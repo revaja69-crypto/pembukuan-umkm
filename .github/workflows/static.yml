@@ -1,5 +1,5 @@
-# Workflow Deployment NiagaPintar PRO v7.5.5
-# Solusi Defensif untuk error "Multiple artifacts found"
+# Workflow Deployment NiagaPintar PRO v7.5.7
+# Solusi untuk error "Multiple artifacts found: Artifact count is 3"
 name: Deploy to GitHub Pages
 
 on:
@@ -12,33 +12,34 @@ permissions:
   pages: write
   id-token: write
 
-# Konfigurasi Concurrency yang lebih ketat untuk membersihkan antrean
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
+  # Menyatukan build dan deploy dalam satu job untuk menghindari duplikasi metadata
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload Artifact
+      # Langkah ini memastikan GitHub tahu kita tidak menggunakan Jekyll
+      - name: Disable Jekyll
+        run: touch .nojekyll
+
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Menggunakan jalur absolut eksplisit untuk menghindari duplikasi scanning
-          path: './'
-          # Memberikan nama unik jika diperlukan, namun Pages default mencari 'github-pages'
-          name: github-pages
+          # Menggunakan path spesifik untuk menghindari pemindaian ganda
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
-        # Menggunakan v4 yang lebih stabil untuk menghindari bug metadata pada v5
         uses: actions/deploy-pages@v4
