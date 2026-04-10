@@ -1,13 +1,15 @@
 /**
- * NiagaPintar PRO - Service Worker v7.3.3
- * Strategi: Network First untuk index.html (Memastikan UI tidak terkunci cache lama).
- * Strategi: Cache First untuk aset statis (Kecepatan).
+ * NiagaPintar PRO - Service Worker v7.3.4
+ * Strategi: Network First untuk index.html (Menjamin UI Performance Edition terbaru).
+ * Strategi: Cache First untuk Library (Mempercepat pemuatan aset statis).
  */
 
-const CACHE_NAME = 'niagapintar-v7.3.3';
+const CACHE_NAME = 'niagapintar-v7.3.4';
 
-// Daftar aset statis yang jarang berubah
+// Daftar aset statis dan pustaka CDN
 const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/chart.js',
@@ -20,22 +22,22 @@ const ASSETS_TO_CACHE = [
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
 ];
 
-// Tahap Install: Simpan aset ke cache
+// Install: Memasukkan aset ke dalam cache
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Memasang Cache v7.3.3');
+      console.log('[SW] Memasang Cache v7.3.4 (Performance Edition)');
       return Promise.all(
         ASSETS_TO_CACHE.map(url => 
-          cache.add(url).catch(err => console.warn(`Gagal cache aset: ${url}`, err))
+          cache.add(url).catch(err => console.warn(`Gagal cache: ${url}`, err))
         )
       );
     })
   );
 });
 
-// Tahap Aktivasi: Klaim kontrol segera & hapus cache usang
+// Activate: Membersihkan cache versi lama
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     Promise.all([
@@ -49,36 +51,35 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Strategi Fetch Pintar
+// Fetch: Mengelola permintaan data
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // STRATEGI 1: Network First untuk index.html & Navigasi
-  // Ini memastikan jika internet jalan, user dapat versi TERBARU (Fix Bug UI)
+  // Navigasi & Index: Network First
+  // Mencoba mengambil dari internet terlebih dahulu agar UI selalu paling baru
   if (event.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname === '/') {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // Simpan salinan terbaru ke cache
           const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match('./index.html')) // Fallback ke cache jika offline
+        .catch(() => caches.match('./index.html'))
     );
     return;
   }
 
-  // STRATEGI 2: Cache First untuk library eksternal (CDN)
+  // Aset & Library: Cache First
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
 
       return fetch(event.request).then((networkResponse) => {
-        // Jangan cache Firebase dynamic calls, hanya library-nya
-        if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com')) {
+        // Hanya simpan library eksternal ke cache
+        if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('unpkg.com')) {
           const copy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         }
