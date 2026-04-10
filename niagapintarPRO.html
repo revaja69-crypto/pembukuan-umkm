@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>NiagaPintar PRO</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NiagaPintar">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1e3a8a">
+    
+    <!-- Ikon Aplikasi -->
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2652/2652218.png">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"NiagaPintar PRO","short_name":"NiagaPintar","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#1e3a8a","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/2652/2652218.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
+
+    <!-- Pustaka Eksternal -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .custom-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-scale:active { transform: scale(0.95); }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 pb-24">
+
+    <!-- Navigasi Atas -->
+    <nav class="bg-blue-900 text-white shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2 rounded-xl">
+                    <i data-lucide="calculator" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-none">NiagaPintar</h1>
+                    <span class="text-[10px] uppercase tracking-widest text-blue-300 font-semibold">GitHub Ready v2.7</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="showInstallGuide()" id="install-btn" class="p-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition-colors border border-blue-700">
+                    <i data-lucide="smartphone" class="w-5 h-5"></i>
+                </button>
+                <button onclick="switchSection('database')" class="p-2 hover:bg-white/10 rounded-lg">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Info Status Offline -->
+    <div id="offline-ready" class="hidden bg-emerald-500 text-white text-[10px] py-1 text-center font-bold uppercase tracking-widest">
+        Aplikasi Siap Digunakan Offline
+    </div>
+
+    <main class="container mx-auto px-4 py-6 max-w-7xl">
+        <!-- Dashboard Atas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="glass-card p-5 rounded-[2rem] custom-shadow border-l-8 border-emerald-500">
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Pemasukan</p>
+                <h3 id="display-income" class="text-2xl font-extrabold text-emerald-600">Rp 0</h3>
+            </div>
+            <div class="glass-card p-5 rounded-[2rem] custom-shadow border-l-8 border-rose-500">
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Pengeluaran</p>
+                <h3 id="display-expense" class="text-2xl font-extrabold text-rose-600">Rp 0</h3>
+            </div>
+            <div class="glass-card p-5 rounded-[2rem] custom-shadow border-l-8 border-blue-600">
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Saldo</p>
+                <h3 id="display-balance" class="text-2xl font-extrabold text-blue-800">Rp 0</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Panel Kiri -->
+            <div class="lg:col-span-4 space-y-6">
+                <div id="panel-input" class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">Input Data</h2>
+                    <form id="accounting-form" class="space-y-4">
+                        <input type="hidden" id="edit-id">
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Keterangan</label>
+                            <input type="text" id="desc" placeholder="Misal: Jual Produk" required
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none transition-all">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Jenis</label>
+                                <select id="type" onchange="filterFormCategories()" class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                                    <option value="income">Masuk</option>
+                                    <option value="expense">Keluar</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Nominal</label>
+                                <input type="number" id="amount" placeholder="0" required
+                                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Kategori</label>
+                            <select id="category" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-extrabold text-slate-400 uppercase mb-1">Tanggal</label>
+                            <input type="date" id="date" required
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none">
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" id="btn-submit" class="flex-grow bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg btn-scale transition-all">Simpan</button>
+                            <button type="button" id="btn-cancel-edit" onclick="resetForm()" class="hidden bg-slate-200 text-slate-600 px-4 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Pengaturan -->
+                <div id="panel-database" class="hidden bg-slate-900 p-6 rounded-[2rem] text-white">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold flex items-center gap-2">Pengaturan</h2>
+                        <button onclick="switchSection('input')"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+                    <div class="mb-6 space-y-4">
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <h3 class="text-xs font-black uppercase tracking-widest text-emerald-400 mb-3">Kategori Masuk</h3>
+                            <div class="space-y-2 mb-4 max-h-32 overflow-y-auto" id="income-cat-list"></div>
+                            <div class="flex gap-2">
+                                <input type="text" id="new-income-cat" placeholder="Tambah..." class="flex-grow bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                                <button onclick="addNewCategory('income')" class="bg-emerald-600 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <h3 class="text-xs font-black uppercase tracking-widest text-rose-400 mb-3">Kategori Keluar</h3>
+                            <div class="space-y-2 mb-4 max-h-32 overflow-y-auto" id="expense-cat-list"></div>
+                            <div class="flex gap-2">
+                                <input type="text" id="new-expense-cat" placeholder="Tambah..." class="flex-grow bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs focus:outline-none">
+                                <button onclick="addNewCategory('expense')" class="bg-rose-600 p-2 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-white/10">
+                        <button onclick="backupDatabase()" class="w-full flex justify-between p-3 bg-white/10 rounded-xl text-sm font-semibold">Simpan Backup <i data-lucide="save" class="w-4 h-4"></i></button>
+                        <button onclick="document.getElementById('importFile').click()" class="w-full flex justify-between p-3 bg-white/10 rounded-xl text-sm font-semibold">Pulihkan Data <i data-lucide="upload-cloud" class="w-4 h-4"></i></button>
+                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="restoreDatabase(event)">
+                        <button onclick="confirmResetDB()" class="w-full p-3 bg-rose-600/20 text-rose-400 rounded-xl font-bold text-xs">Hapus Semua</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Kanan -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h2 class="text-lg font-bold">Riwayat</h2>
+                        <select id="filter-type" onchange="updateUI()" class="px-2 py-2 bg-slate-50 border rounded-xl text-[10px] font-bold uppercase">
+                            <option value="all">Semua</option>
+                            <option value="income">Masuk</option>
+                            <option value="expense">Keluar</option>
+                        </select>
+                    </div>
+                    <div class="flex-grow overflow-x-auto">
+                        <table class="w-full text-left">
+                            <tbody id="list-container" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                        <div id="no-data" class="hidden py-20 text-center text-slate-400 italic text-xs">Belum ada data.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Install -->
+    <div id="modal-install" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl">
+            <h3 class="text-xl font-bold text-center mb-6">Instal NiagaPintar</h3>
+            <div class="space-y-4 text-sm text-slate-600">
+                <p>1. Klik ikon **Titik Tiga (?)** atau **Share**.</p>
+                <p>2. Pilih **"Tambahkan ke layar utama"**.</p>
+                <p>3. Aplikasi kini bisa dibuka tanpa internet!</p>
+            </div>
+            <button onclick="hideInstallGuide()" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl mt-8">Siap!</button>
+        </div>
+    </div>
+
+    <!-- Modals & Notif -->
+    <div id="modal-delete" class="fixed inset-0 bg-slate-900/40 hidden z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center">
+            <h3 class="text-xl font-bold mb-6">Hapus Data?</h3>
+            <div class="flex gap-3">
+                <button onclick="hideDeleteModal()" class="flex-1 py-3 border rounded-xl">Batal</button>
+                <button id="btn-confirm-delete" class="flex-1 py-3 bg-rose-600 text-white rounded-xl">Hapus</button>
+            </div>
+        </div>
+    </div>
+    <div id="notification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] translate-y-20 opacity-0 transition-all duration-500">
+        <div class="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-2xl">
+            <i data-lucide="check-circle" class="text-emerald-400 w-4 h-4"></i><span id="notif-text">Sukses</span>
+        </div>
+    </div>
+
+    <script>
+        // DATABASE LOKAL
+        const DB_NAME = 'UMKM_Smart_DB_v3';
+        const STORE_NAME = 'transaksi';
+        const STORE_CAT = 'kategori_v2';
+        let db;
+
+        const request = indexedDB.open(DB_NAME, 3);
+        request.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains(STORE_NAME)) d.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            if (!d.objectStoreNames.contains(STORE_CAT)) {
+                const catStore = d.createObjectStore(STORE_CAT, { keyPath: 'id' });
+                const defaults = [
+                    { id: 'CI-1', type: 'income', name: 'Penjualan' }, { id: 'CI-2', type: 'income', name: 'Modal' },
+                    { id: 'CE-1', type: 'expense', name: 'Bahan Baku' }, { id: 'CE-2', type: 'expense', name: 'Gaji' },
+                    { id: 'CE-3', type: 'expense', name: 'Sewa & Utilitas' }, { id: 'CE-4', type: 'expense', name: 'Pemasaran' }, { id: 'CO-1', type: 'expense', name: 'Lain-lain' }
+                ];
+                defaults.forEach(c => catStore.add(c));
+            }
+        };
+        request.onsuccess = (e) => { db = e.target.result; updateUI(); };
+
+        let records = [], categories = [], idToRemoval = null, chartInstance = null;
+        const form = document.getElementById('accounting-form'), listBody = document.getElementById('list-container');
+        const emptyView = document.getElementById('no-data'), typeFilter = document.getElementById('filter-type');
+        const typeForm = document.getElementById('type'), catSelect = document.getElementById('category');
+
+        lucide.createIcons();
+        document.getElementById('date').valueAsDate = new Date();
+
+        const toIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+        const formatDate = (dateStr) => { const d = new Date(dateStr); return `${d.getDate()}/${d.getMonth()+1}`; };
+
+        async function fetchAll(storeName) {
+            return new Promise((resolve) => {
+                if (!db) return setTimeout(async () => resolve(await fetchAll(storeName)), 100);
+                const tx = db.transaction([storeName], 'readonly');
+                const req = tx.objectStore(storeName).getAll();
+                req.onsuccess = () => resolve(req.result);
+            });
+        }
+
+        async function updateUI() {
+            records = await fetchAll(STORE_NAME);
+            categories = await fetchAll(STORE_CAT);
+            renderCategoryManager();
+            filterFormCategories();
+            const selectedType = typeFilter.value;
+            let filtered = records.filter(item => (selectedType === 'all' || item.type === selectedType)).sort((a, b) => new Date(b.date) - new Date(a.date));
+            listBody.innerHTML = '';
+            if (!filtered.length) emptyView.classList.remove('hidden');
+            else {
+                emptyView.classList.add('hidden');
+                filtered.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50 transition-all';
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 text-[10px] font-bold text-slate-400">${formatDate(item.date)}</td>
+                        <td class="px-6 py-4">
+                            <span class="text-xs font-bold text-slate-800 block">${item.desc}</span>
+                            <span class="text-[8px] uppercase text-slate-400">${item.category || ''}</span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <span class="text-xs font-black ${item.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">${toIDR(item.amount)}</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="editRecord('${item.id}')" class="p-1 text-blue-400"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+                            <button onclick="showDeleteModal('${item.id}')" class="p-1 text-rose-300"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                        </td>`;
+                    listBody.appendChild(tr);
+                });
+            }
+            calculateStats(); renderChart(); lucide.createIcons();
+        }
+
+        function filterFormCategories() {
+            const selectedType = typeForm.value;
+            catSelect.innerHTML = categories.filter(c => c.type === selectedType).map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+        }
+
+        function renderCategoryManager() {
+            const incomeList = document.getElementById('income-cat-list'), expenseList = document.getElementById('expense-cat-list');
+            const renderItem = (c) => `<div class="flex justify-between items-center bg-white/5 p-2 rounded-lg group"><span class="text-xs font-semibold">${c.name}</span><button onclick="deleteCategory('${c.id}')" class="text-rose-400 opacity-0 group-hover:opacity-100"><i data-lucide="x-circle" class="w-3 h-3"></i></button></div>`;
+            incomeList.innerHTML = categories.filter(c => c.type === 'income').map(renderItem).join('');
+            expenseList.innerHTML = categories.filter(c => c.type === 'expense').map(renderItem).join('');
+            lucide.createIcons();
+        }
+
+        async function addNewCategory(type) {
+            const id = type === 'income' ? 'new-income-cat' : 'new-expense-cat', name = document.getElementById(id).value.trim();
+            if (!name) return;
+            const tx = db.transaction([STORE_CAT], 'readwrite');
+            tx.objectStore(STORE_CAT).add({ id: 'CAT-' + Date.now(), type, name });
+            tx.oncomplete = () => { document.getElementById(id).value = ''; showNotification(`Kategori ditambah`); updateUI(); };
+        }
+
+        function deleteCategory(id) {
+            const tx = db.transaction([STORE_CAT], 'readwrite');
+            tx.objectStore(STORE_CAT).delete(id);
+            tx.oncomplete = () => { showNotification("Dihapus"); updateUI(); };
+        }
+
+        function calculateStats() {
+            const inc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+            const exp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+            document.getElementById('display-income').innerText = toIDR(inc);
+            document.getElementById('display-expense').innerText = toIDR(exp);
+            document.getElementById('display-balance').innerText = toIDR(inc - exp);
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value || 'TRX-' + Date.now();
+            const entry = { id, desc: document.getElementById('desc').value, amount: parseFloat(document.getElementById('amount').value), type: document.getElementById('type').value, category: document.getElementById('category').value, date: document.getElementById('date').value };
+            const tx = db.transaction([STORE_NAME], 'readwrite');
+            tx.objectStore(STORE_NAME).put(entry);
+            tx.oncomplete = () => { showNotification("Berhasil disimpan"); resetForm(); updateUI(); };
+        });
+
+        function editRecord(id) {
+            const item = records.find(r => r.id === id); if (!item) return;
+            document.getElementById('edit-id').value = item.id;
+            document.getElementById('desc').value = item.desc;
+            document.getElementById('amount').value = item.amount;
+            document.getElementById('type').value = item.type;
+            filterFormCategories();
+            document.getElementById('category').value = item.category;
+            document.getElementById('date').value = item.date;
+            document.getElementById('btn-submit').innerText = "Perbarui";
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
+        }
+
+        function resetForm() {
+            form.reset(); document.getElementById('edit-id').value = ''; document.getElementById('date').valueAsDate = new Date();
+            document.getElementById('btn-submit').innerText = "Simpan"; document.getElementById('btn-cancel-edit').classList.add('hidden');
+            filterFormCategories();
+        }
+
+        function switchSection(sec) {
+            document.getElementById('panel-input').classList.toggle('hidden', sec === 'database');
+            document.getElementById('panel-database').classList.toggle('hidden', sec !== 'database');
+        }
+
+        function showInstallGuide() { document.getElementById('modal-install').classList.remove('hidden'); }
+        function hideInstallGuide() { document.getElementById('modal-install').classList.add('hidden'); }
+        function showDeleteModal(id) { idToRemoval = id; document.getElementById('modal-delete').classList.remove('hidden'); }
+        function hideDeleteModal() { document.getElementById('modal-delete').classList.add('hidden'); }
+
+        document.getElementById('btn-confirm-delete').addEventListener('click', () => {
+            const tx = db.transaction([STORE_NAME], 'readwrite');
+            tx.objectStore(STORE_NAME).delete(idToRemoval);
+            tx.oncomplete = () => { updateUI(); hideDeleteModal(); showNotification("Dihapus"); };
+        });
+
+        function showNotification(text) {
+            const n = document.getElementById('notification'); document.getElementById('notif-text').innerText = text;
+            n.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => n.classList.add('translate-y-20', 'opacity-0'), 2500);
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            const dataMap = {}; records.forEach(r => { if (r.type === 'income') dataMap[r.category] = (dataMap[r.category] || 0) + r.amount; });
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: Object.keys(dataMap), datasets: [{ data: Object.values(dataMap), backgroundColor: ['#1e3a8a', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '80%' }
+            });
+        }
+
+        function backupDatabase() {
+            const backupData = { records, categories };
+            const blob = new Blob([JSON.stringify(backupData)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob); const a = document.createElement('a');
+            a.href = url; a.download = `Backup_PintarNiaga.json`; a.click();
+        }
+
+        function restoreDatabase(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const data = JSON.parse(event.target.result);
+                const tx = db.transaction([STORE_NAME, STORE_CAT], 'readwrite');
+                (data.records || []).forEach(item => tx.objectStore(STORE_NAME).put(item));
+                (data.categories || []).forEach(item => tx.objectStore(STORE_CAT).put(item));
+                tx.oncomplete = () => { updateUI(); showNotification("Data Dipulihkan"); };
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmResetDB() {
+            if (confirm("Hapus Semua?")) {
+                const tx = db.transaction([STORE_NAME], 'readwrite');
+                tx.objectStore(STORE_NAME).clear(); tx.oncomplete = () => { updateUI(); showNotification("DB Kosong"); };
+            }
+        }
+
+        // SERVICE WORKER REGISTRATION (HACK FOR SINGLE FILE GITHUB PAGES)
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+            window.addEventListener('load', function() {
+                // Creating a Service Worker on-the-fly via Blob for single-file adherence
+                const swCode = `
+                    const cacheName = 'niagapintar-v2.7';
+                    const assets = [location.href];
+                    self.addEventListener('install', e => e.waitUntil(caches.open(cacheName).then(c => c.addAll(assets))));
+                    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).then(() => {
+                    document.getElementById('offline-ready').classList.remove('hidden');
+                }).catch(err => console.log('SW failed', err));
+            });
+        }
+    </script>
+</body>
+</html>
