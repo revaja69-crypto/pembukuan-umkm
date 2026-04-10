@@ -1,9 +1,10 @@
 /**
  * NiagaPintar PRO - Service Worker v7.6.0
  * Strategi: Network First (HTML) & Stale-While-Revalidate (Library)
+ * Bagian Cloud Server telah dihapus untuk fokus pada aset lokal.
  */
 
-const CACHE_NAME = 'niagapintar-v7.6.0';
+const CACHE_NAME = 'niagapintar-v7.6.0-local';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -14,10 +15,7 @@ const ASSETS_TO_CACHE = [
   'https://unpkg.com/lucide@latest',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
-  'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js',
-  'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
 // Install: Simpan aset awal ke cache
@@ -70,7 +68,8 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cached) => {
       const networked = fetch(event.request)
         .then((response) => {
-          if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('unpkg.com')) {
+          // Hanya simpan pustaka UI dan utility ke cache
+          if (url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('unpkg.com')) {
             caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
           }
           return response;
