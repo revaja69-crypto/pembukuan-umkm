@@ -120,11 +120,12 @@
         .text-micro { font-size: 8px; }
         .text-nano { font-size: 7px; }
         
-        /* Fix for Horizontal Alignment */
+        /* Benar-benar Sejajar Horisontal */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: 1fr 1fr 1fr; /* Memaksa 3 kolom sama lebar */
+            gap: 6px; /* Jarak antar kartu */
+            width: 100%;
         }
     </style>
 </head>
@@ -151,23 +152,23 @@
         </header>
 
         <!-- Area Konten Utama -->
-        <div class="main-content px-4 py-4">
+        <div class="main-content px-3 py-4">
             
             <!-- SECTION: BERANDA -->
             <div id="view-home" class="view-section active space-y-4">
-                <!-- Stat Cards: Sejajar ke samping (Horizontal) -->
+                <!-- Stat Cards: Dipaksa Sejajar Penuh -->
                 <div class="stats-grid animate-fade">
-                    <div class="glass-card p-2 rounded-xl shadow-sm flex flex-col justify-center">
-                        <span class="text-nano font-bold text-slate-400 uppercase block mb-1 leading-none">Masuk</span>
-                        <h3 id="display-income" class="text-[10px] font-black text-emerald-600 truncate leading-tight">Rp 0</h3>
+                    <div class="glass-card p-2 rounded-xl shadow-sm flex flex-col items-center justify-center h-14 border border-slate-100">
+                        <span class="text-[7px] font-extrabold text-slate-400 uppercase block mb-1">Masuk</span>
+                        <h3 id="display-income" class="text-[10px] font-black text-emerald-600 truncate">Rp 0</h3>
                     </div>
-                    <div class="glass-card p-2 rounded-xl shadow-sm flex flex-col justify-center">
-                        <span class="text-nano font-bold text-slate-400 uppercase block mb-1 leading-none">Keluar</span>
-                        <h3 id="display-expense" class="text-[10px] font-black text-rose-600 truncate leading-tight">Rp 0</h3>
+                    <div class="glass-card p-2 rounded-xl shadow-sm flex flex-col items-center justify-center h-14 border border-slate-100">
+                        <span class="text-[7px] font-extrabold text-slate-400 uppercase block mb-1">Keluar</span>
+                        <h3 id="display-expense" class="text-[10px] font-black text-rose-600 truncate">Rp 0</h3>
                     </div>
-                    <div class="bg-slate-900 p-2 rounded-xl shadow-sm flex flex-col justify-center border border-slate-800">
-                        <span class="text-nano font-bold text-slate-500 uppercase block mb-1 leading-none">Saldo</span>
-                        <h3 id="display-balance" class="text-[10px] font-black text-indigo-100 truncate leading-tight">Rp 0</h3>
+                    <div class="bg-slate-900 p-2 rounded-xl shadow-sm flex flex-col items-center justify-center h-14 border border-slate-800 shadow-lg">
+                        <span class="text-[7px] font-extrabold text-slate-500 uppercase block mb-1">Saldo</span>
+                        <h3 id="display-balance" class="text-[10px] font-black text-indigo-100 truncate">Rp 0</h3>
                     </div>
                 </div>
 
@@ -184,7 +185,7 @@
                         <i data-lucide="shield-check" class="w-20 h-20"></i>
                     </div>
                     <p class="text-[9px] font-bold opacity-80 mb-1 uppercase tracking-wider">Status Keamanan</p>
-                    <p class="text-xs font-black leading-tight">Data terenkripsi dan tersimpan di memori internal perangkat.</p>
+                    <p class="text-xs font-black leading-tight">Data tersimpan di memori internal perangkat dengan aman.</p>
                 </div>
             </div>
 
@@ -286,7 +287,7 @@
                 </div>
                 <div class="text-center py-6">
                     <div class="inline-block px-4 py-1.5 bg-slate-100 rounded-full">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">NiagaPintar PRO v4.4</p>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">NiagaPintar PRO v4.5</p>
                     </div>
                 </div>
             </div>
