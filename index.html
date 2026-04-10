@@ -295,7 +295,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global State
@@ -307,6 +307,7 @@
             return id;
         })();
 
+        // Firebase Initialization
         const firebaseConfig = JSON.parse(__firebase_config);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-id';
         const app = initializeApp(firebaseConfig);
@@ -397,9 +398,13 @@
         };
 
         const startSync = (uid) => {
+            // Rule 3: Guard Firestore access behind auth status
+            if (!auth.currentUser) return;
+
             if (unsubRecs) unsubRecs();
             if (unsubCats) unsubCats();
 
+            // Rule 1: Correct Firestore paths
             const pathRecs = `artifacts/${appId}/public/data/recs_${uid}`;
             const pathCats = `artifacts/${appId}/public/data/cats_${uid}`;
 
@@ -410,7 +415,8 @@
                 document.getElementById('sync-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
                 document.getElementById('sync-text').innerText = "CONNECTED";
                 window.hideOverlay();
-            }, () => {
+            }, (err) => {
+                console.error("Firestore sync error (recs):", err);
                 document.getElementById('sync-dot').className = "w-1.5 h-1.5 rounded-full bg-slate-400";
                 document.getElementById('sync-text').innerText = "OFFLINE";
             });
@@ -424,12 +430,15 @@
                     renderCatsUI();
                     window.setT(document.getElementById('type').value);
                 }
+            }, (err) => {
+                console.error("Firestore sync error (cats):", err);
             });
 
             document.getElementById('display-uid').innerText = uid;
         };
 
         const seedCats = async (uid) => {
+            if (!auth.currentUser) return;
             const def = [
                 { type: 'income', name: 'Penjualan' }, { type: 'income', name: 'Modal' },
                 { type: 'expense', name: 'Stok' }, { type: 'expense', name: 'Sewa' }, { type: 'expense', name: 'Gaji' }
@@ -437,8 +446,25 @@
             for (const c of def) await addDoc(collection(db, `artifacts/${appId}/public/data/cats_${uid}`), c);
         };
 
-        onAuthStateChanged(auth, (user) => { if (user) startSync(currentUID); });
-        signInAnonymously(auth).catch(() => window.hideOverlay());
+        // Rule 3: Auth Flow Implementation
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Authentication failed:", err);
+                window.hideOverlay();
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) startSync(currentUID);
+        });
+
+        initAuth();
 
         window.switchView = (v) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -464,12 +490,13 @@
             if(v.length !== 10) return alert("ID harus 10 angka");
             currentUID = v;
             localStorage.setItem('np_active_uid', v);
-            startSync(v);
+            if (auth.currentUser) startSync(v);
             window.switchView('home');
             window.notify("SWITCHING...");
         };
 
         window.addCat = async () => {
+            if (!auth.currentUser) return window.notify("TIDAK TERKONEKSI");
             const name = document.getElementById('new-cat-name').value.trim();
             const type = document.getElementById('new-cat-type').value;
             if(!name) return;
@@ -481,7 +508,74 @@
         };
 
         window.delCat = async (id) => {
+            if (!auth.currentUser) return window.notify("TIDAK TERKONEKSI");
             if(!confirm("Hapus kategori?")) return;
             try { await deleteDoc(doc(db, `artifacts/${appId}/public/data/cats_${currentUID}`, id)); window.notify("KATEGORI DIHAPUS"); }
             catch { window.notify("GAGAL"); }
         };
+
+        window.delRec = async (id) => {
+            if (!auth.currentUser && !id.startsWith('L-')) return window.notify("TIDAK TERKONEKSI");
+            if(!confirm("Hapus transaksi?")) return;
+            try { 
+                if (!id.startsWith('L-')) {
+                    await deleteDoc(doc(db, `artifacts/${appId}/public/data/recs_${currentUID}`, id)); 
+                } else {
+                    window.records = window.records.filter(r => r.id !== id);
+                    localStorage.setItem('np_local_recs', JSON.stringify(window.records));
+                    window.renderUI();
+                }
+                window.notify("TERHAPUS"); 
+            }
+            catch { window.notify("GAGAL"); }
+        };
+
+        document.getElementById('accounting-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.innerText = "...";
+            const data = {
+                desc: document.getElementById('desc').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                type: document.getElementById('type').value,
+                category: document.getElementById('category').value,
+                date: document.getElementById('date').value,
+                timestamp: serverTimestamp()
+            };
+            try {
+                if(!auth.currentUser) throw new Error("Offline");
+                await addDoc(collection(db, `artifacts/${appId}/public/data/recs_${currentUID}`), data);
+                window.notify("TERSINKRON");
+            } catch {
+                window.records.push({ id: 'L-'+Date.now(), ...data });
+                localStorage.setItem('np_local_recs', JSON.stringify(window.records));
+                window.renderUI(); window.notify("SIMPAN LOKAL");
+            } finally {
+                btn.disabled = false; btn.innerText = "SIMPAN TRANSAKSI";
+                document.getElementById('accounting-form').reset();
+                window.switchView('history');
+            }
+        };
+
+        window.exportDoc = (type) => {
+            if(type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const docPdf = new jsPDF();
+                docPdf.text("Laporan NiagaPintar PRO", 14, 20);
+                docPdf.autoTable({ startY: 25, head: [['Tgl', 'Ket', 'Ktg', 'Rp']], body: window.records.map(r=>[r.date, r.desc, r.category, r.amount]) });
+                docPdf.save(`Laporan_${currentUID}.pdf`);
+            } else {
+                const ws = XLSX.utils.json_to_sheet(window.records);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Data");
+                XLSX.writeFile(wb, `Laporan_${currentUID}.xlsx`);
+            }
+        };
+
+        window.setT('income');
+        document.getElementById('date').valueAsDate = new Date();
+        window.renderUI();
+        setTimeout(window.hideOverlay, 4000);
+    </script>
+</body>
+</html>
