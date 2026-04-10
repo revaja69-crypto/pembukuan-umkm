@@ -1,11 +1,11 @@
 /**
- * NiagaPintar PRO - Service Worker v7.3
- * Sinkronisasi dengan sistem Hybrid Cloud & NiagaID 10-Digit.
+ * NiagaPintar PRO - Service Worker v7.3.1
+ * Optimalisasi untuk Hybrid Cloud Sync & Akses Offline Instan.
  */
 
-const CACHE_NAME = 'niagapintar-v7.3';
+const CACHE_NAME = 'niagapintar-v7.3.1';
 
-// Daftar aset yang akan disimpan secara offline
+// Daftar aset inti untuk performa offline maksimal
 const ASSETS_TO_CACHE = [
   './',
   './pembukuan_umkm.html',
@@ -21,22 +21,22 @@ const ASSETS_TO_CACHE = [
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
 ];
 
-// Proses Instalasi: Membuat cache baru
+// Tahap Install: Memasukkan aset ke cache
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Memperbarui Cache ke v7.3 (Hybrid Sync Mode)');
+      console.log('[SW] Memperbarui Cache ke v7.3.1 (Hybrid Mode)');
       return Promise.all(
         ASSETS_TO_CACHE.map(url => 
-          cache.add(url).catch(err => console.warn(`Gagal cache aset: ${url}`, err))
+          cache.add(url).catch(err => console.warn(`Gagal cache: ${url}`, err))
         )
       );
     })
   );
 });
 
-// Proses Aktivasi: Menghapus cache versi lama untuk menghindari konflik
+// Tahap Aktivasi: Menghapus cache lama untuk mengosongkan ruang
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -49,15 +49,16 @@ self.addEventListener('activate', (event) => {
 
 // Strategi Fetch: Cache First, Network Fallback
 self.addEventListener('fetch', (event) => {
+  // Hanya proses metode GET
   if (event.request.method !== 'GET') return;
   
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // Jika ada di cache, gunakan itu. Jika tidak, ambil dari jaringan.
+      // Gunakan cache jika ada, jika tidak ambil dari internet
       return cachedResponse || fetch(event.request).then((networkResponse) => {
         return networkResponse;
       }).catch(() => {
-        // Fallback jika offline total dan mencoba navigasi
+        // Jika offline total dan mencoba navigasi halaman utama
         if (event.request.mode === 'navigate') {
           return caches.match('./pembukuan_umkm.html');
         }
