@@ -12,7 +12,6 @@
     
     <!-- Link ke Manifest -->
     <link rel="manifest" href="manifest.json">
-    <!-- Ikon Baru yang Lebih Profesional (Modern Indigo Finance Icon) -->
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11550/11550419.png">
 
     <!-- Pustaka Eksternal -->
@@ -108,38 +107,39 @@
 
     <main class="container mx-auto px-4 py-8 max-w-7xl">
         
-        <!-- Dashboard Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10 animate-fade">
-            <div class="glass-card stat-card p-6 rounded-[2.5rem] relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                <div class="flex items-center gap-4 mb-3">
-                    <div class="bg-emerald-100 p-3 rounded-2xl text-emerald-600">
-                        <i data-lucide="trending-up" class="w-5 h-5"></i>
+        <!-- Dashboard Summary (Ukuran Diperkecil) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 animate-fade">
+            <div class="glass-card stat-card p-4 rounded-[2rem] relative overflow-hidden">
+                <div class="absolute -right-2 -top-2 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"></div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="bg-emerald-100 p-2 rounded-xl text-emerald-600">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Pemasukan</span>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pemasukan</span>
                 </div>
-                <h3 id="display-income" class="text-3xl font-extrabold text-emerald-600">Rp 0</h3>
+                <h3 id="display-income" class="text-xl font-extrabold text-emerald-600">Rp 0</h3>
             </div>
             
-            <div class="glass-card stat-card p-6 rounded-[2.5rem] relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl"></div>
-                <div class="flex items-center gap-4 mb-3">
-                    <div class="bg-rose-100 p-3 rounded-2xl text-rose-600">
-                        <i data-lucide="trending-down" class="w-5 h-5"></i>
+            <div class="glass-card stat-card p-4 rounded-[2rem] relative overflow-hidden">
+                <div class="absolute -right-2 -top-2 w-16 h-16 bg-rose-500/10 rounded-full blur-xl"></div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="bg-rose-100 p-2 rounded-xl text-rose-600">
+                        <i data-lucide="trending-down" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Pengeluaran</span>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Pengeluaran</span>
                 </div>
-                <h3 id="display-expense" class="text-3xl font-extrabold text-rose-600">Rp 0</h3>
+                <h3 id="display-expense" class="text-xl font-extrabold text-rose-600">Rp 0</h3>
             </div>
 
-            <div class="stat-card p-6 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl shadow-slate-200">
-                <div class="flex items-center gap-4 mb-3">
-                    <div class="bg-white/10 p-3 rounded-2xl text-indigo-400">
-                        <i data-lucide="wallet" class="w-5 h-5"></i>
+            <div class="stat-card p-4 rounded-[2rem] bg-slate-900 text-white shadow-xl shadow-slate-200 overflow-hidden relative">
+                <div class="absolute -right-2 -top-2 w-16 h-16 bg-indigo-500/20 rounded-full blur-xl"></div>
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="bg-white/10 p-2 rounded-xl text-indigo-400">
+                        <i data-lucide="wallet" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Saldo Bersih</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Saldo Bersih</span>
                 </div>
-                <h3 id="display-balance" class="text-3xl font-extrabold">Rp 0</h3>
+                <h3 id="display-balance" class="text-xl font-extrabold">Rp 0</h3>
             </div>
         </div>
 
