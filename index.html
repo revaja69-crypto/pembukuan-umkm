@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NiagaPintar PRO | Enterprise Edition</title>
+    <title>NiagaPintar PRO v7.5.1 | Cloud Resilient</title>
     
-    <!-- PWA & Mobile Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4f46e5">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11550/11550419.png">
 
-    <!-- Pustaka Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -20,362 +17,700 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-        .app-container { display: flex; height: 100dvh; width: 100%; }
-        .content-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; max-width: 500px; margin: 0 auto; background: white; box-shadow: 0 0 40px rgba(0,0,0,0.03); }
-        @media (min-width: 1024px) { .content-wrapper { max-width: none; margin: 0; } }
-        .main-content { flex: 1; overflow-y: auto; padding-bottom: 80px; -webkit-overflow-scrolling: touch; }
-        .view-section { display: none; animation: fadeIn 0.2s ease-out forwards; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .premium-gradient { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
-        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9; display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; cursor: pointer; transition: all 0.2s; }
-        .nav-item.active { color: #4f46e5; }
-        .clickable { cursor: pointer; transition: transform 0.1s; pointer-events: auto !important; }
-        .clickable:active { transform: scale(0.95); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        :root {
+            --brand: #4f46e5;
+            --emerald: #10b981;
+            --rose: #f43f5e;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-shell {
+            display: flex;
+            height: 100dvh;
+            width: 100%;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 60px rgba(0,0,0,0.05);
+        }
+
+        @media (min-width: 1024px) {
+            .phone-frame { max-width: none; margin: 0; }
+        }
+
+        .main-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 90px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .view.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid #f1f5f9;
+            display: flex; 
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .nav-btn.active { color: var(--brand); }
+
+        .premium-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+
+        .card {
+            background: white;
+            border-radius: 28px;
+            border: 1px solid #f1f5f9;
+            padding: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.02);
+        }
+
+        .progress-bg { background: #f1f5f9; height: 6px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
+
+        .btn-tap { cursor: pointer; transition: 0.1s; pointer-events: auto; }
+        .btn-tap:active { transform: scale(0.96); opacity: 0.8; }
+        
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        
+        /* Loading Overlay */
+        #sync-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.8);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.5s;
+        }
+        
+        .pulse-loader {
+            width: 40px;
+            height: 40px;
+            background: var(--brand);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="content-wrapper">
+    <!-- Loading Syncing Overlay -->
+    <div id="sync-overlay">
+        <div class="pulse-loader"></div>
+        <p class="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Menyambungkan Cloud...</p>
+    </div>
+
+    <div class="app-shell">
+        <div class="phone-frame">
             <!-- Header -->
-            <header class="premium-gradient text-white px-5 py-5 shrink-0 shadow-lg">
+            <header class="premium-bg text-white p-5 shrink-0 shadow-lg">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <div class="bg-white/20 p-2.5 rounded-2xl"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div>
                         <div>
-                            <h1 class="text-sm font-black uppercase tracking-tight">NiagaPintar PRO</h1>
-                            <span id="view-title" class="text-[9px] font-bold text-indigo-100 block opacity-80 uppercase tracking-widest">BERANDA</span>
+                            <h1 class="text-sm font-black uppercase tracking-tight leading-none">NiagaPintar PRO</h1>
+                            <span id="view-title" class="text-[9px] font-bold opacity-70 uppercase tracking-widest">BERANDA</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 bg-black/10 px-3 py-1.5 rounded-full border border-white/10">
-                        <span class="w-2 h-2 rounded-full bg-slate-400" id="status-dot"></span>
-                        <span class="text-[9px] font-black uppercase tracking-tighter" id="status-text">OFFLINE</span>
+                    <div class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-full border border-white/10 clickable" onclick="forceReconnect()">
+                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400" id="status-dot"></span>
+                        <span class="text-[9px] font-black uppercase tracking-widest" id="status-text">OFFLINE</span>
                     </div>
                 </div>
             </header>
 
-            <main class="main-content px-5 py-6">
+            <main class="main-scroll p-5">
                 <!-- VIEW: HOME -->
-                <div id="view-home" class="view-section active space-y-6">
+                <div id="view-home" class="view active space-y-6">
                     <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-                            <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Masuk</span>
-                            <h3 id="display-income" class="text-xs font-black text-emerald-600 tracking-tighter">Rp 0</h3>
+                        <div class="card bg-white text-center">
+                            <span class="text-[8px] font-black text-slate-400 uppercase block mb-1">Masuk</span>
+                            <h3 id="dash-inc" class="text-xs font-black text-emerald-600 tracking-tighter">Rp 0</h3>
                         </div>
-                        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-                            <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Keluar</span>
-                            <h3 id="display-expense" class="text-xs font-black text-rose-600 tracking-tighter">Rp 0</h3>
+                        <div class="card bg-white text-center">
+                            <span class="text-[8px] font-black text-slate-400 uppercase block mb-1">Keluar</span>
+                            <h3 id="dash-exp" class="text-xs font-black text-rose-600 tracking-tighter">Rp 0</h3>
                         </div>
-                        <div class="bg-slate-900 p-4 rounded-3xl shadow-lg">
-                            <span class="text-[8px] font-bold text-slate-500 uppercase block mb-1">Saldo</span>
-                            <h3 id="display-balance" class="text-xs font-black text-white tracking-tighter">Rp 0</h3>
+                        <div class="card bg-slate-900 border-none text-center">
+                            <span class="text-[8px] font-black text-slate-500 uppercase block mb-1">Saldo</span>
+                            <h3 id="dash-bal" class="text-xs font-black text-white tracking-tighter">Rp 0</h3>
                         </div>
                     </div>
-                    
-                    <div id="stats-container" class="space-y-4"></div>
-                    <div id="home-empty" class="hidden py-24 text-center opacity-30"><i data-lucide="box" class="w-12 h-12 mx-auto mb-2"></i><p class="text-[10px] font-black uppercase">Belum ada data</p></div>
+
+                    <div class="space-y-6">
+                        <div class="space-y-4">
+                            <h2 class="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span> Pemasukan Terbesar
+                            </h2>
+                            <div id="inc-vis-list" class="space-y-3"></div>
+                        </div>
+                        <div class="space-y-4">
+                            <h2 class="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                <span class="w-1.5 h-4 bg-rose-500 rounded-full"></span> Pengeluaran Terbesar
+                            </h2>
+                            <div id="exp-vis-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <div id="empty-state" class="hidden py-24 text-center opacity-20">
+                        <i data-lucide="package" class="w-12 h-12 mx-auto mb-2"></i>
+                        <p class="text-[10px] font-black uppercase">Belum ada data</p>
+                    </div>
                 </div>
 
                 <!-- VIEW: INPUT -->
-                <div id="view-input" class="view-section space-y-6">
-                    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                        <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Transaksi</h2>
-                        <form id="main-form" class="space-y-4">
-                            <input type="text" id="form-desc" placeholder="Keterangan..." required class="w-full p-4 bg-slate-50 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-100 transition-all">
+                <div id="view-input" class="view space-y-6">
+                    <div class="card">
+                        <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Catat Transaksi</h2>
+                        <form id="f-trans" class="space-y-4">
+                            <div class="space-y-2">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Keterangan</label>
+                                <input type="text" id="i-desc" placeholder="Contoh: Jual Stok Baju..." required class="w-full p-4 bg-slate-50 rounded-2xl text-sm border-none focus:ring-2 focus:ring-indigo-100 outline-none">
+                            </div>
                             
                             <div class="grid grid-cols-2 gap-2">
-                                <button type="button" onclick="setType('income')" id="btn-type-inc" class="p-4 rounded-2xl border-2 font-black text-[10px] uppercase transition-all">💰 Masuk</button>
-                                <button type="button" onclick="setType('expense')" id="btn-type-exp" class="p-4 rounded-2xl border-2 font-black text-[10px] uppercase transition-all">💸 Keluar</button>
+                                <div onclick="setT('income')" id="t-inc" class="p-4 rounded-2xl border-2 border-slate-100 text-[10px] font-black uppercase flex items-center justify-center gap-2 btn-tap">💰 MASUK</div>
+                                <div onclick="setT('expense')" id="t-exp" class="p-4 rounded-2xl border-2 border-slate-100 text-[10px] font-black uppercase flex items-center justify-center gap-2 btn-tap">💸 KELUAR</div>
                             </div>
-                            <input type="hidden" id="form-type" value="income">
+                            <input type="hidden" id="i-type" value="income">
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="number" id="form-amount" placeholder="Nominal..." required class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-black outline-none">
-                                <input type="date" id="form-date" required class="w-full p-4 bg-slate-50 rounded-2xl text-sm outline-none">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="space-y-2">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nominal (IDR)</label>
+                                    <input type="number" id="i-amt" placeholder="0" required class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-black border-none outline-none">
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
+                                    <select id="i-cat" class="w-full p-4 bg-slate-50 rounded-2xl text-sm border-none outline-none cursor-pointer"></select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
+                                    <input type="date" id="i-date" required class="w-full p-4 bg-slate-50 rounded-2xl text-sm border-none outline-none">
+                                </div>
                             </div>
                             
-                            <select id="form-cat" class="w-full p-4 bg-slate-50 rounded-2xl text-sm outline-none"></select>
-                            
-                            <button type="submit" id="submit-btn" class="w-full p-5 bg-indigo-600 text-white rounded-[2rem] font-black text-xs shadow-xl shadow-indigo-100 clickable">SIMPAN KE CLOUD</button>
+                            <button type="submit" id="s-btn" class="w-full p-5 bg-indigo-600 text-white rounded-[2rem] font-black text-xs shadow-xl shadow-indigo-100 btn-tap">SIMPAN TRANSAKSI</button>
                         </form>
                     </div>
                 </div>
 
                 <!-- VIEW: HISTORY -->
-                <div id="view-history" class="view-section space-y-4">
+                <div id="view-history" class="view space-y-4">
                     <div class="flex gap-2">
-                        <button onclick="exportDoc('pdf')" class="flex-1 p-3.5 bg-white border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-tighter shadow-sm flex items-center justify-center gap-2 text-rose-500"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
-                        <button onclick="exportDoc('excel')" class="flex-1 p-3.5 bg-white border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-tighter shadow-sm flex items-center justify-center gap-2 text-emerald-600"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel</button>
+                        <button onclick="doExport('pdf')" class="flex-1 p-3.5 bg-white border border-slate-100 rounded-2xl text-[9px] font-black uppercase btn-tap flex items-center justify-center gap-2 text-rose-500"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
+                        <button onclick="doExport('xlsx')" class="flex-1 p-3.5 bg-white border border-slate-100 rounded-2xl text-[9px] font-black uppercase btn-tap flex items-center justify-center gap-2 text-emerald-600"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXCEL</button>
                     </div>
-                    <div class="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
-                        <table class="w-full text-left text-[11px]">
-                            <tbody id="history-body" class="divide-y divide-slate-50"></tbody>
+                    
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                        <input type="text" id="search-bar" oninput="refreshUI()" placeholder="Cari transaksi..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs outline-none focus:ring-2 focus:ring-indigo-100">
+                    </div>
+
+                    <div class="card p-0 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[8px] font-black text-slate-400 uppercase tracking-widest">
+                                <tr>
+                                    <th class="px-5 py-4">Tgl</th>
+                                    <th class="px-2 py-4">Item</th>
+                                    <th class="px-5 py-4 text-right">Rp</th>
+                                    <th class="px-4 py-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="hist-list" class="divide-y divide-slate-50"></tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- VIEW: SETTINGS -->
-                <div id="view-settings" class="view-section space-y-6">
-                    <div class="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-5">
-                        <div class="space-y-1">
-                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">ID Niaga PRO Anda</p>
-                            <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <span id="display-id" class="font-black text-sm tracking-[0.2em] text-slate-800">000 000 0000</span>
-                                <i data-lucide="copy" class="w-5 h-5 text-indigo-600 clickable" onclick="copyMyId()"></i>
+                <div id="view-settings" class="view space-y-6">
+                    <div class="card space-y-6">
+                        <div>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3">ID Niaga PRO Anda</p>
+                            <div class="flex justify-between items-center bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                <span id="d-id" class="font-black tracking-[0.2em] text-sm text-slate-800">000 000 0000</span>
+                                <i data-lucide="copy" class="w-5 h-5 text-indigo-600 btn-tap" onclick="doCopy()"></i>
                             </div>
                         </div>
+                        
                         <div class="space-y-3">
-                            <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Sinkronisasi ID Lain</p>
+                            <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Ganti ID Sinkronisasi</p>
                             <div class="flex gap-2">
-                                <input type="number" id="id-switcher" placeholder="10 Digit ID" class="flex-1 p-4 bg-slate-50 rounded-2xl text-xs font-bold outline-none border border-slate-100">
-                                <button onclick="switchId()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase clickable">GANTI</button>
+                                <input type="number" id="sw-id" placeholder="10 Digit ID" class="flex-1 p-4 bg-slate-50 rounded-2xl text-xs font-bold outline-none border border-slate-100">
+                                <button onclick="doSwitch()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase btn-tap">GANTI</button>
                             </div>
                         </div>
                     </div>
-                    <button onclick="clearCloud()" class="w-full p-5 bg-rose-50 text-rose-500 rounded-[2rem] font-black text-[10px] uppercase tracking-widest border border-rose-100 clickable">Hapus Seluruh Data</button>
+
+                    <div class="card space-y-6">
+                        <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2"><i data-lucide="tags" class="w-4 h-4"></i> Kelola Kategori</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="flex gap-2">
+                                <input type="text" id="new-cat-name" placeholder="Kategori baru..." class="flex-1 p-4 bg-slate-50 rounded-2xl text-xs outline-none border border-slate-100">
+                                <select id="new-cat-type" class="bg-slate-50 p-4 rounded-2xl text-xs font-bold outline-none border border-slate-100">
+                                    <option value="income">Masuk</option>
+                                    <option value="expense">Keluar</option>
+                                </select>
+                                <button onclick="doAddCat()" class="bg-indigo-600 text-white p-4 rounded-2xl btn-tap"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <p class="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em]">Masuk</p>
+                                    <div id="list-cat-inc" class="space-y-1"></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <p class="text-[8px] font-black text-rose-500 uppercase tracking-[0.2em]">Keluar</p>
+                                    <div id="list-cat-exp" class="space-y-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="confirmClear()" class="w-full p-5 bg-rose-50 text-rose-500 rounded-[2rem] font-black text-[10px] uppercase tracking-widest border border-rose-100 btn-tap">Hapus Seluruh Data Cloud</button>
                 </div>
             </main>
 
-            <nav class="bottom-nav">
-                <div class="nav-item active clickable" id="nav-home" onclick="switchView('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Beranda</span></div>
-                <div class="nav-item clickable" id="nav-input" onclick="switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
-                <div class="nav-item clickable" id="nav-history" onclick="switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Riwayat</span></div>
-                <div class="nav-item clickable" id="nav-settings" onclick="switchView('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
+            <!-- Bottom Navigation -->
+            <nav class="nav-bar">
+                <div class="nav-btn active btn-tap" id="n-home" onclick="nav('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Beranda</span></div>
+                <div class="nav-btn btn-tap" id="n-input" onclick="nav('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
+                <div class="nav-btn btn-tap" id="n-history" onclick="nav('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Riwayat</span></div>
+                <div class="nav-btn btn-tap" id="n-settings" onclick="nav('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
             </nav>
         </div>
     </div>
 
-    <!-- NOTIFIKASI -->
-    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] opacity-0 transition-all pointer-events-none bg-slate-900 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">BERHASIL</div>
+    <!-- Toast -->
+    <div id="tst" class="fixed top-10 left-1/2 -translate-x-1/2 z-[999] opacity-0 transition-all pointer-events-none bg-slate-900 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">BERHASIL</div>
 
+    <!-- UI CORE LOGIC -->
+    <script>
+        window.dbRec = JSON.parse(localStorage.getItem('np_db_rec') || '[]');
+        window.dbCats = JSON.parse(localStorage.getItem('np_db_cats') || '[]');
+        let currentId = localStorage.getItem('np_active_id') || "";
+        
+        function nav(v) {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.getElementById('view-' + v).classList.add('active');
+            document.getElementById('view-title').innerText = v.toUpperCase();
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('n-' + v).classList.add('active');
+            if (window.lucide) lucide.createIcons();
+            refreshUI();
+            if(v === 'settings') renderCatManagement();
+        }
+
+        function setT(t) {
+            document.getElementById('i-type').value = t;
+            document.getElementById('t-inc').className = `p-4 rounded-2xl border-2 font-black text-[10px] uppercase flex items-center justify-center gap-2 btn-tap ${t==='income'?'bg-emerald-500 text-white border-emerald-500':'bg-white text-slate-300 border-slate-100'}`;
+            document.getElementById('t-exp').className = `p-4 rounded-2xl border-2 font-black text-[10px] uppercase flex items-center justify-center gap-2 btn-tap ${t==='expense'?'bg-rose-500 text-white border-rose-500':'bg-white text-slate-300 border-slate-100'}`;
+            
+            const cats = window.dbCats.filter(c => c.type === t);
+            const select = document.getElementById('i-cat');
+            if (select) {
+                select.innerHTML = cats.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            }
+        }
+
+        function refreshUI() {
+            const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+            const query = document.getElementById('search-bar')?.value.toLowerCase() || "";
+            
+            const filtered = window.dbRec.filter(r => 
+                (r.desc || "").toLowerCase().includes(query) || 
+                (r.category || "").toLowerCase().includes(query)
+            ).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            const inc = window.dbRec.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+            const exp = window.dbRec.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+            
+            document.getElementById('dash-inc').innerText = formatter.format(inc);
+            document.getElementById('dash-exp').innerText = formatter.format(exp);
+            document.getElementById('dash-bal').innerText = formatter.format(inc - exp);
+
+            const list = document.getElementById('hist-list');
+            if (list) {
+                list.innerHTML = filtered.map(r => `
+                    <tr class="text-[10px] group">
+                        <td class="px-5 py-4 font-bold text-slate-300">${r.date.split('-').reverse().slice(0,2).join('/')}</td>
+                        <td class="px-2 py-4">
+                            <span class="font-black text-slate-800 block leading-tight truncate max-w-[140px] mb-0.5">${r.desc}</span>
+                            <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">${r.category}</span>
+                        </td>
+                        <td class="px-5 py-4 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'}">
+                            ${formatter.format(r.amount).replace('Rp', '')}
+                        </td>
+                        <td class="px-4 py-4 text-right">
+                             <button onclick="doDelete('${r.id}')" class="text-slate-200 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            document.getElementById('empty-state').classList.toggle('hidden', window.dbRec.length > 0);
+            renderVisuals(inc, exp, formatter);
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function renderVisuals(totalInc, totalExp, formatter) {
+            const incL = document.getElementById('inc-vis-list');
+            const expL = document.getElementById('exp-vis-list');
+            if (!incL || !expL) return;
+
+            const draw = (type, total, color, icon) => {
+                const data = window.dbRec.filter(r => r.type === type);
+                const cats = {};
+                data.forEach(r => cats[r.category] = (cats[r.category] || 0) + r.amount);
+                
+                return Object.keys(cats).sort((a,b) => cats[b] - cats[a]).slice(0, 3).map(c => {
+                    const perc = total > 0 ? Math.round((cats[c] / total) * 100) : 0;
+                    return `
+                        <div class="card p-4 flex flex-col gap-3">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center"><i data-lucide="${icon}" class="w-4 h-4" style="color:${color}"></i></div>
+                                    <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase leading-none mb-1">${c}</span><span class="text-[8px] font-bold text-slate-300">${perc}% Porsi</span></div>
+                                </div>
+                                <span class="text-[10px] font-black text-slate-900">${formatter.format(cats[c])}</span>
+                            </div>
+                            <div class="progress-bg"><div class="progress-fill" style="width:${perc}%; background-color:${color}"></div></div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            incL.innerHTML = draw('income', totalInc, '#10b981', 'trending-up');
+            expL.innerHTML = draw('expense', totalExp, '#f43f5e', 'trending-down');
+        }
+
+        function renderCatManagement() {
+            const incList = document.getElementById('list-cat-inc');
+            const expList = document.getElementById('list-cat-exp');
+            if(!incList || !expList) return;
+
+            const render = (type) => window.dbCats.filter(c => c.type === type).map(c => `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <span class="text-[9px] font-black text-slate-600 uppercase">${c.name}</span>
+                    <button onclick="doDelCat('${c.id}')" class="text-slate-300 hover:text-rose-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                </div>
+            `).join('');
+
+            incList.innerHTML = render('income');
+            expList.innerHTML = render('expense');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function msg(t) {
+            const e = document.getElementById('tst');
+            if (e) { e.innerText = t; e.classList.remove('opacity-0'); setTimeout(() => e.classList.add('opacity-0'), 2500); }
+        }
+
+        function doCopy() {
+            const el = document.createElement('input'); el.value = currentId;
+            document.body.appendChild(el); el.select(); document.execCommand('copy');
+            document.body.removeChild(el); msg("ID DISALIN");
+        }
+
+        window.onload = () => {
+            const dateInput = document.getElementById('i-date');
+            if (dateInput) dateInput.valueAsDate = new Date();
+            refreshUI();
+            setT('income');
+            if (window.lucide) lucide.createIcons();
+        };
+    </script>
+
+    <!-- FIREBASE RESILIENT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // GLOBAL UTILS (Available immediately for UI)
-        window.records = JSON.parse(localStorage.getItem('np_rec') || '[]');
-        window.activeView = 'home';
-        
+        // Environment Defaults
         const config = JSON.parse(__firebase_config);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-id';
         const app = initializeApp(config);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // ID LOGIC
-        const getMyId = () => {
-            let id = localStorage.getItem('np_id_10');
-            if (!id) {
-                id = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-                localStorage.setItem('np_id_10', id);
-            }
-            return id;
-        };
-        const myId = getMyId();
+        // ID Initialization
+        const myId = (() => {
+            if (!localStorage.getItem('np_id_main')) localStorage.setItem('np_id_main', Math.floor(1000000000 + Math.random() * 9000000000).toString());
+            return localStorage.getItem('np_id_main');
+        })();
         let currentId = localStorage.getItem('np_active_id') || myId;
-        let unsub = null;
 
-        // UI HELPERS
-        const formatIDR = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v);
-        
-        window.showToast = (t) => {
-            const el = document.getElementById('toast');
-            el.innerText = t; el.classList.remove('opacity-0');
-            setTimeout(() => el.classList.add('opacity-0'), 2500);
-        };
+        let unsubRecs = null;
+        let unsubCats = null;
+        let isAuthenticating = false;
 
-        window.updateStatus = (online) => {
-            const isReallyOnline = online && navigator.onLine;
-            const color = isReallyOnline ? 'bg-emerald-400' : 'bg-slate-400';
-            document.getElementById('status-dot').className = `w-2 h-2 rounded-full ${color}`;
-            document.getElementById('status-text').innerText = isReallyOnline ? 'CONNECTED' : 'OFFLINE';
-        };
-
-        window.renderUI = () => {
-            const list = document.getElementById('history-body');
-            if (list) {
-                list.innerHTML = window.records.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(r => `
-                    <tr class="group">
-                        <td class="px-6 py-5 font-bold text-slate-300 text-[10px]">${r.date.split('-').slice(1).reverse().join('/')}</td>
-                        <td class="px-2 py-5">
-                            <span class="font-black text-slate-800 block leading-tight truncate max-w-[140px] mb-1">${r.desc}</span>
-                            <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">${r.category}</span>
-                        </td>
-                        <td class="px-6 py-5 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'}">
-                            ${formatIDR(r.amount).replace('Rp', '')}
-                        </td>
-                    </tr>
-                `).join('');
+        const updateStatus = (on) => {
+            const reallyOn = on && navigator.onLine;
+            const dot = document.getElementById('status-dot');
+            const txt = document.getElementById('status-text');
+            if (dot) dot.className = `w-1.5 h-1.5 rounded-full ${reallyOn ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`;
+            if (txt) txt.innerText = reallyOn ? 'CONNECTED' : 'OFFLINE';
+            
+            // Hide overlay if connected
+            if (reallyOn) {
+                const overlay = document.getElementById('sync-overlay');
+                if (overlay) overlay.style.opacity = '0';
+                setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 500);
             }
-
-            const tInc = window.records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0);
-            const tExp = window.records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0);
-            document.getElementById('display-income').innerText = formatIDR(tInc);
-            document.getElementById('display-expense').innerText = formatIDR(tExp);
-            document.getElementById('display-balance').innerText = formatIDR(tInc-tExp);
-            document.getElementById('home-empty').classList.toggle('hidden', window.records.length > 0);
-            
-            renderStats(tInc, tExp);
-            if (window.lucide) lucide.createIcons();
         };
 
-        const renderStats = (tInc, tExp) => {
-            const container = document.getElementById('stats-container');
-            if (!container || window.records.length === 0) return;
-            
-            const cats = {};
-            window.records.forEach(r => {
-                const k = `${r.type}:${r.category}`;
-                cats[k] = (cats[k] || 0) + r.amount;
-            });
-
-            container.innerHTML = Object.keys(cats).sort((a,b)=>cats[b]-cats[a]).slice(0,4).map(k => {
-                const [type, name] = k.split(':');
-                const total = type === 'income' ? tInc : tExp;
-                const perc = total > 0 ? Math.round((cats[k]/total)*100) : 0;
-                const color = type === 'income' ? '#10b981' : '#f43f5e';
-                return `
-                    <div class="bg-white p-5 rounded-[2rem] border border-slate-50 flex flex-col gap-3 shadow-sm">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-2xl bg-slate-50 flex items-center justify-center"><i data-lucide="${type==='income'?'trending-up':'trending-down'}" class="w-4 h-4" style="color:${color}"></i></div>
-                                <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase leading-none mb-1">${name}</span><span class="text-[8px] font-bold text-slate-300 uppercase">${perc}% Porsi</span></div>
-                            </div>
-                            <span class="text-[11px] font-black text-slate-900">${formatIDR(cats[k])}</span>
-                        </div>
-                        <div class="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden"><div class="h-full" style="width:${perc}%; background-color:${color}"></div></div>
-                    </div>
-                `;
-            }).join('');
-        };
-
-        // CLOUD CORE (RULE 3 Compliance)
         const sync = (id) => {
-            if (unsub) unsub();
-            // RULE 1: Strict Path artifacts/{appId}/public/data/{collection}
-            const path = `artifacts/${appId}/public/data/niaga_v7_${id}`;
-            unsub = onSnapshot(collection(db, path), (snap) => {
-                window.records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                localStorage.setItem('np_rec', JSON.stringify(window.records));
-                window.renderUI();
-                window.updateStatus(true);
+            if (unsubRecs) unsubRecs();
+            if (unsubCats) unsubCats();
+
+            // MANDATORY RULE 1: artifacts/{appId}/public/data/{collection}
+            const recPath = `artifacts/${appId}/public/data/niagap_v11_recs_${id}`;
+            const catPath = `artifacts/${appId}/public/data/niagap_v11_cats_${id}`;
+
+            unsubRecs = onSnapshot(collection(db, recPath), (snap) => {
+                window.dbRec = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                localStorage.setItem('np_db_rec', JSON.stringify(window.dbRec));
+                window.refreshUI();
+                updateStatus(true);
             }, (err) => {
-                console.warn("Cloud offline/unauthorized", err);
-                window.updateStatus(false);
+                console.error("Firestore Error:", err);
+                updateStatus(false);
             });
 
-            document.getElementById('display-id').innerText = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+            unsubCats = onSnapshot(collection(db, catPath), (snap) => {
+                const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (fetched.length === 0 && id === myId) {
+                    seedCats(id);
+                } else {
+                    window.dbCats = fetched;
+                    localStorage.setItem('np_db_cats', JSON.stringify(window.dbCats));
+                    window.setT(document.getElementById('i-type').value);
+                    if(document.getElementById('view-settings').classList.contains('active')) window.renderCatManagement();
+                }
+            });
+
+            document.getElementById('d-id').innerText = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
         };
 
-        const initAuth = async () => {
+        const seedCats = async (id) => {
+            const defaults = [
+                { type: 'income', name: 'Penjualan' }, { type: 'income', name: 'Modal' },
+                { type: 'expense', name: 'Stok Barang' }, { type: 'expense', name: 'Gaji' }, { type: 'expense', name: 'Lainnya' }
+            ];
+            const path = `artifacts/${appId}/public/data/niagap_v11_cats_${id}`;
+            for (const c of defaults) {
+                await addDoc(collection(db, path), c);
+            }
+        };
+
+        // Resilient Auth Flow
+        const startAuth = async () => {
+            if (isAuthenticating) return;
+            isAuthenticating = true;
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (e) {
-                console.error("Auth failed", e);
-                window.updateStatus(false);
-                setTimeout(initAuth, 3000);
+            } catch (err) {
+                console.error("Auth Failed, Retrying...", err);
+                setTimeout(startAuth, 3000);
+            } finally {
+                isAuthenticating = false;
             }
         };
 
-        onAuthStateChanged(auth, (user) => { if (user) sync(currentId); });
+        onAuthStateChanged(auth, (u) => {
+            if (u) {
+                sync(currentId);
+            } else {
+                updateStatus(false);
+                startAuth();
+            }
+        });
 
-        // EXPOSED FUNCTIONS
-        window.switchView = (v) => {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`view-${v}`).classList.add('active');
-            document.getElementById('view-title').innerText = v.toUpperCase();
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`nav-${v}`).classList.add('active');
-            window.renderUI();
+        window.forceReconnect = () => {
+            window.msg("MENCOBA ULANG...");
+            startAuth();
         };
 
-        window.setType = (t) => {
-            document.getElementById('form-type').value = t;
-            document.getElementById('btn-type-inc').className = `p-4 rounded-2xl border-2 font-black text-[10px] uppercase transition-all ${t==='income'?'bg-emerald-500 text-white border-emerald-500':'bg-white text-slate-300 border-slate-50'}`;
-            document.getElementById('btn-type-exp').className = `p-4 rounded-2xl border-2 font-black text-[10px] uppercase transition-all ${t==='expense'?'bg-rose-500 text-white border-rose-500':'bg-white text-slate-300 border-slate-50'}`;
-            const cats = t === 'income' ? ['Penjualan', 'Modal', 'Piutang'] : ['Stok Barang', 'Gaji', 'Sewa', 'Lainnya'];
-            document.getElementById('form-cat').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+        // Category Actions
+        window.doAddCat = async () => {
+            if(!auth.currentUser) return window.msg("OFFLINE");
+            const name = document.getElementById('new-cat-name').value.trim();
+            const type = document.getElementById('new-cat-type').value;
+            if(!name) return;
+            
+            try {
+                const path = `artifacts/${appId}/public/data/niagap_v11_cats_${currentId}`;
+                await addDoc(collection(db, path), { name, type });
+                document.getElementById('new-cat-name').value = '';
+                window.msg("KATEGORI DITAMBAH");
+            } catch(e) { window.msg("GAGAL"); }
         };
 
-        window.copyMyId = () => {
-            const temp = document.createElement('input'); temp.value = currentId;
-            document.body.appendChild(temp); temp.select(); document.execCommand('copy');
-            document.body.removeChild(temp); window.showToast("ID DISALIN");
+        window.doDelCat = async (catId) => {
+            if(!auth.currentUser) return window.msg("OFFLINE");
+            if(confirm("Hapus kategori ini?")) {
+                try {
+                    const path = `artifacts/${appId}/public/data/niagap_v11_cats_${currentId}`;
+                    await deleteDoc(doc(db, path, catId));
+                    window.msg("KATEGORI DIHAPUS");
+                } catch(e) { window.msg("GAGAL"); }
+            }
         };
 
-        window.switchId = () => {
-            const val = document.getElementById('id-switcher').value;
+        window.doSwitch = () => {
+            const val = document.getElementById('sw-id').value;
             if (val.length !== 10) return alert("ID harus 10 digit");
             currentId = val;
             localStorage.setItem('np_active_id', val);
             sync(val);
-            window.showToast("MENYAMBUNGKAN...");
-            window.switchView('home');
+            window.msg("MENYAMBUNGKAN...");
+            window.nav('home');
         };
 
-        window.exportDoc = (type) => {
+        window.doDelete = async (recId) => {
+            if(!auth.currentUser && !recId.startsWith('L-')) return window.msg("OFFLINE");
+            if (confirm("Hapus transaksi ini?")) {
+                try {
+                    if (!recId.startsWith('L-')) {
+                        const path = `artifacts/${appId}/public/data/niagap_v11_recs_${currentId}`;
+                        await deleteDoc(doc(db, path, recId));
+                    } else {
+                        window.dbRec = window.dbRec.filter(r => r.id !== recId);
+                        localStorage.setItem('np_db_rec', JSON.stringify(window.dbRec));
+                        window.refreshUI();
+                    }
+                    window.msg("TERHAPUS");
+                } catch(e) { window.msg("GAGAL"); }
+            }
+        };
+
+        window.confirmClear = async () => {
+            if(!auth.currentUser) return window.msg("OFFLINE");
+            if (confirm("Hapus SEMUA data Cloud?")) {
+                try {
+                    const path = `artifacts/${appId}/public/data/niagap_v11_recs_${currentId}`;
+                    for (const r of window.dbRec) if(!r.id.startsWith('L-')) await deleteDoc(doc(db, path, r.id));
+                    window.msg("CLOUD BERSIH");
+                } catch(e) { window.msg("GAGAL"); }
+            }
+        };
+
+        document.getElementById('f-trans').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('s-btn');
+            btn.disabled = true; btn.innerText = "MENYIMPAN...";
+            
+            const entry = {
+                desc: document.getElementById('i-desc').value,
+                amount: parseFloat(document.getElementById('i-amt').value),
+                type: document.getElementById('i-type').value,
+                category: document.getElementById('i-cat').value,
+                date: document.getElementById('i-date').value,
+                timestamp: serverTimestamp()
+            };
+
+            try {
+                if(!auth.currentUser) throw new Error("Offline");
+                const path = `artifacts/${appId}/public/data/niagap_v11_recs_${currentId}`;
+                await addDoc(collection(db, path), entry);
+                window.msg("TERSINKRON");
+                document.getElementById('f-trans').reset();
+                window.nav('history');
+            } catch (err) {
+                if (!window.dbRec) window.dbRec = [];
+                window.dbRec.push({ id: 'L-'+Date.now(), ...entry });
+                localStorage.setItem('np_db_rec', JSON.stringify(window.dbRec));
+                window.refreshUI();
+                window.msg("SIMPAN LOKAL");
+                window.nav('history');
+            } finally { 
+                btn.disabled = false; btn.innerText = "SIMPAN TRANSAKSI"; 
+                document.getElementById('i-date').valueAsDate = new Date();
+                window.setT('income');
+            }
+        };
+
+        window.doExport = (type) => {
+            if (window.dbRec.length === 0) return window.msg("DATA KOSONG");
             if (type === 'pdf') {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                doc.text("Laporan NiagaPintar PRO", 14, 20);
-                doc.autoTable({ startY: 25, head: [['Tgl', 'Item', 'Tipe', 'Nominal']], body: window.records.map(r=>[r.date, r.desc, r.type, formatIDR(r.amount)]) });
-                doc.save(`Laporan_${currentId}.pdf`);
+                const pdf = new jsPDF();
+                pdf.text("Laporan NiagaPintar PRO", 14, 20);
+                pdf.autoTable({ startY: 25, head: [['Tgl', 'Ket', 'Ktg', 'Rp']], body: window.dbRec.map(r=>[r.date, r.desc, r.category, r.amount]) });
+                pdf.save(`Laporan_${currentId}.pdf`);
             } else {
-                const ws = XLSX.utils.json_to_sheet(window.records);
+                const ws = XLSX.utils.json_to_sheet(window.dbRec);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Data");
                 XLSX.writeFile(wb, `Laporan_${currentId}.xlsx`);
             }
         };
-
-        // FORM HANDLER
-        document.getElementById('main-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerText = "MENYIMPAN...";
-
-            const data = {
-                desc: document.getElementById('form-desc').value,
-                amount: parseFloat(document.getElementById('form-amount').value),
-                type: document.getElementById('form-type').value,
-                category: document.getElementById('form-cat').value,
-                date: document.getElementById('form-date').value,
-                timestamp: serverTimestamp()
-            };
-
-            try {
-                await addDoc(collection(db, `artifacts/${appId}/public/data/niaga_v7_${currentId}`), data);
-                window.showToast("TERSINKRON");
-                document.getElementById('main-form').reset();
-                window.setType('income');
-                window.switchView('history');
-            } catch (err) {
-                window.showToast("SIMPAN LOKAL");
-                window.records.push({ id: 'L-'+Date.now(), ...data });
-                localStorage.setItem('np_rec', JSON.stringify(window.records));
-                window.renderUI();
-                window.switchView('history');
-            } finally {
-                btn.disabled = false; btn.innerText = "SIMPAN KE CLOUD";
-            }
-        };
-
-        // RUN
-        window.setType('income');
-        document.getElementById('form-date').valueAsDate = new Date();
-        window.renderUI();
-        initAuth();
-        window.addEventListener('online', () => { window.showToast("ONLINE"); sync(currentId); });
-        window.addEventListener('offline', () => { window.updateStatus(false); });
     </script>
 </body>
 </html>
