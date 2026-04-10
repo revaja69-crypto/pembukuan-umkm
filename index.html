@@ -142,6 +142,9 @@
         .progress-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease-in-out; }
         
         button:active { transform: scale(0.96); transition: transform 0.1s; }
+        
+        /* Fix for non-clickable elements */
+        .clickable { cursor: pointer; pointer-events: auto; }
     </style>
 </head>
 <body class="text-slate-900">
@@ -160,19 +163,19 @@
             </div>
 
             <nav class="flex-1 space-y-1">
-                <div class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-white/5" onclick="window.switchView('home')">
+                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="window.switchView('home')">
                     <i data-lucide="layout-grid" class="w-5 h-5"></i>
                     <span class="text-sm font-semibold">Dashboard</span>
                 </div>
-                <div class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-white/5" onclick="window.switchView('input')">
+                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="window.switchView('input')">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i>
                     <span class="text-sm font-semibold">Input</span>
                 </div>
-                <div class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-white/5" onclick="window.switchView('history')">
+                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="window.switchView('history')">
                     <i data-lucide="clock-3" class="w-5 h-5"></i>
                     <span class="text-sm font-semibold">Laporan</span>
                 </div>
-                <div class="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-white/5" onclick="window.switchView('settings')">
+                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="window.switchView('settings')">
                     <i data-lucide="settings-2" class="w-5 h-5"></i>
                     <span class="text-sm font-semibold">Sistem</span>
                 </div>
@@ -182,7 +185,7 @@
                 <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
                     <div class="flex items-center gap-2 mb-2">
                         <div class="w-2 h-2 rounded-full bg-slate-500" id="sync-status-dot"></div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="sync-status-text">OFFLINE MODE</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="sync-status-text">MENYAMBUNGKAN...</p>
                     </div>
                     <p class="text-[11px] text-white font-black tracking-widest mb-1" id="user-display-id">000 000 0000</p>
                     <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
@@ -207,7 +210,7 @@
                     </div>
                     <div id="offline-badge" class="flex items-center gap-1.5 bg-slate-900/30 px-3 py-1.5 rounded-full border border-white/10">
                         <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse" id="header-sync-dot"></span>
-                        <span class="text-[8px] font-black text-white uppercase tracking-widest" id="header-sync-text">OFFLINE</span>
+                        <span class="text-[8px] font-black text-white uppercase tracking-widest" id="header-sync-text">MEMUAT...</span>
                     </div>
                 </div>
             </header>
@@ -264,12 +267,12 @@
                         <form id="accounting-form" class="space-y-5">
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan</label>
-                                <input type="text" id="desc" placeholder="Contoh: Stok Barang, Penjualan..." required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                                <input type="text" id="desc" placeholder="Contoh: Penjualan..." required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Dana</label>
-                                    <select id="type" onchange="window.filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm cursor-pointer">
+                                    <select id="type" onchange="window.filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
                                         <option value="income">💰 Uang Masuk</option>
                                         <option value="expense">💸 Uang Keluar</option>
                                     </select>
@@ -282,14 +285,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
-                                    <select id="category" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm cursor-pointer"></select>
+                                    <select id="category" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm"></select>
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
                                     <input type="date" id="date" required class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
                                 </div>
                             </div>
-                            <button type="submit" id="submit-button" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl shadow-indigo-200 mt-4 transition-all">SIMPAN TRANSAKSI</button>
+                            <button type="submit" id="submit-button" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl transition-all clickable">SIMPAN TRANSAKSI</button>
                         </form>
                     </div>
                 </div>
@@ -298,12 +301,12 @@
                 <div id="view-history" class="view-section space-y-6">
                     <div class="flex flex-col gap-4">
                         <div class="flex gap-2">
-                            <button onclick="window.exportToExcel()" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-emerald-600 rounded-2xl border border-slate-100 font-bold text-[10px] uppercase tracking-widest"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel</button>
-                            <button onclick="window.exportToPDF()" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-rose-500 rounded-2xl border border-slate-100 font-bold text-[10px] uppercase tracking-widest"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
+                            <button onclick="window.exportToExcel()" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-emerald-600 rounded-2xl border border-slate-100 font-bold text-[10px] uppercase clickable"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel</button>
+                            <button onclick="window.exportToPDF()" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-rose-500 rounded-2xl border border-slate-100 font-bold text-[10px] uppercase clickable"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
                         </div>
                         <div class="relative">
                             <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                            <input type="text" id="search-bar" placeholder="Cari transaksi..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs outline-none">
+                            <input type="text" id="search-bar" placeholder="Cari..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs outline-none">
                         </div>
                     </div>
 
@@ -314,7 +317,7 @@
                                     <th class="px-6 py-4">Tgl</th>
                                     <th class="px-2 py-4">Item</th>
                                     <th class="px-6 py-4 text-right">IDR</th>
-                                    <th class="px-6 py-4 text-center"></th>
+                                    <th class="px-6 py-4"></th>
                                 </tr>
                             </thead>
                             <tbody id="list-container" class="divide-y divide-slate-50"></tbody>
@@ -336,41 +339,37 @@
                                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">User NiagaID Anda</p>
                                 <div class="flex items-center justify-between gap-4">
                                     <p class="text-base font-black text-slate-800 tracking-[0.2em]" id="full-user-id">0000000000</p>
-                                    <button onclick="window.copyUserId()" class="shrink-0 p-3 bg-white text-indigo-600 border border-slate-100 shadow-sm rounded-xl">
+                                    <button onclick="window.copyUserId()" class="shrink-0 p-3 bg-white text-indigo-600 border border-slate-100 shadow-sm rounded-xl clickable">
                                         <i data-lucide="copy" class="w-5 h-5"></i>
                                     </button>
                                 </div>
                             </div>
 
                             <div class="space-y-3">
-                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest px-2">Masuk ke ID Lain</p>
+                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest px-2">Hubungkan Perangkat</p>
                                 <div class="flex gap-2">
                                     <input type="number" id="manual-uid-input" placeholder="10 Angka" class="flex-1 px-5 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold outline-none">
-                                    <button onclick="window.switchManualAccount()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase">HUBUNGKAN</button>
+                                    <button onclick="window.switchManualAccount()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase clickable">HUBUNGKAN</button>
                                 </div>
                             </div>
 
                             <div id="manual-reset-btn" class="hidden">
-                                <button onclick="window.resetToOriginalAccount()" class="w-full py-4 border-2 border-dashed border-rose-100 text-rose-500 font-black text-[10px] uppercase rounded-2xl">Keluar ke ID Utama</button>
+                                <button onclick="window.resetToOriginalAccount()" class="w-full py-4 border-2 border-dashed border-rose-100 text-rose-500 font-black text-[10px] uppercase rounded-2xl clickable">Keluar ke ID Utama</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100">
-                        <div class="flex items-center gap-3 mb-8">
-                            <i data-lucide="trash-2" class="w-5 h-5 text-rose-500"></i>
-                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Danger Zone</h2>
-                        </div>
-                        <button onclick="window.confirmResetDB()" class="w-full py-5 text-rose-500 font-black text-[10px] bg-rose-50 uppercase tracking-widest rounded-2xl transition-all">Hapus Seluruh Data Cloud</button>
+                        <button onclick="window.confirmResetDB()" class="w-full py-5 text-rose-500 font-black text-[10px] bg-rose-50 uppercase tracking-widest rounded-2xl transition-all clickable">Hapus Seluruh Data Cloud</button>
                     </div>
                 </div>
             </main>
 
             <nav class="bottom-nav">
-                <div class="nav-item-mobile active" onclick="window.switchView('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Home</span></div>
-                <div class="nav-item-mobile" onclick="window.switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
-                <div class="nav-item-mobile" onclick="window.switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Riwayat</span></div>
-                <div class="nav-item-mobile" onclick="window.switchView('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
+                <div class="nav-item-mobile active clickable" onclick="window.switchView('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Home</span></div>
+                <div class="nav-item-mobile clickable" onclick="window.switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
+                <div class="nav-item-mobile clickable" onclick="window.switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Laporan</span></div>
+                <div class="nav-item-mobile clickable" onclick="window.switchView('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
             </nav>
         </div>
     </div>
@@ -382,15 +381,14 @@
                 <i data-lucide="trash-2" class="w-10 h-10"></i>
             </div>
             <h3 class="text-lg font-black text-slate-800 mb-2">Hapus Data?</h3>
-            <p class="text-[10px] text-slate-400 mb-10 leading-relaxed uppercase tracking-widest">Tindakan ini permanen di Cloud.</p>
             <div class="flex gap-4">
-                <button onclick="window.hideDeleteModal()" class="flex-1 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Batal</button>
-                <button id="btn-confirm-delete" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl text-[10px] font-black shadow-lg uppercase tracking-widest">Ya, Hapus</button>
+                <button onclick="window.hideDeleteModal()" class="flex-1 py-4 text-[10px] font-black text-slate-400 uppercase clickable">Batal</button>
+                <button id="btn-confirm-delete" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl text-[10px] font-black uppercase clickable">Hapus</button>
             </div>
         </div>
     </div>
 
-    <div id="notification" class="fixed top-10 left-1/2 -translate-x-1/2 z-[600] -translate-y-32 opacity-0 transition-all duration-700">
+    <div id="notification" class="fixed top-10 left-1/2 -translate-x-1/2 z-[600] -translate-y-32 opacity-0 transition-all duration-700 pointer-events-none">
         <div class="bg-slate-900 text-white px-8 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
             <i data-lucide="check-circle-2" class="text-emerald-400 w-5 h-5"></i>
             <span id="notif-text" class="text-[10px] font-black uppercase tracking-[0.2em]">BERHASIL</span>
@@ -399,7 +397,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Core ---
@@ -422,13 +420,13 @@
         const myId = getOrCreateId();
         let activeId = localStorage.getItem('niaga_active_id') || myId;
         
-        // --- App State ---
+        // --- State ---
         let records = JSON.parse(localStorage.getItem('local_db_rec') || '[]');
         let categories = JSON.parse(localStorage.getItem('local_db_cat') || '[]');
         let currentDeleteId = null;
         let unsubT = null;
         let unsubC = null;
-        let cloudAuthenticated = false;
+        let isAuthReady = false;
 
         // --- UI Logic ---
         const formatIDR = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v);
@@ -436,37 +434,36 @@
         const notify = (t) => {
             const el = document.getElementById('notification');
             const txt = document.getElementById('notif-text');
-            if (!el || !txt) return;
-            txt.innerText = t;
-            el.classList.remove('-translate-y-32', 'opacity-0');
-            setTimeout(() => el.classList.add('-translate-y-32', 'opacity-0'), 3000);
+            if (el && txt) {
+                txt.innerText = t;
+                el.classList.remove('-translate-y-32', 'opacity-0');
+                setTimeout(() => el.classList.add('-translate-y-32', 'opacity-0'), 3000);
+            }
         };
 
-        const updateStatus = (online) => {
+        const updateStatusUI = (isOnline) => {
             const dot = document.getElementById('sync-status-dot');
             const txt = document.getElementById('sync-status-text');
             const hDot = document.getElementById('header-sync-dot');
             const hTxt = document.getElementById('header-sync-text');
             const isManual = activeId !== myId;
 
-            const isReallyOnline = online && window.navigator.onLine;
-
-            if (dot) dot.className = `w-2 h-2 rounded-full ${isReallyOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-500'}`;
-            if (txt) txt.innerText = isReallyOnline ? (isManual ? 'SHARED SYNC' : 'CLOUD ONLINE') : 'OFFLINE MODE';
-            if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full ${isReallyOnline ? 'animate-pulse bg-emerald-400' : 'bg-slate-400'}`;
+            if (dot) dot.className = `w-2 h-2 rounded-full ${isOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-500'}`;
+            if (txt) txt.innerText = isOnline ? (isManual ? 'SHARED SYNC' : 'CLOUD ONLINE') : 'OFFLINE MODE';
+            if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full ${isOnline ? 'animate-pulse bg-emerald-400' : 'bg-slate-400'}`;
             if (hTxt) {
-                hTxt.innerText = isReallyOnline ? 'CONNECTED' : 'OFFLINE';
-                hTxt.className = `text-[8px] font-black ${isReallyOnline ? 'text-white' : 'text-slate-400'}`;
+                hTxt.innerText = isOnline ? 'CONNECTED' : 'OFFLINE';
+                hTxt.className = `text-[8px] font-black ${isOnline ? 'text-white' : 'text-slate-400'}`;
             }
         };
 
         const renderUI = () => {
-            const query = document.getElementById('search-bar')?.value.toLowerCase() || "";
-            const filtered = records.filter(r => r.desc.toLowerCase().includes(query)).sort((a,b) => new Date(b.date) - new Date(a.date));
+            const queryVal = document.getElementById('search-bar')?.value.toLowerCase() || "";
+            const filtered = records.filter(r => r.desc.toLowerCase().includes(queryVal)).sort((a,b) => new Date(b.date) - new Date(a.date));
             
-            const list = document.getElementById('list-container');
-            if (list) {
-                list.innerHTML = filtered.map(r => `
+            const listBody = document.getElementById('list-container');
+            if (listBody) {
+                listBody.innerHTML = filtered.map(r => `
                     <tr class="text-[10px] group">
                         <td class="px-6 py-4 font-bold text-slate-400">${r.date.split('-').reverse().slice(0,2).join('/')}</td>
                         <td class="px-2 py-4">
@@ -475,7 +472,7 @@
                         </td>
                         <td class="px-6 py-4 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'}">${formatIDR(r.amount).replace('Rp', '')}</td>
                         <td class="px-6 py-4 text-center">
-                            <button onclick="window.showDeleteModal('${r.id}')" class="text-slate-200 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="window.showDeleteModal('${r.id}')" class="text-slate-300 hover:text-rose-500 clickable"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                         </td>
                     </tr>
                 `).join('');
@@ -483,11 +480,11 @@
             
             document.getElementById('no-data')?.classList.toggle('hidden', filtered.length > 0);
             
-            const inc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
-            const exp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
-            document.getElementById('display-income').innerText = formatIDR(inc);
-            document.getElementById('display-expense').innerText = formatIDR(exp);
-            document.getElementById('display-balance').innerText = formatIDR(inc - exp);
+            const totalInc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+            const totalExp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+            document.getElementById('display-income').innerText = formatIDR(totalInc);
+            document.getElementById('display-expense').innerText = formatIDR(totalExp);
+            document.getElementById('display-balance').innerText = formatIDR(totalInc - totalExp);
             
             updateVisuals();
             lucide.createIcons();
@@ -496,108 +493,121 @@
         const updateVisuals = () => {
             const incL = document.getElementById('income-visual-list');
             const expL = document.getElementById('expense-visual-list');
-            const empty = document.getElementById('home-no-data');
+            const emptyEl = document.getElementById('home-no-data');
             if (!incL || !expL) return;
 
             if (records.length === 0) {
-                empty?.classList.remove('hidden');
+                emptyEl?.classList.remove('hidden');
                 incL.innerHTML = ''; expL.innerHTML = ''; return;
             }
-            empty?.classList.add('hidden');
+            emptyEl?.classList.add('hidden');
 
-            const process = (type, color, icon) => {
-                const data = records.filter(r => r.type === type);
-                const total = data.reduce((s, r) => s + r.amount, 0);
-                const cats = {};
-                data.forEach(r => cats[r.category] = (cats[r.category] || 0) + r.amount);
+            const processStats = (type, color, icon) => {
+                const dataSet = records.filter(r => r.type === type);
+                const total = dataSet.reduce((s, r) => s + r.amount, 0);
+                const catGroups = {};
+                dataSet.forEach(r => catGroups[r.category] = (catGroups[r.category] || 0) + r.amount);
                 
-                return Object.keys(cats).sort((a,b) => cats[b] - cats[a]).slice(0, 3).map(c => {
-                    const p = total > 0 ? ((cats[c] / total) * 100).toFixed(0) : 0;
+                return Object.keys(catGroups).sort((a,b) => catGroups[b] - catGroups[a]).slice(0, 3).map(catName => {
+                    const ratio = total > 0 ? ((catGroups[catName] / total) * 100).toFixed(0) : 0;
                     return `
                         <div class="bg-white p-4 rounded-[2rem] border border-slate-50 flex flex-col gap-3">
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center gap-2">
                                     <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center"><i data-lucide="${icon}" class="w-4 h-4" style="color:${color}"></i></div>
-                                    <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase leading-none mb-1">${c}</span><span class="text-[8px] font-bold text-slate-400">${p}%</span></div>
+                                    <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase mb-1 leading-none">${catName}</span><span class="text-[8px] font-bold text-slate-400">${ratio}%</span></div>
                                 </div>
-                                <span class="text-[10px] font-black text-slate-900">${formatIDR(cats[c])}</span>
+                                <span class="text-[10px] font-black text-slate-900">${formatIDR(catGroups[catName])}</span>
                             </div>
-                            <div class="progress-bar-bg"><div class="progress-fill" style="width:${p}%; background-color:${color}"></div></div>
+                            <div class="progress-bar-bg"><div class="progress-fill" style="width:${ratio}%; background-color:${color}"></div></div>
                         </div>
                     `;
                 }).join('');
             };
 
-            incL.innerHTML = process('income', '#10b981', 'trending-up');
-            expL.innerHTML = process('expense', '#f43f5e', 'trending-down');
+            incL.innerHTML = processStats('income', '#10b981', 'trending-up');
+            expL.innerHTML = processStats('expense', '#f43f5e', 'trending-down');
         };
 
-        // --- Cloud Sync ---
+        // --- Cloud Logic ---
         const startSync = (id) => {
-            if (!cloudAuthenticated) return;
+            if (!auth.currentUser) return;
             if (unsubT) unsubT();
             if (unsubC) unsubC();
 
-            // Sesuai RULE 1: /artifacts/{appId}/public/data/{collectionName}
-            const tCol = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + id);
-            const cCol = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
+            // Strict Path: /artifacts/{appId}/public/data/{collectionName}
+            const transColRef = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + id);
+            const catsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
 
-            unsubT = onSnapshot(tCol, (snap) => {
+            unsubT = onSnapshot(transColRef, (snap) => {
                 records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 localStorage.setItem('local_db_rec', JSON.stringify(records));
                 renderUI();
-                updateStatus(true);
-            }, () => updateStatus(false));
+                updateStatusUI(true);
+            }, (err) => {
+                console.error("Sync Error:", err);
+                updateStatusUI(false);
+            });
 
-            unsubC = onSnapshot(cCol, (snap) => {
-                const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                if (fetched.length === 0 && id === myId) seed(id);
-                else {
-                    categories = fetched;
+            unsubC = onSnapshot(catsColRef, (snap) => {
+                const fetchedCats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (fetchedCats.length === 0 && id === myId) {
+                    seedDatabase(id);
+                } else {
+                    categories = fetchedCats;
                     localStorage.setItem('local_db_cat', JSON.stringify(categories));
-                    renderCats();
+                    renderSettingsCats();
                     window.filterFormCategories();
                 }
-            }, () => {});
+            }, (err) => console.error("Cat Sync Error:", err));
 
-            const formatted = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-            document.getElementById('user-display-id').innerText = formatted;
-            document.getElementById('full-user-id').innerText = formatted;
+            const formattedID = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+            const uidDisplay = document.getElementById('user-display-id');
+            const fullUidDisplay = document.getElementById('full-user-id');
+            if(uidDisplay) uidDisplay.innerText = formattedID;
+            if(fullUidDisplay) fullUidDisplay.innerText = formattedID;
             document.getElementById('manual-reset-btn')?.classList.toggle('hidden', id === myId);
         };
 
-        const seed = async (id) => {
-            const def = [
+        const seedDatabase = async (id) => {
+            const defaults = [
                 { type: 'income', name: 'Penjualan' }, { type: 'income', name: 'Modal' },
                 { type: 'expense', name: 'Stok' }, { type: 'expense', name: 'Gaji' }, { type: 'expense', name: 'Lainnya' }
             ];
             const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
-            for (const c of def) await addDoc(col, c);
+            for (const c of defaults) await addDoc(col, c);
         };
 
-        // --- Auth & Start ---
+        // --- Auth flow ---
+        const startApp = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth Failed:", err);
+                updateStatusUI(false);
+            }
+        };
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                cloudAuthenticated = true;
+                isAuthReady = true;
                 startSync(activeId);
             }
         });
 
-        const connectCloud = async () => {
-            try {
-                await signInAnonymously(auth);
-            } catch (e) {
-                console.warn("Retrying Cloud Handshake...");
-                setTimeout(connectCloud, 2000);
-            }
-        };
-        connectCloud();
+        startApp();
 
-        // --- Navigasi & Global ---
+        // --- Nav ---
         window.switchView = (v) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`view-${v}`)?.classList.add('active');
-            document.getElementById('view-title').innerText = v.toUpperCase();
+            const titleEl = document.getElementById('view-title');
+            if(titleEl) titleEl.innerText = v.toUpperCase();
+            
             document.querySelectorAll('.nav-item-mobile').forEach(n => {
                 n.classList.remove('active');
                 if (n.innerText.toLowerCase().includes(v.substring(0,3))) n.classList.add('active');
@@ -606,68 +616,71 @@
         };
 
         window.filterFormCategories = () => {
-            const t = document.getElementById('type').value;
-            const c = document.getElementById('category');
-            if (c) c.innerHTML = categories.filter(cat => cat.type === t).map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            const typeVal = document.getElementById('type').value;
+            const catSelect = document.getElementById('category');
+            if (catSelect) catSelect.innerHTML = categories.filter(cat => cat.type === typeVal).map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
         };
 
         window.copyUserId = () => {
-            const el = document.createElement('input');
-            el.value = activeId;
-            document.body.appendChild(el); el.select();
+            const tempInput = document.createElement('input');
+            tempInput.value = activeId;
+            document.body.appendChild(tempInput); 
+            tempInput.select();
             document.execCommand('copy');
-            document.body.removeChild(el);
-            notify("ID BERHASIL DISALIN");
+            document.body.removeChild(tempInput);
+            notify("ID DISALIN");
         };
 
         window.switchManualAccount = () => {
-            const val = document.getElementById('manual-uid-input')?.value;
-            if (!val || val.length !== 10) return notify("HARUS 10 ANGKA");
-            activeId = val;
-            localStorage.setItem('niaga_active_id', val);
-            startSync(val);
+            const inputVal = document.getElementById('manual-uid-input')?.value;
+            if (!inputVal || inputVal.length !== 10) return notify("HARUS 10 ANGKA");
+            activeId = inputVal;
+            localStorage.setItem('niaga_active_id', inputVal);
+            if(isAuthReady) startSync(inputVal);
             notify("MENGHUBUNGKAN...");
         };
 
         window.resetToOriginalAccount = () => {
             activeId = myId;
             localStorage.removeItem('niaga_active_id');
-            startSync(myId);
+            if(isAuthReady) startSync(myId);
             notify("KEMBALI KE ID UTAMA");
         };
 
         window.showDeleteModal = (id) => { currentDeleteId = id; document.getElementById('modal-delete').classList.remove('hidden'); };
         window.hideDeleteModal = () => document.getElementById('modal-delete').classList.add('hidden');
 
-        const renderCats = () => {
+        const renderSettingsCats = () => {
             const iL = document.getElementById('income-cat-list');
             const eL = document.getElementById('expense-cat-list');
             if (!iL || !eL) return;
-            const item = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-50 text-[9px] font-black uppercase"><span>${c.name}</span><button onclick="window.deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
-            iL.innerHTML = categories.filter(c => c.type === 'income').map(item).join('');
-            eL.innerHTML = categories.filter(c => c.type === 'expense').map(item).join('');
+            const catRow = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-50 text-[9px] font-black uppercase"><span>${c.name}</span><button onclick="window.deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500 clickable"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
+            iL.innerHTML = categories.filter(c => c.type === 'income').map(catRow).join('');
+            eL.innerHTML = categories.filter(c => c.type === 'expense').map(catRow).join('');
             lucide.createIcons();
         };
 
         window.addNewCategory = async (type) => {
-            const n = prompt("Nama Kategori:");
-            if (!n) return;
-            const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId);
-            await addDoc(col, { type, name: n.trim() });
+            const catName = prompt("Nama Kategori:");
+            if (!catName || !isAuthReady) return;
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId);
+            await addDoc(colRef, { type, name: catName.trim() });
         };
 
-        window.deleteCategory = async (id) => {
-            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId, id);
-            await deleteDoc(ref);
+        window.deleteCategory = async (catId) => {
+            if(!isAuthReady) return;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId, catId);
+            await deleteDoc(docRef);
         };
 
-        // --- Actions ---
+        // --- Form Handler ---
         document.getElementById('accounting-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submit-button');
-            btn.disabled = true; btn.innerText = "...";
+            const submitBtn = document.getElementById('submit-button');
+            submitBtn.disabled = true; 
+            submitBtn.innerText = "MENYIMPAN...";
 
-            const data = {
+            const transData = {
                 desc: document.getElementById('desc').value,
                 amount: parseFloat(document.getElementById('amount').value),
                 type: document.getElementById('type').value,
@@ -677,58 +690,64 @@
             };
 
             try {
-                const col = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId);
-                await addDoc(col, data);
+                if(!isAuthReady) throw new Error("Not Authed");
+                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId);
+                await addDoc(colRef, transData);
                 notify("TERSINKRON");
                 document.getElementById('accounting-form').reset();
                 document.getElementById('date').valueAsDate = new Date();
                 window.switchView('history');
             } catch (err) {
                 notify("SIMPAN LOKAL (OFFLINE)");
-                records.push({ id: 'LOCAL-'+Date.now(), ...data });
+                records.push({ id: 'LOCAL-'+Date.now(), ...transData });
                 localStorage.setItem('local_db_rec', JSON.stringify(records));
                 renderUI();
                 window.switchView('history');
             } finally {
-                btn.disabled = false; btn.innerText = "SIMPAN TRANSAKSI";
+                submitBtn.disabled = false; 
+                submitBtn.innerText = "SIMPAN TRANSAKSI";
             }
         });
 
         document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
             if (!currentDeleteId) return;
             try {
-                const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId, currentDeleteId);
-                await deleteDoc(ref);
-            } catch (err) {
-                records = records.filter(r => r.id !== currentDeleteId);
-                localStorage.setItem('local_db_rec', JSON.stringify(records));
-                renderUI();
-            } finally { hideDeleteModal(); }
+                if(isAuthReady && !currentDeleteId.startsWith('LOCAL')) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId, currentDeleteId);
+                    await deleteDoc(docRef);
+                } else {
+                    records = records.filter(r => r.id !== currentDeleteId);
+                    localStorage.setItem('local_db_rec', JSON.stringify(records));
+                    renderUI();
+                }
+            } catch (err) { console.error(err); }
+            finally { hideDeleteModal(); }
         });
 
-        // Search & Init
+        // --- Init ---
         document.getElementById('search-bar')?.addEventListener('input', renderUI);
-        document.getElementById('date').valueAsDate = new Date();
-        renderUI();
-        updateStatus(false);
+        const dateInput = document.getElementById('date');
+        if(dateInput) dateInput.valueAsDate = new Date();
         
-        // Listeners
-        window.addEventListener('online', () => { notify("ONLINE"); startSync(activeId); });
-        window.addEventListener('offline', () => { notify("OFFLINE MODE"); updateStatus(false); });
+        renderUI();
+        updateStatusUI(false);
+        
+        window.addEventListener('online', () => { notify("KEMBALI ONLINE"); if(isAuthReady) startSync(activeId); });
+        window.addEventListener('offline', () => { notify("MODE OFFLINE"); updateStatusUI(false); });
 
-        // Export (Simple)
+        // --- Export ---
         window.exportToPDF = () => {
             const { jsPDF } = window.jspdf;
-            const d = new jsPDF();
-            d.text("Laporan NiagaPintar PRO", 14, 20);
-            d.autoTable({ startY: 25, head: [['Tgl', 'Ket', 'Ktg', 'Tipe', 'Nominal']], body: records.map(r=>[r.date, r.desc, r.category, r.type, formatIDR(r.amount)]) });
-            d.save(`Laporan_${activeId}.pdf`);
+            const pdfDoc = new jsPDF();
+            pdfDoc.text("Laporan NiagaPintar PRO", 14, 20);
+            pdfDoc.autoTable({ startY: 25, head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']], body: records.map(r=>[r.date, r.desc, r.category, r.type, formatIDR(r.amount)]) });
+            pdfDoc.save(`Laporan_${activeId}.pdf`);
         };
         window.exportToExcel = () => {
-            const ws = XLSX.utils.json_to_sheet(records);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Laporan");
-            XLSX.writeFile(wb, `Laporan_${activeId}.xlsx`);
+            const workSheet = XLSX.utils.json_to_sheet(records);
+            const workBook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workBook, workSheet, "Laporan");
+            XLSX.writeFile(workBook, `Laporan_${activeId}.xlsx`);
         };
     </script>
 </body>
