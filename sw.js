@@ -1,14 +1,15 @@
 /**
- * NiagaPintar PRO - Service Worker v7.3.1
+ * NiagaPintar PRO - Service Worker v7.3.2
  * Optimalisasi untuk Hybrid Cloud Sync & Akses Offline Instan.
+ * Diselaraskan dengan file index.html sebagai entri utama.
  */
 
-const CACHE_NAME = 'niagapintar-v7.3.1';
+const CACHE_NAME = 'niagapintar-v7.3.2';
 
 // Daftar aset inti untuk performa offline maksimal
 const ASSETS_TO_CACHE = [
   './',
-  './pembukuan_umkm.html',
+  './index.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/chart.js',
@@ -26,7 +27,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Memperbarui Cache ke v7.3.1 (Hybrid Mode)');
+      console.log('[SW] Memperbarui Cache ke v7.3.2 (Entri: index.html)');
       return Promise.all(
         ASSETS_TO_CACHE.map(url => 
           cache.add(url).catch(err => console.warn(`Gagal cache: ${url}`, err))
@@ -49,18 +50,16 @@ self.addEventListener('activate', (event) => {
 
 // Strategi Fetch: Cache First, Network Fallback
 self.addEventListener('fetch', (event) => {
-  // Hanya proses metode GET
   if (event.request.method !== 'GET') return;
   
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // Gunakan cache jika ada, jika tidak ambil dari internet
       return cachedResponse || fetch(event.request).then((networkResponse) => {
         return networkResponse;
       }).catch(() => {
         // Jika offline total dan mencoba navigasi halaman utama
         if (event.request.mode === 'navigate') {
-          return caches.match('./pembukuan_umkm.html');
+          return caches.match('./index.html');
         }
       });
     })
