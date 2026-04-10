@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NiagaPintar PRO | Mobile App</title>
+    <title>NiagaPintar PRO | Digital Bookkeeping</title>
     
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -27,29 +27,61 @@
         
         :root {
             --brand: #4f46e5;
+            --brand-light: #eef2ff;
+            --emerald: #10b981;
+            --rose: #f43f5e;
         }
 
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #0f172a;
+            background-color: #f1f5f9;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
         }
 
-        /* Menggunakan dvh agar tidak terpotong toolbar browser seluler */
-        .mobile-app-shell {
-            width: 100%;
-            max-width: 480px;
+        /* Responsive Wrapper */
+        .app-container {
+            display: flex;
             height: 100vh;
-            height: 100dvh; 
+            height: 100dvh;
+            width: 100%;
             background-color: #f8fafc;
+        }
+
+        /* Sidebar khusus Desktop/Tablet */
+        .desktop-sidebar {
+            width: 260px;
+            background-color: #0f172a;
+            color: white;
+            display: none; /* Default hidden for mobile */
+            flex-direction: column;
+            padding: 24px;
+            flex-shrink: 0;
+        }
+
+        /* Main Area */
+        .content-wrapper {
+            flex: 1;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
             position: relative;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5);
+            background-color: #f8fafc;
+            /* Center mobile view on large screens */
+            max-width: 480px;
+            margin: 0 auto;
+            box-shadow: 0 0 100px rgba(0,0,0,0.05);
+        }
+
+        @media (min-width: 1024px) {
+            .desktop-sidebar { display: flex; }
+            .content-wrapper { 
+                max-width: none; 
+                margin: 0;
+                box-shadow: none;
+                border-left: 1px solid #e2e8f0;
+            }
         }
 
         .main-content {
@@ -59,11 +91,15 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        @media (min-width: 1024px) {
+            .main-content { padding-bottom: 40px; }
+        }
+
         .premium-gradient {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
         }
 
-        /* Navigasi Sejajar Paksa */
+        /* Navigation Components */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -74,51 +110,52 @@
             backdrop-filter: blur(15px);
             border-top: 1px solid #e2e8f0;
             display: flex; 
-            justify-content: space-around;
-            align-items: center;
             z-index: 100;
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .nav-item {
-            flex: 1; 
-            height: 100%;
+        @media (min-width: 1024px) {
+            .bottom-nav { display: none; }
+        }
+
+        .nav-item-mobile {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: #94a3b8;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            position: relative;
-        }
-
-        .nav-item.active {
-            color: var(--brand);
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 30%;
-            height: 3px;
-            background: var(--brand);
-            border-radius: 0 0 4px 4px;
-        }
-
-        .nav-item span {
             font-size: 8px;
             font-weight: 800;
             text-transform: uppercase;
-            margin-top: 5px;
-            white-space: nowrap; 
-            letter-spacing: 0.05em;
         }
 
-        .glass-card {
-            background: white;
-            border: 1px solid #f1f5f9;
+        .nav-item-mobile.active { color: var(--brand); }
+
+        .nav-item-desktop {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item-desktop.active {
+            background-color: var(--brand);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+
+        .nav-item-desktop:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
         }
 
         .view-section {
@@ -126,230 +163,314 @@
             animation: fadeIn 0.3s ease-out forwards;
         }
 
-        .view-section.active {
-            display: block;
-        }
+        .view-section.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        ::-webkit-scrollbar { width: 0px; }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            width: 100%;
-        }
+        .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .progress-bar-bg { background-color: #f1f5f9; height: 4px; border-radius: 10px; width: 100%; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease-in-out; }
     </style>
 </head>
 <body class="text-slate-900">
 
-    <div class="mobile-app-shell">
-        <!-- Header -->
-        <header class="premium-gradient text-white px-4 py-3 shrink-0">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <div class="bg-white/20 p-1.5 rounded-lg">
-                        <i data-lucide="calculator" class="w-4 h-4 text-white"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xs font-black uppercase tracking-tight">NiagaPintar <span class="text-indigo-200">PRO</span></h1>
-                        <span id="view-title" class="text-[8px] font-bold text-indigo-200 block -mt-0.5 uppercase tracking-widest">Beranda</span>
-                    </div>
+    <div class="app-container">
+        <!-- SIDEBAR (DESKTOP) -->
+        <aside class="desktop-sidebar">
+            <div class="flex items-center gap-3 mb-10 px-2">
+                <div class="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-500/20">
+                    <i data-lucide="calculator" class="w-6 h-6 text-white"></i>
                 </div>
-                <div id="offline-badge" class="hidden flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full">
-                    <span class="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></span>
-                    <span class="text-[7px] font-bold text-emerald-300">LOKAL</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Area Konten Utama -->
-        <div class="main-content px-3 py-4">
-            
-            <!-- SECTION: BERANDA -->
-            <div id="view-home" class="view-section active space-y-4">
-                <div class="stats-grid animate-fade">
-                    <div class="glass-card p-2 rounded-xl shadow-sm flex flex-col items-center justify-center h-16 border border-slate-100">
-                        <span class="text-[7px] font-extrabold text-slate-400 uppercase block mb-1">Masuk</span>
-                        <h3 id="display-income" class="text-[10px] font-black text-emerald-600 truncate w-full text-center">Rp 0</h3>
-                    </div>
-                    <div class="glass-card p-2 rounded-xl shadow-sm flex flex-col items-center justify-center h-16 border border-slate-100">
-                        <span class="text-[7px] font-extrabold text-slate-400 uppercase block mb-1">Keluar</span>
-                        <h3 id="display-expense" class="text-[10px] font-black text-rose-600 truncate w-full text-center">Rp 0</h3>
-                    </div>
-                    <div class="bg-slate-900 p-2 rounded-xl shadow-sm flex flex-col items-center justify-center h-16 border border-slate-800 shadow-lg">
-                        <span class="text-[7px] font-extrabold text-slate-500 uppercase block mb-1">Saldo</span>
-                        <h3 id="display-balance" class="text-[10px] font-black text-indigo-100 truncate w-full text-center">Rp 0</h3>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Analisis Arus Kas</h2>
-                        <i data-lucide="pie-chart" class="w-3 h-3 text-slate-300"></i>
-                    </div>
-                    <div class="h-44"><canvas id="categoryChart"></canvas></div>
-                    <!-- Legenda Dinamis -->
-                    <div id="chart-legend" class="mt-4 flex flex-wrap gap-x-3 gap-y-2 justify-center"></div>
-                </div>
-
-                <div class="bg-indigo-600 p-4 rounded-2xl text-white relative overflow-hidden shadow-lg shadow-indigo-100">
-                    <div class="absolute -right-4 -bottom-4 opacity-10">
-                        <i data-lucide="shield-check" class="w-20 h-20"></i>
-                    </div>
-                    <p class="text-[9px] font-bold opacity-80 mb-1 uppercase tracking-wider">Status Keamanan</p>
-                    <p class="text-xs font-black leading-tight">Data tersimpan di memori internal perangkat dengan aman.</p>
+                <div>
+                    <h1 class="text-base font-black tracking-tight leading-none">NiagaPintar</h1>
+                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">Enterprise PRO</span>
                 </div>
             </div>
 
-            <!-- SECTION: INPUT (TRANSAKSI) -->
-            <div id="view-input" class="view-section space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-4">Catat Transaksi</h2>
-                    <form id="accounting-form" class="space-y-3">
-                        <input type="hidden" id="edit-id">
-                        <div class="space-y-1">
-                            <label class="text-[8px] font-bold text-slate-400 uppercase ml-1">Keterangan</label>
-                            <input type="text" id="desc" placeholder="Contoh: Jual Sembako" required class="w-full px-3 py-3 bg-slate-50 border border-slate-100 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase ml-1">Tipe</label>
-                                <select id="type" onchange="filterFormCategories()" class="w-full px-2 py-3 bg-slate-50 border border-slate-100 rounded-lg text-xs">
-                                    <option value="income">Uang Masuk</option>
-                                    <option value="expense">Uang Keluar</option>
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase ml-1">Nominal</label>
-                                <input type="number" id="amount" placeholder="0" required class="w-full px-3 py-3 bg-slate-50 border border-slate-100 rounded-lg text-xs">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase ml-1">Kategori</label>
-                                <select id="category" class="w-full px-2 py-3 bg-slate-50 border border-slate-100 rounded-lg text-xs"></select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[8px] font-bold text-slate-400 uppercase ml-1">Tanggal</label>
-                                <input type="date" id="date" required class="w-full px-2 py-3 bg-slate-50 border border-slate-100 rounded-lg text-xs">
-                            </div>
-                        </div>
-                        <button type="submit" id="btn-submit" class="w-full py-4 bg-indigo-600 text-white font-black rounded-lg text-xs shadow-lg shadow-indigo-100 mt-2">KONFIRMASI SIMPAN</button>
-                    </form>
+            <nav class="flex-1 space-y-1">
+                <div class="nav-item-desktop active" onclick="switchView('home')">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    <span>Beranda Dashboard</span>
+                </div>
+                <div class="nav-item-desktop" onclick="switchView('input')">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>Input Transaksi</span>
+                </div>
+                <div class="nav-item-desktop" onclick="switchView('history')">
+                    <i data-lucide="clock-3" class="w-5 h-5"></i>
+                    <span>Riwayat & Laporan</span>
+                </div>
+                <div class="nav-item-desktop" onclick="switchView('settings')">
+                    <i data-lucide="settings-2" class="w-5 h-5"></i>
+                    <span>Pengaturan Sistem</span>
+                </div>
+            </nav>
+
+            <div class="mt-auto pt-6 border-t border-white/10">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Penyimpanan</p>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold">Local Database</span>
+                        <span class="text-[10px] text-emerald-400 font-bold">100% Aman</span>
+                    </div>
+                    <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                        <div class="bg-emerald-400 h-full w-[100%]"></div>
+                    </div>
                 </div>
             </div>
+        </aside>
 
-            <!-- SECTION: RIWAYAT -->
-            <div id="view-history" class="view-section space-y-3">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex gap-1.5">
-                        <button onclick="exportToExcel()" class="p-3 bg-emerald-50 text-emerald-600 rounded-xl shadow-sm border border-emerald-100"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i></button>
-                        <button onclick="exportToPDF()" class="p-3 bg-rose-50 text-rose-500 rounded-xl shadow-sm border border-rose-100"><i data-lucide="file-text" class="w-4 h-4"></i></button>
+        <!-- CONTENT AREA (MOBILE SHELL / DESKTOP CONTENT) -->
+        <div class="content-wrapper">
+            <!-- Header (Mobile Only / Content Header Desktop) -->
+            <header class="premium-gradient text-white px-5 py-4 shrink-0 lg:bg-white lg:text-slate-800 lg:border-b lg:border-slate-100 lg:from-transparent lg:to-transparent">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white/20 p-2 rounded-xl lg:bg-indigo-50 lg:p-2.5">
+                            <i data-lucide="calculator" class="w-4 h-4 text-white lg:text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xs font-black uppercase tracking-tight lg:text-sm lg:text-slate-900 lg:normal-case">NiagaPintar PRO</h1>
+                            <span id="view-title" class="text-[8px] font-bold text-indigo-200 block -mt-0.5 uppercase tracking-widest lg:text-indigo-600 lg:font-black">Dashboard</span>
+                        </div>
                     </div>
-                    <select id="filter-type" onchange="updateUI()" class="px-3 py-2 bg-white border border-slate-100 rounded-xl text-[10px] font-bold text-slate-500 uppercase tracking-tighter shadow-sm">
-                        <option value="all">SEMUA DATA</option>
-                        <option value="income">HANYA MASUK</option>
-                        <option value="expense">HANYA KELUAR</option>
-                    </select>
+                    <div class="flex items-center gap-2">
+                        <div id="offline-badge" class="hidden flex items-center gap-1.5 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/20">
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                            <span class="text-[8px] font-black text-emerald-300 lg:text-emerald-600">DATABASE AKTIF</span>
+                        </div>
+                    </div>
                 </div>
+            </header>
+
+            <main class="main-content px-5 py-6">
                 
-                <div class="relative mb-3">
-                    <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                    <input type="text" id="search-bar" placeholder="Cari transaksi..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-100 rounded-2xl text-[10px] focus:outline-none shadow-sm">
-                </div>
-
-                <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 text-slate-400 text-[8px] font-black uppercase tracking-widest">
-                            <tr>
-                                <th class="px-4 py-3">Tanggal</th>
-                                <th class="px-4 py-3">Item</th>
-                                <th class="px-4 py-3 text-right">Nominal</th>
-                                <th class="px-4 py-3 text-center">...</th>
-                            </tr>
-                        </thead>
-                        <tbody id="list-container" class="divide-y divide-slate-50"></tbody>
-                    </table>
-                    <div id="no-data" class="hidden py-16 text-center text-slate-300 text-[10px] font-bold italic uppercase">Belum ada transaksi</div>
-                </div>
-            </div>
-
-            <!-- SECTION: PENGATURAN -->
-            <div id="view-settings" class="view-section space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                    <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-4">Sistem & Kategori</h2>
-                    <div class="grid grid-cols-2 gap-3 mb-6">
-                        <div class="space-y-2">
-                            <span class="text-nano font-bold text-emerald-600 uppercase tracking-widest">Pemasukan</span>
-                            <div id="income-cat-list" class="space-y-1.5"></div>
-                            <button onclick="addNewCategory('income')" class="w-full py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[8px] font-bold border border-emerald-100 hover:bg-emerald-100 transition-colors">+ TAMBAH</button>
+                <!-- SECTION: BERANDA -->
+                <div id="view-home" class="view-section active space-y-8">
+                    <!-- Kartu Ringkasan (Grid Responsif) -->
+                    <div class="grid grid-cols-3 gap-3 md:gap-6">
+                        <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50 relative group transition-all hover:scale-[1.02]">
+                            <div class="bg-emerald-50 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
+                                <i data-lucide="arrow-down-circle" class="w-4 h-4 text-emerald-500"></i>
+                            </div>
+                            <span class="text-[8px] font-extrabold text-slate-400 uppercase block mb-1">Masuk</span>
+                            <h3 id="display-income" class="text-xs font-black text-slate-900 lg:text-lg tracking-tighter">Rp 0</h3>
                         </div>
-                        <div class="space-y-2">
-                            <span class="text-nano font-bold text-rose-600 uppercase tracking-widest">Pengeluaran</span>
-                            <div id="expense-cat-list" class="space-y-1.5"></div>
-                            <button onclick="addNewCategory('expense')" class="w-full py-2 bg-rose-50 text-rose-600 rounded-xl text-[8px] font-bold border border-rose-100 hover:bg-rose-100 transition-colors">+ TAMBAH</button>
+                        <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50 relative group transition-all hover:scale-[1.02]">
+                            <div class="bg-rose-50 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
+                                <i data-lucide="arrow-up-circle" class="w-4 h-4 text-rose-500"></i>
+                            </div>
+                            <span class="text-[8px] font-extrabold text-slate-400 uppercase block mb-1">Keluar</span>
+                            <h3 id="display-expense" class="text-xs font-black text-slate-900 lg:text-lg tracking-tighter">Rp 0</h3>
+                        </div>
+                        <div class="bg-slate-900 p-4 rounded-[2rem] shadow-xl relative group transition-all hover:scale-[1.02]">
+                            <div class="bg-white/10 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
+                                <i data-lucide="wallet" class="w-4 h-4 text-indigo-300"></i>
+                            </div>
+                            <span class="text-[8px] font-extrabold text-slate-500 uppercase block mb-1">Saldo</span>
+                            <h3 id="display-balance" class="text-xs font-black text-white lg:text-lg tracking-tighter">Rp 0</h3>
                         </div>
                     </div>
-                    <div class="pt-5 border-t border-slate-100 space-y-3">
-                        <button onclick="backupDatabase()" class="w-full py-3.5 bg-slate-50 text-slate-600 rounded-2xl text-[10px] font-black flex items-center justify-center gap-2 border border-slate-100">
-                            <i data-lucide="download" class="w-4 h-4"></i> EKSPOR CADANGAN (JSON)
-                        </button>
-                        <button onclick="confirmResetDB()" class="w-full py-3.5 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black border border-rose-100">HAPUS DATABASE TOTAL</button>
+
+                    <!-- Layout Perbandingan (Side by Side on Desktop) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Rincian Pemasukan -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between px-1">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-1.5 h-5 bg-emerald-500 rounded-full"></div>
+                                    <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pemasukan</h2>
+                                </div>
+                            </div>
+                            <div id="income-visual-list" class="space-y-3"></div>
+                        </div>
+
+                        <!-- Rincian Pengeluaran -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between px-1">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-1.5 h-5 bg-rose-500 rounded-full"></div>
+                                    <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pengeluaran</h2>
+                                </div>
+                            </div>
+                            <div id="expense-visual-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <div id="home-no-data" class="hidden py-16 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
+                        <i data-lucide="package-open" class="w-10 h-10 text-slate-200 mx-auto mb-3"></i>
+                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Database Masih Kosong</p>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div class="bg-indigo-600 p-6 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl shadow-indigo-100 lg:max-w-md">
+                        <div class="absolute -right-6 -bottom-6 opacity-20 rotate-12">
+                            <i data-lucide="sparkles" class="w-32 h-32"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <h4 class="text-[10px] font-black opacity-60 uppercase tracking-[0.3em] mb-2">Tips Manajemen</h4>
+                            <p class="text-sm font-black leading-snug">Rata-rata pengeluaran Anda dapat ditekan jika kategori 'Lain-lain' teridentifikasi dengan jelas.</p>
+                        </div>
                     </div>
                 </div>
-                <div class="text-center py-6">
-                    <div class="inline-block px-4 py-1.5 bg-slate-100 rounded-full">
-                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">NiagaPintar PRO v5.0</p>
+
+                <!-- SECTION: INPUT -->
+                <div id="view-input" class="view-section space-y-6 max-w-2xl">
+                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-50">
+                        <div class="flex items-center gap-3 mb-8">
+                            <i data-lucide="plus-circle" class="w-6 h-6 text-indigo-600"></i>
+                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Catat Baru</h2>
+                        </div>
+                        <form id="accounting-form" class="space-y-5">
+                            <input type="hidden" id="edit-id">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Apa transaksinya?</label>
+                                <input type="text" id="desc" placeholder="Contoh: Stok Barang, Gaji Karyawan..." required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:ring-4 focus:ring-indigo-500/10 focus:outline-none transition-all">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Dana</label>
+                                    <select id="type" onchange="filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none cursor-pointer">
+                                        <option value="income">💰 Uang Masuk</option>
+                                        <option value="expense">💸 Uang Keluar</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nominal (IDR)</label>
+                                    <input type="number" id="amount" placeholder="0" required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
+                                    <select id="category" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm cursor-pointer"></select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
+                                    <input type="date" id="date" required class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
+                                </div>
+                            </div>
+                            <button type="submit" id="btn-submit" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl shadow-indigo-200 mt-4 transition-all hover:bg-indigo-700 active:scale-95">KONFIRMASI PENYIMPANAN</button>
+                        </form>
                     </div>
                 </div>
+
+                <!-- SECTION: RIWAYAT -->
+                <div id="view-history" class="view-section space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex gap-2">
+                            <button onclick="exportToExcel()" class="flex items-center gap-2 px-5 py-3 bg-white text-emerald-600 rounded-2xl shadow-sm border border-slate-100 font-bold text-xs hover:bg-emerald-50"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel</button>
+                            <button onclick="exportToPDF()" class="flex items-center gap-2 px-5 py-3 bg-white text-rose-500 rounded-2xl shadow-sm border border-slate-100 font-bold text-xs hover:bg-rose-50"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
+                        </div>
+                        <div class="flex gap-2 relative">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                            <input type="text" id="search-bar" placeholder="Cari..." class="pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs shadow-sm outline-none w-full md:w-64">
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                <tr>
+                                    <th class="px-6 py-5">Tanggal</th>
+                                    <th class="px-2 py-5">Detail Transaksi</th>
+                                    <th class="px-6 py-5 text-right">Jumlah</th>
+                                    <th class="px-6 py-5 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-container" class="divide-y divide-slate-50"></tbody>
+                        </table>
+                        <div id="no-data" class="hidden py-32 text-center text-slate-300 text-xs font-black uppercase tracking-widest">Laporan Masih Kosong</div>
+                    </div>
+                </div>
+
+                <!-- SECTION: SISTEM -->
+                <div id="view-settings" class="view-section space-y-6 max-w-4xl">
+                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100">
+                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
+                            <i data-lucide="sliders-horizontal" class="w-5 h-5"></i> Konfigurasi Kategori
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
+                                    <span class="text-xs font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                                        <i data-lucide="chevron-down-circle" class="w-3 h-3"></i> Kategori Masuk
+                                    </span>
+                                </div>
+                                <div id="income-cat-list" class="grid grid-cols-1 gap-2"></div>
+                                <button onclick="addNewCategory('income')" class="w-full py-3 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-bold border border-emerald-100 hover:bg-emerald-100">+ Kategori Baru</button>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-rose-100 pb-2">
+                                    <span class="text-xs font-black text-rose-600 uppercase tracking-widest flex items-center gap-2">
+                                        <i data-lucide="chevron-up-circle" class="w-3 h-3"></i> Kategori Keluar
+                                    </span>
+                                </div>
+                                <div id="expense-cat-list" class="grid grid-cols-1 gap-2"></div>
+                                <button onclick="addNewCategory('expense')" class="w-full py-3 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-bold border border-rose-100 hover:bg-rose-100">+ Kategori Baru</button>
+                            </div>
+                        </div>
+                        <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row gap-4">
+                            <button onclick="backupDatabase()" class="flex-1 py-5 bg-slate-900 text-white rounded-[2rem] text-xs font-black flex items-center justify-center gap-3 shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all">
+                                <i data-lucide="download-cloud" class="w-5 h-5 text-indigo-400"></i> EKSPOR BACKUP DATA (.JSON)
+                            </button>
+                            <button onclick="confirmResetDB()" class="px-8 py-5 text-rose-500 font-bold text-xs hover:bg-rose-50 rounded-[2rem]">RESET SISTEM</button>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Product by NiagaPintar Dev • v6.0</p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- NAVIGATION (MOBILE ONLY) -->
+            <nav class="bottom-nav">
+                <div class="nav-item-mobile active" onclick="switchView('home')">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                    <span>Home</span>
+                </div>
+                <div class="nav-item-mobile" onclick="switchView('input')">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <span>Catat</span>
+                </div>
+                <div class="nav-item-mobile" onclick="switchView('history')">
+                    <i data-lucide="clock-3" class="w-5 h-5"></i>
+                    <span>Laporan</span>
+                </div>
+                <div class="nav-item-mobile" onclick="switchView('settings')">
+                    <i data-lucide="settings-2" class="w-5 h-5"></i>
+                    <span>Sistem</span>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-delete" class="fixed inset-0 bg-slate-900/80 hidden z-[500] flex items-center justify-center p-6 backdrop-blur-lg">
+        <div class="bg-white rounded-[3rem] p-10 w-full max-w-[340px] text-center shadow-2xl animate-fade">
+            <div class="bg-rose-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-500">
+                <i data-lucide="trash-2" class="w-12 h-12"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2 tracking-tight">Hapus Data?</h3>
+            <p class="text-xs text-slate-400 mb-10 leading-relaxed">Transaksi ini akan dihapus permanen dari memori lokal. Lanjutkan?</p>
+            <div class="flex gap-4">
+                <button onclick="hideDeleteModal()" class="flex-1 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Batal</button>
+                <button id="btn-confirm-delete" class="flex-1 py-5 bg-rose-500 text-white rounded-[2rem] text-xs font-black shadow-lg shadow-rose-200 uppercase tracking-widest">Ya, Hapus</button>
             </div>
         </div>
+    </div>
 
-        <!-- Bottom Navigation Bar -->
-        <nav class="bottom-nav">
-            <div class="nav-item active" onclick="switchView('home')">
-                <i data-lucide="home" class="w-5 h-5"></i>
-                <span>Beranda</span>
-            </div>
-            <div class="nav-item" onclick="switchView('input')">
-                <i data-lucide="plus-square" class="w-5 h-5"></i>
-                <span>Catat</span>
-            </div>
-            <div class="nav-item" onclick="switchView('history')">
-                <i data-lucide="list" class="w-5 h-5"></i>
-                <span>Riwayat</span>
-            </div>
-            <div class="nav-item" onclick="switchView('settings')">
-                <i data-lucide="user-cog" class="w-5 h-5"></i>
-                <span>Sistem</span>
-            </div>
-        </nav>
-
-        <!-- Modals & Notif -->
-        <div id="modal-delete" class="fixed inset-0 bg-slate-900/60 hidden z-[200] flex items-center justify-center p-6 backdrop-blur-sm">
-            <div class="bg-white rounded-[2.5rem] p-8 w-full max-w-[300px] text-center shadow-2xl animate-fade">
-                <div class="bg-rose-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 text-rose-500">
-                    <i data-lucide="trash-2" class="w-8 h-8"></i>
-                </div>
-                <h3 class="text-base font-black text-slate-800 mb-1">Hapus Data?</h3>
-                <p class="text-[10px] text-slate-400 mb-8 leading-relaxed">Catatan ini akan dihapus permanen dari database lokal Anda.</p>
-                <div class="flex gap-3">
-                    <button onclick="hideDeleteModal()" class="flex-1 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Batal</button>
-                    <button id="btn-confirm-delete" class="flex-1 py-3 bg-rose-500 text-white rounded-2xl text-[11px] font-bold shadow-lg shadow-rose-100 uppercase tracking-widest">Hapus</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="notification" class="fixed top-8 left-1/2 -translate-x-1/2 z-[210] -translate-y-24 opacity-0 transition-all duration-500">
-            <div class="bg-slate-900 text-white px-6 py-2.5 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
-                <i data-lucide="check-circle" class="text-emerald-400 w-4 h-4"></i>
-                <span id="notif-text" class="text-[9px] font-black uppercase tracking-widest">Sukses Disimpan</span>
-            </div>
+    <div id="notification" class="fixed top-12 left-1/2 -translate-x-1/2 z-[600] -translate-y-32 opacity-0 transition-all duration-700">
+        <div class="bg-slate-900 text-white px-10 py-4 rounded-full shadow-2xl flex items-center gap-4 border border-white/10">
+            <i data-lucide="check-circle-2" class="text-emerald-400 w-6 h-6"></i>
+            <span id="notif-text" class="text-xs font-black uppercase tracking-widest">Berhasil</span>
         </div>
     </div>
 
@@ -383,24 +504,45 @@
             updateUI(); 
         };
 
-        let records = [], categories = [], idToRemoval = null, chartInstance = null;
+        let records = [], categories = [], idToRemoval = null;
         const toIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
-        const formatDate = (dateStr) => { const d = new Date(dateStr); return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit' }); };
+        const formatDate = (dateStr) => { const d = new Date(dateStr); return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); };
 
         lucide.createIcons();
-        document.getElementById('date').valueAsDate = new Date();
+        
+        // Inisialisasi input tanggal setelah DOM siap
+        window.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('date');
+            if (dateInput) dateInput.valueAsDate = new Date();
+        });
 
         function switchView(viewId) {
-            const titles = { home: 'Beranda', input: 'Catat Transaksi', history: 'Riwayat Laporan', settings: 'Sistem & Kategori' };
-            document.getElementById('view-title').innerText = titles[viewId];
+            const titles = { home: 'Dashboard Utama', input: 'Pencatatan Baru', history: 'Laporan Keuangan', settings: 'Konfigurasi Sistem' };
+            const titleEl = document.getElementById('view-title');
+            if (titleEl) titleEl.innerText = titles[viewId];
+            
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`view-${viewId}`).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach((item, idx) => {
+            const targetView = document.getElementById(`view-${viewId}`);
+            if (targetView) targetView.classList.add('active');
+            
+            // Sync Mobile Nav
+            document.querySelectorAll('.nav-item-mobile').forEach((item, idx) => {
                 const views = ['home', 'input', 'history', 'settings'];
                 item.classList.toggle('active', views[idx] === viewId);
             });
-            if(viewId === 'home') setTimeout(renderChart, 100);
-            document.querySelector('.main-content').scrollTop = 0;
+
+            // Sync Desktop Sidebar
+            document.querySelectorAll('.nav-item-desktop').forEach((item, idx) => {
+                const views = ['home', 'input', 'history', 'settings'];
+                item.classList.toggle('active', views[idx] === viewId);
+            });
+
+            if(viewId === 'home') setTimeout(updateHomeVisuals, 100);
+            
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) mainContent.scrollTop = 0;
+            
+            lucide.createIcons();
         }
 
         async function fetchAll(storeName) {
@@ -420,33 +562,129 @@
             categories = await fetchAll(STORE_CAT);
             renderCategoryManager();
             filterFormCategories();
-            const query = document.getElementById('search-bar').value.toLowerCase();
-            const selectedType = document.getElementById('filter-type').value;
+            
+            const searchInput = document.getElementById('search-bar');
+            const filterSelect = document.getElementById('filter-type');
+            
+            // Guard clause untuk mencegah error jika elemen DOM belum siap
+            if (!searchInput || !filterSelect) return;
+
+            const query = searchInput.value.toLowerCase();
+            const selectedType = filterSelect.value;
             let filtered = records.filter(item => (selectedType === 'all' || item.type === selectedType) && (item.desc.toLowerCase().includes(query) || (item.category && item.category.toLowerCase().includes(query)))).sort((a, b) => new Date(b.date) - new Date(a.date));
+            
             const listBody = document.getElementById('list-container');
+            if (!listBody) return;
+            
             listBody.innerHTML = '';
-            if (!filtered.length) document.getElementById('no-data').classList.remove('hidden');
-            else {
-                document.getElementById('no-data').classList.add('hidden');
+            
+            const noDataEl = document.getElementById('no-data');
+            if (!filtered.length) {
+                if (noDataEl) noDataEl.classList.remove('hidden');
+            } else {
+                if (noDataEl) noDataEl.classList.add('hidden');
                 filtered.forEach(item => {
                     const isInc = item.type === 'income';
                     const tr = document.createElement('tr');
-                    tr.className = 'text-[9px] hover:bg-slate-50 transition-colors';
-                    tr.innerHTML = `<td class="px-4 py-4 font-bold text-slate-400">${formatDate(item.date)}</td><td class="px-4 py-4"><span class="font-bold text-slate-800 block leading-tight truncate max-w-[110px] mb-0.5">${item.desc}</span><span class="text-[7px] font-black text-slate-300 uppercase tracking-widest">${item.category || 'LAINNYA'}</span></td><td class="px-4 py-4 text-right font-black ${isInc ? 'text-emerald-600' : 'text-rose-600'}">${toIDR(item.amount)}</td><td class="px-4 py-4 text-center"><button onclick="showDeleteModal('${item.id}')" class="text-rose-200 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>`;
+                    tr.className = 'text-[11px] hover:bg-slate-50 transition-colors group';
+                    tr.innerHTML = `
+                        <td class="px-6 py-5 font-bold text-slate-400">${formatDate(item.date)}</td>
+                        <td class="px-2 py-5">
+                            <span class="font-bold text-slate-800 block leading-tight truncate max-w-[200px] mb-1">${item.desc}</span>
+                            <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">${item.category || 'LAINNYA'}</span>
+                        </td>
+                        <td class="px-6 py-5 text-right font-black ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${toIDR(item.amount)}
+                        </td>
+                        <td class="px-6 py-5 text-center">
+                            <button onclick="showDeleteModal('${item.id}')" class="text-rose-200 hover:text-rose-500 p-2 rounded-xl hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    `;
                     listBody.appendChild(tr);
                 });
             }
-            calculateStats(); renderChart(); lucide.createIcons();
+            calculateStats(); updateHomeVisuals(); lucide.createIcons();
         }
 
         function calculateStats() {
             const inc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
             const exp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
-            document.getElementById('display-income').innerText = toIDR(inc);
-            document.getElementById('display-expense').innerText = toIDR(exp);
-            document.getElementById('display-balance').innerText = toIDR(inc - exp);
+            
+            const incEl = document.getElementById('display-income');
+            const expEl = document.getElementById('display-expense');
+            const balEl = document.getElementById('display-balance');
+            
+            if (incEl) incEl.innerText = toIDR(inc);
+            if (expEl) expEl.innerText = toIDR(exp);
+            if (balEl) balEl.innerText = toIDR(inc - exp);
         }
 
+        function updateHomeVisuals() {
+            const incomeVisualList = document.getElementById('income-visual-list');
+            const expenseVisualList = document.getElementById('expense-visual-list');
+            const noDataMsg = document.getElementById('home-no-data');
+            
+            if (!incomeVisualList || !expenseVisualList) return;
+
+            const catsInc = {};
+            const catsExp = {};
+            const incomeRecords = records.filter(r => r.type === 'income');
+            const expenseRecords = records.filter(r => r.type === 'expense');
+            const totalIncome = incomeRecords.reduce((s, r) => s + r.amount, 0);
+            const totalExpense = expenseRecords.reduce((s, r) => s + r.amount, 0);
+            
+            incomeRecords.forEach(r => { catsInc[r.category] = (catsInc[r.category] || 0) + r.amount; });
+            expenseRecords.forEach(r => { catsExp[r.category] = (catsExp[r.category] || 0) + r.amount; });
+            
+            const incLabels = Object.keys(catsInc).sort((a,b) => catsInc[b] - catsInc[a]);
+            const expLabels = Object.keys(catsExp).sort((a,b) => catsExp[b] - catsExp[a]);
+
+            if (incLabels.length === 0 && expLabels.length === 0) {
+                if (noDataMsg) noDataMsg.classList.remove('hidden');
+                incomeVisualList.innerHTML = '';
+                expenseVisualList.innerHTML = '';
+                return;
+            } else {
+                if (noDataMsg) noDataMsg.classList.add('hidden');
+            }
+
+            const renderItems = (labels, cats, total, colorBase, icon) => {
+                if (labels.length === 0) return `<p class="text-[10px] font-bold text-slate-300 uppercase py-6 text-center italic">Kosong</p>`;
+                const colors = [colorBase, '#818cf8', '#6366f1', '#4f46e5'];
+                return labels.map((label, i) => {
+                    const percentage = total > 0 ? ((cats[label] / total) * 100).toFixed(0) : 0;
+                    const color = colors[i % colors.length];
+                    return `
+                        <div class="bg-white p-5 rounded-[2rem] card-shadow border border-slate-50 flex flex-col gap-4 animate-fade" style="animation-delay: ${i * 0.05}s">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center" style="background-color: ${color}15">
+                                        <i data-lucide="${icon}" class="w-5 h-5" style="color: ${color}"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[11px] font-black text-slate-800 uppercase tracking-tighter leading-none mb-1.5">${label}</span>
+                                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none">${percentage}% Porsi</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-black text-slate-900 block leading-none mb-1.5">${toIDR(cats[label])}</span>
+                                    <span class="text-[8px] font-black text-slate-300 uppercase leading-none">Total Akumulasi</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-fill" style="width: ${percentage}%; background-color: ${color}"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            incomeVisualList.innerHTML = renderItems(incLabels, catsInc, totalIncome, '#10b981', 'trending-up');
+            expenseVisualList.innerHTML = renderItems(expLabels, catsExp, totalExpense, '#f43f5e', 'trending-down');
+            lucide.createIcons();
+        }
+
+        // --- Ekspor & Kategori ---
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -457,19 +695,14 @@
             doc.text("Laporan NiagaPintar PRO", 14, 20);
             doc.setFontSize(10);
             doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
-            const sortedRecords = [...records].sort((a,b) => new Date(b.date) - new Date(a.date));
-            const tableData = sortedRecords.map(r => [r.date, r.desc, r.category || '-', r.type === 'income' ? 'Masuk' : 'Keluar', toIDR(r.amount)]);
+            const tableData = [...records].sort((a,b) => new Date(b.date) - new Date(a.date)).map(r => [r.date, r.desc, r.category || '-', r.type === 'income' ? 'Masuk' : 'Keluar', toIDR(r.amount)]);
             doc.autoTable({
-                startY: 35,
-                head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']],
-                body: tableData,
-                theme: 'grid',
-                headStyles: { fillColor: [79, 70, 229] },
+                startY: 35, head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']], body: tableData, theme: 'grid', headStyles: { fillColor: [79, 70, 229] },
                 foot: [['', '', '', 'TOTAL MASUK', toIDR(totalIncome)], ['', '', '', 'TOTAL KELUAR', toIDR(totalExpense)], ['', '', '', 'SALDO AKHIR', toIDR(balance)]],
                 footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' }
             });
-            doc.save(`Laporan_NiagaPintar_${Date.now()}.pdf`);
-            showNotification("PDF BERHASIL");
+            doc.save(`Laporan_NiagaPintar.pdf`);
+            showNotification("PDF BERHASIL DICETAK");
         }
 
         function exportToExcel() {
@@ -480,19 +713,27 @@
             const ws = XLSX.utils.aoa_to_sheet(worksheetData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Laporan");
-            XLSX.writeFile(wb, `Laporan_NiagaPintar_${Date.now()}.xlsx`);
-            showNotification("EXCEL BERHASIL");
+            XLSX.writeFile(wb, `Laporan_NiagaPintar.xlsx`);
+            showNotification("EXCEL BERHASIL DICETAK");
         }
 
         function filterFormCategories() {
-            const type = document.getElementById('type').value;
-            document.getElementById('category').innerHTML = categories.filter(c => c.type === type).map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            const typeSelect = document.getElementById('type');
+            const categorySelect = document.getElementById('category');
+            if (!typeSelect || !categorySelect) return;
+            
+            const type = typeSelect.value;
+            categorySelect.innerHTML = categories.filter(c => c.type === type).map(c => `<option value="${c.name}">${c.name}</option>`).join('');
         }
 
         function renderCategoryManager() {
-            const itemUI = (c) => `<div class="flex justify-between items-center bg-white p-2 rounded-xl text-[7px] font-bold border border-slate-50 shadow-sm group"><span>${c.name}</span><button onclick="deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-400 transition-colors"><i data-lucide="x-circle" class="w-3 h-3"></i></button></div>`;
-            document.getElementById('income-cat-list').innerHTML = categories.filter(c => c.type === 'income').map(itemUI).join('');
-            document.getElementById('expense-cat-list').innerHTML = categories.filter(c => c.type === 'expense').map(itemUI).join('');
+            const incomeList = document.getElementById('income-cat-list');
+            const expenseList = document.getElementById('expense-cat-list');
+            if (!incomeList || !expenseList) return;
+
+            const itemUI = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl text-[9px] font-black text-slate-700 border border-slate-50 shadow-sm group"><span>${c.name}</span><button onclick="deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500 transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
+            incomeList.innerHTML = categories.filter(c => c.type === 'income').map(itemUI).join('');
+            expenseList.innerHTML = categories.filter(c => c.type === 'expense').map(itemUI).join('');
             lucide.createIcons();
         }
 
@@ -513,78 +754,42 @@
         document.getElementById('accounting-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const id = 'TRX-' + Date.now();
-            const data = { id, desc: document.getElementById('desc').value, amount: parseFloat(document.getElementById('amount').value), type: document.getElementById('type').value, category: document.getElementById('category').value, date: document.getElementById('date').value };
+            const data = { 
+                id, 
+                desc: document.getElementById('desc').value, 
+                amount: parseFloat(document.getElementById('amount').value), 
+                type: document.getElementById('type').value, 
+                category: document.getElementById('category').value, 
+                date: document.getElementById('date').value 
+            };
             const tx = db.transaction([STORE_NAME], 'readwrite');
             tx.objectStore(STORE_NAME).put(data);
-            tx.oncomplete = () => { document.getElementById('accounting-form').reset(); updateUI(); showNotification("DATA DISIMPAN"); switchView('history'); };
+            tx.oncomplete = () => { 
+                document.getElementById('accounting-form').reset(); 
+                updateUI(); 
+                showNotification("DATA BERHASIL DISIMPAN"); 
+                switchView('history'); 
+                const dateInput = document.getElementById('date');
+                if (dateInput) dateInput.valueAsDate = new Date();
+            };
         });
 
-        function showDeleteModal(id) { idToRemoval = id; document.getElementById('modal-delete').classList.remove('hidden'); }
-        function hideDeleteModal() { document.getElementById('modal-delete').classList.add('hidden'); }
+        function showDeleteModal(id) { idToRemoval = id; const m = document.getElementById('modal-delete'); if (m) m.classList.remove('hidden'); }
+        function hideDeleteModal() { const m = document.getElementById('modal-delete'); if (m) m.classList.add('hidden'); }
         document.getElementById('btn-confirm-delete').addEventListener('click', () => {
             if (!idToRemoval) return;
             const tx = db.transaction([STORE_NAME], 'readwrite');
             tx.objectStore(STORE_NAME).delete(idToRemoval);
-            tx.oncomplete = () => { updateUI(); hideDeleteModal(); showNotification("DATA DIHAPUS"); };
+            tx.oncomplete = () => { updateUI(); hideDeleteModal(); showNotification("DATA TELAH DIHAPUS"); };
         });
-
-        function renderChart() {
-            const canvas = document.getElementById('categoryChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const cats = {};
-            records.forEach(r => { if (r.type === 'income') cats[r.category] = (cats[r.category] || 0) + r.amount; });
-            
-            if (chartInstance) chartInstance.destroy();
-            
-            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
-            const labels = Object.keys(cats);
-            const dataValues = Object.values(cats);
-
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: { 
-                    labels: labels, 
-                    datasets: [{ 
-                        data: dataValues, 
-                        backgroundColor: colors, 
-                        borderWidth: 0 
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { display: false } 
-                    }, 
-                    cutout: '82%' 
-                }
-            });
-
-            // Update Legenda Manual di Bawah Grafik
-            const legendContainer = document.getElementById('chart-legend');
-            if (legendContainer) {
-                if (labels.length === 0) {
-                    legendContainer.innerHTML = '<span class="text-[8px] font-bold text-slate-300 uppercase tracking-widest italic">Belum ada pemasukan</span>';
-                } else {
-                    legendContainer.innerHTML = labels.map((label, i) => `
-                        <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
-                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${colors[i % colors.length]}"></span>
-                            <div class="flex flex-col">
-                                <span class="text-[7px] font-black text-slate-400 uppercase leading-none mb-0.5">${label}</span>
-                                <span class="text-[8px] font-bold text-slate-600 leading-none">${toIDR(cats[label])}</span>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-            }
-        }
 
         function showNotification(text) {
             const n = document.getElementById('notification');
-            document.getElementById('notif-text').innerText = text;
-            n.classList.remove('-translate-y-24', 'opacity-0');
-            setTimeout(() => n.classList.add('-translate-y-24', 'opacity-0'), 2500);
+            const nt = document.getElementById('notif-text');
+            if (!n || !nt) return;
+            nt.innerText = text;
+            n.classList.remove('-translate-y-32', 'opacity-0');
+            setTimeout(() => n.classList.add('-translate-y-32', 'opacity-0'), 3000);
         }
 
         function backupDatabase() {
@@ -592,12 +797,14 @@
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `NiagaPintar_Backup.json`; a.click();
         }
 
-        function confirmResetDB() { if(confirm("Hapus semua data?")) { db.transaction([STORE_NAME], 'readwrite').objectStore(STORE_NAME).clear(); updateUI(); } }
-        document.getElementById('search-bar').addEventListener('input', updateUI);
+        function confirmResetDB() { if(confirm("PERHATIAN: Seluruh data Anda akan dihapus permanen. Lanjutkan?")) { db.transaction([STORE_NAME], 'readwrite').objectStore(STORE_NAME).clear(); updateUI(); } }
+        
+        const searchInput = document.getElementById('search-bar');
+        if (searchInput) searchInput.addEventListener('input', updateUI);
 
         if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
             window.addEventListener('load', () => {
-                const swCode = `const cacheName = 'niagapintar-v5.0'; self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(cacheName).then(c => c.add(location.href))); }); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== cacheName).map(k => caches.delete(k)))))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
+                const swCode = `const cacheName = 'niagapintar-v6.0'; self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(cacheName).then(c => c.add(location.href))); }); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== cacheName).map(k => caches.delete(k)))))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
                 const blob = new Blob([swCode], { type: 'application/javascript' });
                 navigator.serviceWorker.register(URL.createObjectURL(blob));
             });
