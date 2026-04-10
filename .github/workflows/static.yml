@@ -1,17 +1,22 @@
-# Workflow Deployment NiagaPintar PRO v7.5.1
+# Workflow Deployment NiagaPintar PRO v7.5.2
+# Memperbaiki error "Multiple artifacts found" dengan sinkronisasi versi modul.
 name: Deploy to GitHub Pages
 
 on:
+  # Berjalan saat push ke branch main
   push:
     branches: ["main"]
+
+  # Memungkinkan menjalankan workflow secara manual
   workflow_dispatch:
 
+# Mengatur izin token untuk deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Mencegah error 'Multiple artifacts found' dengan membatasi proses konkuren
+# Mencegah tabrakan deployment: batalkan proses lama jika ada proses baru masuk
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -20,9 +25,10 @@ jobs:
   deploy:
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Pages
@@ -31,7 +37,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Pastikan jalur mengarah ke root repository
+          # Mengunggah seluruh folder root
           path: '.'
 
       - name: Deploy to GitHub Pages
