@@ -3,627 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NiagaPintar PRO | Performance Edition</title>
+    <title>NiagaPintar PRO | Cloud Sync Fixed</title>
     
-    <!-- PWA Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#4f46e5">
-    
-    <!-- Link ke Manifest -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11550/11550419.png">
-
-    <!-- Pustaka Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        
-        :root {
-            --brand: #4f46e5;
-            --emerald: #10b981;
-            --rose: #f43f5e;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f1f5f9;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        .app-container {
-            display: flex;
-            height: 100vh;
-            height: 100dvh;
-            width: 100%;
-            background-color: #f8fafc;
-        }
-
-        .desktop-sidebar {
-            width: 260px;
-            background-color: #0f172a;
-            color: white;
-            display: none; 
-            flex-direction: column;
-            padding: 24px;
-            flex-shrink: 0;
-        }
-
-        .content-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            background-color: #f8fafc;
-            max-width: 480px;
-            margin: 0 auto;
-            box-shadow: 0 0 100px rgba(0,0,0,0.05);
-        }
-
-        @media (min-width: 1024px) {
-            .desktop-sidebar { display: flex; }
-            .content-wrapper { 
-                max-width: none; 
-                margin: 0;
-                box-shadow: none;
-                border-left: 1px solid #e2e8f0;
-            }
-        }
-
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 90px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .premium-gradient {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        }
-
-        .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid #e2e8f0;
-            display: flex; 
-            z-index: 100;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        @media (min-width: 1024px) {
-            .bottom-nav { display: none; }
-        }
-
-        .nav-item-mobile {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 8px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .nav-item-mobile.active { color: var(--brand); }
-
-        .view-section {
-            display: none;
-            animation: fadeIn 0.2s ease-out forwards;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        .app-container { display: flex; height: 100dvh; width: 100%; background-color: #f8fafc; }
+        .content-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; max-width: 480px; margin: 0 auto; background: white; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
+        @media (min-width: 1024px) { .content-wrapper { max-width: none; margin: 0; } }
+        .main-content { flex: 1; overflow-y: auto; padding-bottom: 80px; -webkit-overflow-scrolling: touch; }
+        .view-section { display: none; animation: fadeIn 0.2s ease-out; }
         .view-section.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
-
-        .progress-bar-bg { background-color: #f1f5f9; height: 4px; border-radius: 10px; width: 100%; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease-in-out; }
-        
-        /* Interactive feedback */
-        .clickable { cursor: pointer; pointer-events: auto; transition: all 0.1s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .premium-gradient { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: white; border-top: 1px solid #e2e8f0; display: flex; z-index: 100; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; cursor: pointer; font-size: 9px; font-weight: 700; }
+        .nav-item.active { color: #4f46e5; }
+        .clickable { cursor: pointer; transition: all 0.1s; }
         .clickable:active { transform: scale(0.95); opacity: 0.8; }
-        
-        select, input { -webkit-appearance: none; }
     </style>
 </head>
-<body class="text-slate-900">
+<body>
 
     <div class="app-container">
-        <!-- SIDEBAR (DESKTOP) -->
-        <aside class="desktop-sidebar">
-            <div class="flex items-center gap-3 mb-10 px-2">
-                <div class="bg-indigo-600 p-2 rounded-xl shadow-lg">
-                    <i data-lucide="calculator" class="w-6 h-6 text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-base font-black tracking-tight leading-none">NiagaPintar</h1>
-                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">Enterprise Hybrid</span>
-                </div>
-            </div>
-
-            <nav class="flex-1 space-y-1">
-                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="switchView('home')">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                    <span class="text-sm font-semibold">Dashboard</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="switchView('input')">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                    <span class="text-sm font-semibold">Input</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="switchView('history')">
-                    <i data-lucide="clock-3" class="w-5 h-5"></i>
-                    <span class="text-sm font-semibold">Laporan</span>
-                </div>
-                <div class="flex items-center gap-3 p-3 rounded-xl clickable hover:bg-white/5" onclick="switchView('settings')">
-                    <i data-lucide="settings-2" class="w-5 h-5"></i>
-                    <span class="text-sm font-semibold">Sistem</span>
-                </div>
-            </nav>
-
-            <div class="mt-auto pt-6 border-t border-white/10">
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-2 h-2 rounded-full bg-slate-500" id="sync-status-dot"></div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="sync-status-text">OFFLINE</p>
-                    </div>
-                    <p class="text-[11px] text-white font-black tracking-widest mb-1" id="user-display-id">000 000 0000</p>
-                </div>
-            </div>
-        </aside>
-
-        <!-- CONTENT AREA -->
         <div class="content-wrapper">
+            <!-- Header -->
             <header class="premium-gradient text-white px-5 py-4 shrink-0">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="bg-white/20 p-2 rounded-xl">
-                            <i data-lucide="cloud" class="w-4 h-4 text-white"></i>
-                        </div>
+                        <div class="bg-white/20 p-2 rounded-xl"><i data-lucide="cloud" class="w-4 h-4"></i></div>
                         <div>
-                            <h1 class="text-xs font-black uppercase tracking-tight">NiagaPintar PRO</h1>
-                            <span id="view-title" class="text-[8px] font-bold text-indigo-200 block -mt-0.5 uppercase tracking-widest">DASHBOARD</span>
+                            <h1 class="text-xs font-black uppercase">NiagaPintar PRO</h1>
+                            <span id="view-title" class="text-[8px] font-bold text-indigo-200 block uppercase">DASHBOARD</span>
                         </div>
                     </div>
-                    <div id="offline-badge" class="flex items-center gap-1.5 bg-slate-900/30 px-3 py-1.5 rounded-full border border-white/10">
-                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full" id="header-sync-dot"></span>
-                        <span class="text-[8px] font-black text-white uppercase tracking-widest" id="header-sync-text">OFFLINE</span>
+                    <div class="flex items-center gap-2 bg-black/20 px-3 py-1.5 rounded-full border border-white/10">
+                        <span class="w-2 h-2 rounded-full bg-slate-400" id="status-dot"></span>
+                        <span class="text-[8px] font-black uppercase tracking-widest" id="status-text">OFFLINE</span>
                     </div>
                 </div>
             </header>
 
-            <main class="main-content px-5 py-6" id="app-main-view">
+            <main class="main-content px-5 py-6">
                 <!-- VIEW: HOME -->
-                <div id="view-home" class="view-section active space-y-8">
+                <div id="view-home" class="view-section active space-y-6">
                     <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50">
-                            <i data-lucide="arrow-down-circle" class="w-4 h-4 text-emerald-500 mb-2"></i>
+                        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Masuk</span>
-                            <h3 id="display-income" class="text-xs font-black text-slate-900 tracking-tighter">Rp 0</h3>
+                            <h3 id="display-income" class="text-xs font-black text-emerald-600">Rp 0</h3>
                         </div>
-                        <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50">
-                            <i data-lucide="arrow-up-circle" class="w-4 h-4 text-rose-500 mb-2"></i>
+                        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
                             <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Keluar</span>
-                            <h3 id="display-expense" class="text-xs font-black text-slate-900 tracking-tighter">Rp 0</h3>
+                            <h3 id="display-expense" class="text-xs font-black text-rose-600">Rp 0</h3>
                         </div>
-                        <div class="bg-slate-900 p-4 rounded-[2rem] shadow-xl">
-                            <i data-lucide="wallet" class="w-4 h-4 text-indigo-300 mb-2"></i>
+                        <div class="bg-slate-900 p-4 rounded-3xl shadow-lg">
                             <span class="text-[8px] font-bold text-slate-500 uppercase block mb-1">Saldo</span>
-                            <h3 id="display-balance" class="text-xs font-black text-white tracking-tighter">Rp 0</h3>
+                            <h3 id="display-balance" class="text-xs font-black text-white">Rp 0</h3>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="space-y-4">
-                            <h2 class="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                                <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span> Pemasukan
-                            </h2>
-                            <div id="income-visual-list" class="space-y-3"></div>
-                        </div>
-                        <div class="space-y-4">
-                            <h2 class="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                                <span class="w-1.5 h-4 bg-rose-500 rounded-full"></span> Pengeluaran
-                            </h2>
-                            <div id="expense-visual-list" class="space-y-3"></div>
-                        </div>
-                    </div>
-
-                    <div id="home-no-data" class="hidden py-16 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
-                        <i data-lucide="package-open" class="w-10 h-10 text-slate-200 mx-auto mb-3"></i>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Belum Ada Data</p>
-                    </div>
+                    <div id="visual-lists" class="space-y-4"></div>
+                    <div id="empty-state" class="hidden py-20 text-center"><p class="text-[10px] font-bold text-slate-300 uppercase">Belum ada data</p></div>
                 </div>
 
                 <!-- VIEW: INPUT -->
                 <div id="view-input" class="view-section space-y-6">
-                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-50">
-                        <div class="flex items-center gap-3 mb-8">
-                            <i data-lucide="plus-circle" class="w-6 h-6 text-indigo-600"></i>
-                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Catat Baru</h2>
+                    <form id="accounting-form" class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm space-y-4">
+                        <input type="text" id="desc" placeholder="Keterangan..." required class="w-full p-4 bg-slate-50 rounded-2xl text-sm outline-none">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="setType('income')" id="btn-inc" class="p-4 rounded-2xl border-2 border-slate-100 font-bold text-[10px]">💰 MASUK</button>
+                            <button type="button" onclick="setType('expense')" id="btn-exp" class="p-4 rounded-2xl border-2 border-slate-100 font-bold text-[10px]">💸 KELUAR</button>
                         </div>
-                        <form id="accounting-form" class="space-y-5">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan</label>
-                                <input type="text" id="desc" placeholder="Isi detail..." required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none">
-                            </div>
-                            <div class="grid grid-cols-1 gap-4">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tipe Dana</label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <button type="button" onclick="setEntryType('income')" id="btn-type-income" class="py-4 rounded-2xl border-2 border-slate-100 text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all">💰 MASUK</button>
-                                        <button type="button" onclick="setEntryType('expense')" id="btn-type-expense" class="py-4 rounded-2xl border-2 border-slate-100 text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all">💸 KELUAR</button>
-                                    </div>
-                                    <input type="hidden" id="type" value="income">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nominal</label>
-                                    <input type="number" id="amount" placeholder="0" required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black">
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
-                                    <input type="date" id="date" required class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
-                                </div>
-                            </div>
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
-                                <select id="category" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm"></select>
-                            </div>
-                            <button type="submit" id="submit-button" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl transition-all clickable">SIMPAN TRANSAKSI</button>
-                        </form>
-                    </div>
+                        <input type="hidden" id="type" value="income">
+                        <input type="number" id="amount" placeholder="Nominal..." required class="w-full p-4 bg-slate-50 rounded-2xl text-sm font-bold outline-none">
+                        <select id="category" class="w-full p-4 bg-slate-50 rounded-2xl text-sm outline-none"></select>
+                        <input type="date" id="date" required class="w-full p-4 bg-slate-50 rounded-2xl text-sm outline-none">
+                        <button type="submit" id="sub-btn" class="w-full p-5 bg-indigo-600 text-white rounded-[2rem] font-black text-xs clickable">SIMPAN KE CLOUD</button>
+                    </form>
                 </div>
 
                 <!-- VIEW: HISTORY -->
-                <div id="view-history" class="view-section space-y-6">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex gap-2">
-                            <button onclick="exportToExcel()" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-emerald-600 rounded-2xl border border-slate-100 font-bold text-[10px] uppercase clickable"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel</button>
-                            <button onclick="exportToPDF()" class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-rose-500 rounded-2xl border border-slate-100 font-bold text-[10px] uppercase clickable"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
-                        </div>
-                        <div class="relative">
-                            <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                            <input type="text" id="search-bar" placeholder="Cari..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs outline-none">
-                        </div>
+                <div id="view-history" class="view-section space-y-4">
+                    <div class="flex gap-2">
+                        <button onclick="exportData('pdf')" class="flex-1 p-3 bg-white border rounded-xl text-[9px] font-bold">PDF</button>
+                        <button onclick="exportData('excel')" class="flex-1 p-3 bg-white border rounded-xl text-[9px] font-bold">EXCEL</button>
                     </div>
-
-                    <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-[0.2em]">
-                                <tr>
-                                    <th class="px-6 py-4">Tgl</th>
-                                    <th class="px-2 py-4">Item</th>
-                                    <th class="px-6 py-4 text-right">Rp</th>
-                                    <th class="px-6 py-4"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="list-container" class="divide-y divide-slate-50"></tbody>
+                    <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden">
+                        <table class="w-full text-left text-[10px]">
+                            <tbody id="list-body" class="divide-y divide-slate-50"></tbody>
                         </table>
-                        <div id="no-data" class="hidden py-32 text-center text-slate-300 text-[10px] font-black uppercase tracking-widest">Belum ada riwayat</div>
                     </div>
                 </div>
 
                 <!-- VIEW: SETTINGS -->
-                <div id="view-settings" class="view-section space-y-6">
-                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100 mb-6">
-                        <div class="flex items-center gap-3 mb-8">
-                            <i data-lucide="cloud-sync" class="w-6 h-6 text-indigo-600"></i>
-                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Sistem Cloud</h2>
+                <div id="view-settings" class="view-section space-y-4">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-100">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase mb-2">ID Niaga Anda</p>
+                        <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl">
+                            <span id="display-id" class="font-bold tracking-widest text-sm">0000000000</span>
+                            <i data-lucide="copy" class="w-4 h-4 text-indigo-600 clickable" onclick="copyId()"></i>
                         </div>
-                        
-                        <div class="space-y-6">
-                            <div class="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">ID Niaga Anda</p>
-                                <div class="flex items-center justify-between gap-4">
-                                    <p class="text-base font-black text-slate-800 tracking-[0.2em]" id="full-user-id">0000000000</p>
-                                    <button onclick="copyUserId()" class="shrink-0 p-3 bg-white text-indigo-600 border border-slate-100 shadow-sm rounded-xl clickable">
-                                        <i data-lucide="copy" class="w-5 h-5"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="space-y-3">
-                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest px-2">Ganti ID Niaga</p>
-                                <div class="flex gap-2">
-                                    <input type="number" id="manual-uid-input" placeholder="10 Digit" class="flex-1 px-5 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold outline-none">
-                                    <button onclick="switchManualAccount()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase clickable">GANTI</button>
-                                </div>
-                            </div>
+                        <div class="mt-4 space-y-2">
+                            <input type="number" id="id-input" placeholder="Ganti ke ID lain (10 digit)" class="w-full p-4 border rounded-2xl text-xs">
+                            <button onclick="changeId()" class="w-full p-4 bg-indigo-600 text-white rounded-2xl font-bold text-[10px]">HUBUNGKAN</button>
                         </div>
-                    </div>
-
-                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100">
-                        <button onclick="confirmResetDB()" class="w-full py-5 text-rose-500 font-black text-[10px] bg-rose-50 uppercase tracking-widest rounded-2xl transition-all clickable">Hapus Seluruh Data Cloud</button>
                     </div>
                 </div>
             </main>
 
-            <!-- NAVIGATION (MOBILE) -->
             <nav class="bottom-nav">
-                <div class="nav-item-mobile active clickable" id="btn-nav-home" onclick="switchView('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Home</span></div>
-                <div class="nav-item-mobile clickable" id="btn-nav-input" onclick="switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
-                <div class="nav-item-mobile clickable" id="btn-nav-history" onclick="switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Laporan</span></div>
-                <div class="nav-item-mobile clickable" id="btn-nav-settings" onclick="switchView('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
+                <div class="nav-item active" id="nav-home" onclick="switchView('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Beranda</span></div>
+                <div class="nav-item" id="nav-input" onclick="switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
+                <div class="nav-item" id="nav-history" onclick="switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Riwayat</span></div>
+                <div class="nav-item" id="nav-settings" onclick="switchView('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
             </nav>
         </div>
     </div>
 
-    <!-- Modals & Overlay -->
-    <div id="modal-delete" class="fixed inset-0 bg-slate-900/80 hidden z-[500] flex items-center justify-center p-6 backdrop-blur-lg">
-        <div class="bg-white rounded-[3rem] p-10 w-full max-w-[340px] text-center shadow-2xl">
-            <div class="bg-rose-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-500">
-                <i data-lucide="trash-2" class="w-10 h-10"></i>
-            </div>
-            <h3 class="text-lg font-black text-slate-800 mb-2">Hapus Data?</h3>
-            <div class="flex gap-4">
-                <button onclick="hideDeleteModal()" class="flex-1 py-4 text-[10px] font-black text-slate-400 uppercase clickable">Batal</button>
-                <button id="btn-confirm-delete" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl text-[10px] font-black uppercase clickable">Hapus</button>
-            </div>
-        </div>
-    </div>
+    <div id="notif" class="fixed top-5 left-1/2 -translate-x-1/2 z-[1000] opacity-0 transition-all pointer-events-none bg-slate-900 text-white px-6 py-2 rounded-full text-[10px] font-bold"></div>
 
-    <div id="notification" class="fixed top-10 left-1/2 -translate-x-1/2 z-[600] -translate-y-32 opacity-0 transition-all duration-700 pointer-events-none">
-        <div class="bg-slate-900 text-white px-8 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
-            <i data-lucide="check-circle-2" class="text-emerald-400 w-5 h-5"></i>
-            <span id="notif-text" class="text-[10px] font-black uppercase tracking-[0.2em]">BERHASIL</span>
-        </div>
-    </div>
-
-    <!-- SCRIPTS CORE (Runs Instantly) -->
-    <script>
-        // Global variables for immediate UI access
-        let records = JSON.parse(localStorage.getItem('local_db_rec') || '[]');
-        let categories = JSON.parse(localStorage.getItem('local_db_cat') || '[]');
-        let activeId = localStorage.getItem('niaga_active_id') || "";
-        let currentDeleteId = null;
-
-        // Ensure lucide icons load
-        window.onload = () => { if (window.lucide) lucide.createIcons(); renderUI(); filterFormCategories(); };
-
-        function switchView(v) {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(`view-${v}`);
-            if (target) target.classList.add('active');
-            
-            document.getElementById('view-title').innerText = v.toUpperCase();
-            document.querySelectorAll('.nav-item-mobile').forEach(n => n.classList.remove('active'));
-            document.getElementById(`btn-nav-${v}`)?.classList.add('active');
-            
-            renderUI();
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function setEntryType(t) {
-            document.getElementById('type').value = t;
-            const incBtn = document.getElementById('btn-type-income');
-            const expBtn = document.getElementById('btn-type-expense');
-            
-            if (t === 'income') {
-                incBtn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
-                expBtn.classList.remove('bg-rose-500', 'text-white', 'border-rose-500');
-            } else {
-                expBtn.classList.add('bg-rose-500', 'text-white', 'border-rose-500');
-                incBtn.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
-            }
-            filterFormCategories();
-        }
-
-        function filterFormCategories() {
-            const t = document.getElementById('type').value;
-            const select = document.getElementById('category');
-            if (select) {
-                const filtered = categories.filter(cat => cat.type === t);
-                select.innerHTML = filtered.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
-            }
-        }
-
-        function notify(t) {
-            const el = document.getElementById('notification');
-            const txt = document.getElementById('notif-text');
-            if (el && txt) {
-                txt.innerText = t;
-                el.classList.remove('-translate-y-32', 'opacity-0');
-                setTimeout(() => el.classList.add('-translate-y-32', 'opacity-0'), 3000);
-            }
-        }
-
-        function renderUI() {
-            const formatIDR = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v);
-            const query = document.getElementById('search-bar')?.value.toLowerCase() || "";
-            const filtered = records.filter(r => r.desc.toLowerCase().includes(query)).sort((a,b) => new Date(b.date) - new Date(a.date));
-            
-            const listBody = document.getElementById('list-container');
-            if (listBody) {
-                listBody.innerHTML = filtered.length ? filtered.map(r => `
-                    <tr class="text-[10px]">
-                        <td class="px-6 py-4 font-bold text-slate-400">${r.date.split('-').reverse().slice(0,2).join('/')}</td>
-                        <td class="px-2 py-4">
-                            <span class="font-black text-slate-800 block truncate max-w-[120px]">${r.desc}</span>
-                            <span class="text-[8px] font-bold text-slate-300 uppercase">${r.category}</span>
-                        </td>
-                        <td class="px-6 py-4 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'}">${formatIDR(r.amount).replace('Rp', '')}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button onclick="showDeleteModal('${r.id}')" class="text-slate-300 hover:text-rose-500"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                        </td>
-                    </tr>
-                `).join('') : '';
-            }
-            
-            document.getElementById('home-no-data')?.classList.toggle('hidden', records.length > 0);
-            document.getElementById('no-data')?.classList.toggle('hidden', filtered.length > 0 || !records.length);
-            
-            const tInc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
-            const tExp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
-            document.getElementById('display-income').innerText = formatIDR(tInc);
-            document.getElementById('display-expense').innerText = formatIDR(tExp);
-            document.getElementById('display-balance').innerText = formatIDR(tInc - tExp);
-            
-            updateHomeVisuals(formatIDR);
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function updateHomeVisuals(formatter) {
-            const incL = document.getElementById('income-visual-list');
-            const expL = document.getElementById('expense-visual-list');
-            if (!incL || !expL) return;
-
-            const draw = (type, color, icon) => {
-                const data = records.filter(r => r.type === type);
-                const total = data.reduce((s, r) => s + r.amount, 0);
-                const cats = {};
-                data.forEach(r => cats[r.category] = (cats[r.category] || 0) + r.amount);
-                
-                return Object.keys(cats).sort((a,b) => cats[b] - cats[a]).slice(0, 3).map(c => {
-                    const ratio = total > 0 ? ((cats[c] / total) * 100).toFixed(0) : 0;
-                    return `
-                        <div class="bg-white p-4 rounded-[2rem] border border-slate-50 flex flex-col gap-3">
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center"><i data-lucide="${icon}" class="w-4 h-4" style="color:${color}"></i></div>
-                                    <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase leading-none mb-1">${c}</span><span class="text-[8px] font-bold text-slate-400">${ratio}%</span></div>
-                                </div>
-                                <span class="text-[10px] font-black text-slate-900">${formatter(cats[c])}</span>
-                            </div>
-                            <div class="progress-bar-bg"><div class="progress-fill" style="width:${ratio}%; background-color:${color}"></div></div>
-                        </div>
-                    `;
-                }).join('');
-            };
-
-            incL.innerHTML = draw('income', '#10b981', 'trending-up');
-            expL.innerHTML = draw('expense', '#f43f5e', 'trending-down');
-        }
-
-        function showDeleteModal(id) { currentDeleteId = id; document.getElementById('modal-delete').classList.remove('hidden'); }
-        function hideDeleteModal() { document.getElementById('modal-delete').classList.add('hidden'); }
-        function copyUserId() {
-            const el = document.createElement('input'); el.value = activeId;
-            document.body.appendChild(el); el.select(); document.execCommand('copy');
-            document.body.removeChild(el); notify("ID DISALIN");
-        }
-
-        // Initialize UI state
-        setEntryType('income');
-    </script>
-
-    <!-- SCRIPTS FIREBASE (Sync Logic) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const app = initializeApp(firebaseConfig);
+        // CONFIG & INIT
+        const config = JSON.parse(__firebase_config);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-id';
+        const app = initializeApp(config);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // ID Generator
-        if (!localStorage.getItem('niaga_id_10')) {
+        // STATE
+        let activeId = localStorage.getItem('active_id') || (() => {
             const id = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-            localStorage.setItem('niaga_id_10', id);
-        }
-        const myId = localStorage.getItem('niaga_id_10');
-        if (!activeId) activeId = myId;
-
+            localStorage.setItem('active_id', id);
+            return id;
+        })();
+        let records = [];
+        let categories = [];
         let unsubT = null;
-        let unsubC = null;
 
-        const updateStatus = (conn) => {
-            const isOnline = conn && navigator.onLine;
-            const dot = document.getElementById('sync-status-dot');
-            const txt = document.getElementById('sync-status-text');
-            const hDot = document.getElementById('header-sync-dot');
-            const hTxt = document.getElementById('header-sync-text');
-
-            if (dot) dot.className = `w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-slate-500'}`;
-            if (txt) txt.innerText = isOnline ? 'CLOUD ONLINE' : 'OFFLINE';
-            if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full ${isOnline ? 'animate-pulse bg-emerald-400' : 'bg-slate-400'}`;
-            if (hTxt) { hTxt.innerText = isOnline ? 'CONNECTED' : 'OFFLINE'; hTxt.className = `text-[8px] font-black ${isOnline ? 'text-white' : 'text-slate-400'}`; }
+        // AUTH GUARD
+        const startApp = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                updateStatus(false);
+                setTimeout(startApp, 3000);
+            }
         };
 
-        const startSync = (id) => {
-            if (unsubT) unsubT(); if (unsubC) unsubC();
-            const tCol = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + id);
-            const cCol = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Auth Success:", user.uid);
+                syncData(activeId);
+            } else {
+                updateStatus(false);
+            }
+        });
 
-            unsubT = onSnapshot(tCol, (snap) => {
+        // SYNC LOGIC (RULE 1 Path Compliance)
+        function syncData(id) {
+            if (unsubT) unsubT();
+            // Path: artifacts/{appId}/public/data/{collection}
+            const path = `artifacts/${appId}/public/data/trans_${id}`;
+            const col = collection(db, path);
+
+            unsubT = onSnapshot(col, (snap) => {
                 records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                localStorage.setItem('local_db_rec', JSON.stringify(records));
                 renderUI();
                 updateStatus(true);
-            }, () => updateStatus(false));
-
-            unsubC = onSnapshot(cCol, (snap) => {
-                const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                if (fetched.length === 0 && id === myId) {
-                    const def = [
-                        { type: 'income', name: 'Penjualan' }, { type: 'income', name: 'Modal' },
-                        { type: 'expense', name: 'Stok' }, { type: 'expense', name: 'Gaji' }, { type: 'expense', name: 'Lainnya' }
-                    ];
-                    def.forEach(c => addDoc(cCol, c));
-                } else {
-                    categories = fetched;
-                    localStorage.setItem('local_db_cat', JSON.stringify(categories));
-                    filterFormCategories();
-                }
+            }, (err) => {
+                console.error("Firebase Permission Error:", err);
+                updateStatus(false);
+                // If permission denied, likely path structure or auth issue
             });
 
-            document.getElementById('user-display-id').innerText = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-            document.getElementById('full-user-id').innerText = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+            document.getElementById('display-id').innerText = id;
+            document.getElementById('display-id').innerText = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+        }
+
+        function updateStatus(online) {
+            const dot = document.getElementById('status-dot');
+            const txt = document.getElementById('status-text');
+            const sDot = document.getElementById('sync-status-dot');
+            const sTxt = document.getElementById('sync-status-text');
+            
+            const isReallyOnline = online && navigator.onLine;
+            const color = isReallyOnline ? 'bg-emerald-400' : 'bg-slate-400';
+            
+            if (dot) dot.className = `w-2 h-2 rounded-full ${color}`;
+            if (txt) txt.innerText = isReallyOnline ? 'CONNECTED' : 'OFFLINE';
+            if (sDot) sDot.className = `w-2 h-2 rounded-full ${color}`;
+            if (sTxt) sTxt.innerText = isReallyOnline ? 'CLOUD ONLINE' : 'OFFLINE MODE';
+        }
+
+        // UI ACTIONS
+        window.switchView = (v) => {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`view-${v}`).classList.add('active');
+            document.getElementById('view-title').innerText = v.toUpperCase();
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`nav-${v}`).classList.add('active');
+            lucide.createIcons();
         };
 
-        onAuthStateChanged(auth, (user) => { if (user) startSync(activeId); });
-        
-        try {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-            else await signInAnonymously(auth);
-        } catch (e) { updateStatus(false); }
+        window.setType = (t) => {
+            document.getElementById('type').value = t;
+            document.getElementById('btn-inc').className = `p-4 rounded-2xl border-2 font-bold text-[10px] ${t==='income'?'bg-emerald-500 text-white border-emerald-500':'bg-white text-slate-400 border-slate-100'}`;
+            document.getElementById('btn-exp').className = `p-4 rounded-2xl border-2 font-bold text-[10px] ${t==='expense'?'bg-rose-500 text-white border-rose-500':'bg-white text-slate-400 border-slate-100'}`;
+            const cats = t === 'income' ? ['Penjualan', 'Modal', 'Piutang'] : ['Stok', 'Gaji', 'Sewa', 'Lainnya'];
+            document.getElementById('category').innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+        };
 
-        // Global functions tied to Firebase
-        window.switchManualAccount = () => {
-            const val = document.getElementById('manual-uid-input')?.value;
-            if (!val || val.length !== 10) return notify("HARUS 10 ANGKA");
+        window.copyId = () => {
+            navigator.clipboard.writeText(activeId);
+            const n = document.getElementById('notif');
+            n.innerText = "ID DISALIN"; n.classList.remove('opacity-0');
+            setTimeout(() => n.classList.add('opacity-0'), 2000);
+        };
+
+        window.changeId = () => {
+            const val = document.getElementById('id-input').value;
+            if (val.length !== 10) return alert("Harus 10 digit");
             activeId = val;
-            localStorage.setItem('niaga_active_id', val);
-            startSync(val);
-            notify("MENGHUBUNGKAN...");
+            localStorage.setItem('active_id', val);
+            syncData(val);
+            switchView('home');
         };
 
-        window.resetToOriginalAccount = () => {
-            activeId = myId;
-            localStorage.removeItem('niaga_active_id');
-            startSync(myId);
-            notify("ID UTAMA AKTIF");
-        };
-
-        document.getElementById('accounting-form').addEventListener('submit', async (e) => {
+        document.getElementById('accounting-form').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('submit-button');
-            btn.disabled = true; btn.innerText = "...";
+            if (!auth.currentUser) return alert("Belum terhubung ke Cloud");
+            const btn = document.getElementById('sub-btn');
+            btn.disabled = true; btn.innerText = "MENYIMPAN...";
+            
             const data = {
                 desc: document.getElementById('desc').value,
                 amount: parseFloat(document.getElementById('amount').value),
@@ -632,35 +256,47 @@
                 date: document.getElementById('date').value,
                 timestamp: serverTimestamp()
             };
+
             try {
-                const col = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId);
-                await addDoc(col, data);
-                notify("TERSINKRON");
+                const path = `artifacts/${appId}/public/data/trans_${activeId}`;
+                await addDoc(collection(db, path), data);
                 document.getElementById('accounting-form').reset();
-                document.getElementById('date').valueAsDate = new Date();
+                setType('income');
                 switchView('history');
             } catch (err) {
-                notify("SIMPAN LOKAL");
-                records.push({ id: 'LOCAL-'+Date.now(), ...data });
-                localStorage.setItem('local_db_rec', JSON.stringify(records));
-                renderUI();
-                switchView('history');
-            } finally { btn.disabled = false; btn.innerText = "SIMPAN TRANSAKSI"; }
-        });
+                alert("Gagal simpan: " + err.message);
+            } finally {
+                btn.disabled = false; btn.innerText = "SIMPAN KE CLOUD";
+            }
+        };
 
-        document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
-            if (!currentDeleteId) return;
-            try {
-                if (!currentDeleteId.startsWith('LOCAL')) {
-                    const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId, currentDeleteId);
-                    await deleteDoc(ref);
-                } else {
-                    records = records.filter(r => r.id !== currentDeleteId);
-                    localStorage.setItem('local_db_rec', JSON.stringify(records));
-                    renderUI();
-                }
-            } catch (err) { console.error(err); } finally { hideDeleteModal(); }
-        });
+        function renderUI() {
+            const list = document.getElementById('list-body');
+            list.innerHTML = records.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(r => `
+                <tr class="group">
+                    <td class="px-6 py-4 font-bold text-slate-400">${r.date.split('-').slice(1).reverse().join('/')}</td>
+                    <td class="px-2 py-4">
+                        <span class="font-black text-slate-800 block">${r.desc}</span>
+                        <span class="text-[8px] font-bold text-slate-300 uppercase">${r.category}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'}">
+                        ${new Intl.NumberFormat('id-ID').format(r.amount)}
+                    </td>
+                </tr>
+            `).join('');
+
+            const tInc = records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0);
+            const tExp = records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0);
+            document.getElementById('display-income').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(tInc);
+            document.getElementById('display-expense').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(tExp);
+            document.getElementById('display-balance').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(tInc-tExp);
+        }
+
+        // INIT
+        setType('income');
+        document.getElementById('date').valueAsDate = new Date();
+        startApp();
+        lucide.createIcons();
     </script>
 </body>
 </html>
