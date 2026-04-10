@@ -1,18 +1,14 @@
 /**
- * NiagaPintar PRO - Service Worker v7.3.4
- * Strategi: Network First untuk index.html (Menjamin UI Performance Edition terbaru).
- * Strategi: Cache First untuk Library (Mempercepat pemuatan aset statis).
+ * NiagaPintar PRO - Service Worker v7.3.5
+ * Strategi: Network First untuk index.html agar UI tidak terkunci cache.
  */
 
-const CACHE_NAME = 'niagapintar-v7.3.4';
-
-// Daftar aset statis dan pustaka CDN
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'niagapintar-v7.3.5';
+const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/chart.js',
   'https://unpkg.com/lucide@latest',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js',
@@ -22,68 +18,42 @@ const ASSETS_TO_CACHE = [
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
 ];
 
-// Install: Memasukkan aset ke dalam cache
-self.addEventListener('install', (event) => {
+self.addEventListener('install', (e) => {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Memasang Cache v7.3.4 (Performance Edition)');
-      return Promise.all(
-        ASSETS_TO_CACHE.map(url => 
-          cache.add(url).catch(err => console.warn(`Gagal cache: ${url}`, err))
-        )
-      );
-    })
-  );
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
 });
 
-// Activate: Membersihkan cache versi lama
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    Promise.all([
-      self.clients.claim(),
-      caches.keys().then((keys) => {
-        return Promise.all(
-          keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-        );
-      })
-    ])
-  );
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
 });
 
-// Fetch: Mengelola permintaan data
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
 
-  const url = new URL(event.request.url);
-
-  // Navigasi & Index: Network First
-  // Mencoba mengambil dari internet terlebih dahulu agar UI selalu paling baru
-  if (event.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname === '/') {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
+  // Strategi: Network First untuk file utama & navigasi
+  if (e.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname === '/') {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(e.request, copy));
+          return res;
         })
         .catch(() => caches.match('./index.html'))
     );
     return;
   }
 
-  // Aset & Library: Cache First
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
-      return fetch(event.request).then((networkResponse) => {
-        // Hanya simpan library eksternal ke cache
-        if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('unpkg.com')) {
-          const copy = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+  // Strategi: Cache First untuk library
+  e.respondWith(
+    caches.match(e.request).then(res => {
+      return res || fetch(e.request).then(net => {
+        if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com')) {
+          const copy = net.clone();
+          caches.open(CACHE_NAME).then(c => c.put(e.request, copy));
         }
-        return networkResponse;
+        return net;
       });
     })
   );
