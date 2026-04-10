@@ -12,11 +12,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1e3a8a">
     
-    <!-- Ikon Aplikasi -->
+    <!-- Link ke Manifest File (Eksternal) -->
+    <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2652/2652218.png">
-    
-    <!-- Web App Manifest -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"NiagaPintar PRO","short_name":"NiagaPintar","start_url":".","display":"standalone","background_color":"#f8fafc","theme_color":"#1e3a8a","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/2652/2652218.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}'>
 
     <!-- Pustaka Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -60,32 +58,24 @@
     <nav class="bg-blue-900 text-white shadow-xl sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-xl">
+                <div class="bg-blue-600 p-2 rounded-xl shadow-inner">
                     <i data-lucide="calculator" class="w-6 h-6"></i>
                 </div>
                 <div>
                     <h1 class="text-lg font-bold leading-none">NiagaPintar</h1>
-                    <span class="text-[10px] uppercase tracking-widest text-blue-300 font-semibold">GitHub Ready v2.7</span>
+                    <span class="text-[10px] uppercase tracking-widest text-blue-300 font-semibold">Native App v3.0</span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="showInstallGuide()" id="install-btn" class="p-2 bg-blue-800 hover:bg-blue-700 rounded-lg transition-colors border border-blue-700">
-                    <i data-lucide="smartphone" class="w-5 h-5"></i>
-                </button>
-                <button onclick="switchSection('database')" class="p-2 hover:bg-white/10 rounded-lg">
+                <button onclick="switchSection('database')" class="p-2 hover:bg-white/10 rounded-lg" title="Pengaturan">
                     <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- Info Status Offline -->
-    <div id="offline-ready" class="hidden bg-emerald-500 text-white text-[10px] py-1 text-center font-bold uppercase tracking-widest">
-        Aplikasi Siap Digunakan Offline
-    </div>
-
     <main class="container mx-auto px-4 py-6 max-w-7xl">
-        <!-- Dashboard Atas -->
+        <!-- Dasbor Atas -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="glass-card p-5 rounded-[2rem] custom-shadow border-l-8 border-emerald-500">
                 <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-1">Pemasukan</p>
@@ -143,7 +133,6 @@
                     </form>
                 </div>
 
-                <!-- Pengaturan -->
                 <div id="panel-database" class="hidden bg-slate-900 p-6 rounded-[2rem] text-white">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="font-bold flex items-center gap-2">Pengaturan</h2>
@@ -168,7 +157,7 @@
                         </div>
                     </div>
                     <div class="space-y-3 pt-4 border-t border-white/10">
-                        <button onclick="backupDatabase()" class="w-full flex justify-between p-3 bg-white/10 rounded-xl text-sm font-semibold">Simpan Backup <i data-lucide="save" class="w-4 h-4"></i></button>
+                        <button onclick="backupDatabase()" class="w-full flex justify-between p-3 bg-white/10 rounded-xl text-sm font-semibold">Simpan Cadangan <i data-lucide="save" class="w-4 h-4"></i></button>
                         <button onclick="document.getElementById('importFile').click()" class="w-full flex justify-between p-3 bg-white/10 rounded-xl text-sm font-semibold">Pulihkan Data <i data-lucide="upload-cloud" class="w-4 h-4"></i></button>
                         <input type="file" id="importFile" class="hidden" accept=".json" onchange="restoreDatabase(event)">
                         <button onclick="confirmResetDB()" class="w-full p-3 bg-rose-600/20 text-rose-400 rounded-xl font-bold text-xs">Hapus Semua</button>
@@ -180,7 +169,7 @@
             <div class="lg:col-span-8">
                 <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                        <h2 class="text-lg font-bold">Riwayat</h2>
+                        <h2 class="text-lg font-bold text-slate-800">Riwayat Transaksi</h2>
                         <select id="filter-type" onchange="updateUI()" class="px-2 py-2 bg-slate-50 border rounded-xl text-[10px] font-bold uppercase">
                             <option value="all">Semua</option>
                             <option value="income">Masuk</option>
@@ -189,29 +178,24 @@
                     </div>
                     <div class="flex-grow overflow-x-auto">
                         <table class="w-full text-left">
+                            <thead class="bg-slate-50/50 text-slate-400 text-[9px] uppercase font-black tracking-widest">
+                                <tr>
+                                    <th class="px-6 py-4">Tgl</th>
+                                    <th class="px-6 py-4">Item</th>
+                                    <th class="px-6 py-4 text-right">Nominal</th>
+                                    <th class="px-6 py-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
                             <tbody id="list-container" class="divide-y divide-slate-100"></tbody>
                         </table>
-                        <div id="no-data" class="hidden py-20 text-center text-slate-400 italic text-xs">Belum ada data.</div>
+                        <div id="no-data" class="hidden py-20 text-center text-slate-400 italic text-xs">Belum ada data transaksi.</div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal Install -->
-    <div id="modal-install" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-6 backdrop-blur-md">
-        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl">
-            <h3 class="text-xl font-bold text-center mb-6">Instal NiagaPintar</h3>
-            <div class="space-y-4 text-sm text-slate-600">
-                <p>1. Klik ikon **Titik Tiga (?)** atau **Share**.</p>
-                <p>2. Pilih **"Tambahkan ke layar utama"**.</p>
-                <p>3. Aplikasi kini bisa dibuka tanpa internet!</p>
-            </div>
-            <button onclick="hideInstallGuide()" class="w-full bg-blue-700 text-white font-bold py-4 rounded-xl mt-8">Siap!</button>
-        </div>
-    </div>
-
-    <!-- Modals & Notif -->
+    <!-- Modals & Notifikasi -->
     <div id="modal-delete" class="fixed inset-0 bg-slate-900/40 hidden z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
         <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center">
             <h3 class="text-xl font-bold mb-6">Hapus Data?</h3>
@@ -223,12 +207,11 @@
     </div>
     <div id="notification" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] translate-y-20 opacity-0 transition-all duration-500">
         <div class="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-2xl">
-            <i data-lucide="check-circle" class="text-emerald-400 w-4 h-4"></i><span id="notif-text">Sukses</span>
+            <i data-lucide="check-circle" class="text-emerald-400 w-4 h-4"></i><span id="notif-text">Berhasil</span>
         </div>
     </div>
 
     <script>
-        // DATABASE LOKAL
         const DB_NAME = 'UMKM_Smart_DB_v3';
         const STORE_NAME = 'transaksi';
         const STORE_CAT = 'kategori_v2';
@@ -243,7 +226,7 @@
                 const defaults = [
                     { id: 'CI-1', type: 'income', name: 'Penjualan' }, { id: 'CI-2', type: 'income', name: 'Modal' },
                     { id: 'CE-1', type: 'expense', name: 'Bahan Baku' }, { id: 'CE-2', type: 'expense', name: 'Gaji' },
-                    { id: 'CE-3', type: 'expense', name: 'Sewa & Utilitas' }, { id: 'CE-4', type: 'expense', name: 'Pemasaran' }, { id: 'CO-1', type: 'expense', name: 'Lain-lain' }
+                    { id: 'CO-1', type: 'expense', name: 'Lain-lain' }
                 ];
                 defaults.forEach(c => catStore.add(c));
             }
@@ -286,13 +269,8 @@
                     tr.className = 'hover:bg-slate-50 transition-all';
                     tr.innerHTML = `
                         <td class="px-6 py-4 text-[10px] font-bold text-slate-400">${formatDate(item.date)}</td>
-                        <td class="px-6 py-4">
-                            <span class="text-xs font-bold text-slate-800 block">${item.desc}</span>
-                            <span class="text-[8px] uppercase text-slate-400">${item.category || ''}</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <span class="text-xs font-black ${item.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">${toIDR(item.amount)}</span>
-                        </td>
+                        <td class="px-6 py-4"><span class="text-xs font-bold text-slate-800 block">${item.desc}</span><span class="text-[8px] uppercase text-slate-400">${item.category || '-'}</span></td>
+                        <td class="px-6 py-4 text-right"><span class="text-xs font-black ${item.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">${toIDR(item.amount)}</span></td>
                         <td class="px-6 py-4 text-center">
                             <button onclick="editRecord('${item.id}')" class="p-1 text-blue-400"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
                             <button onclick="showDeleteModal('${item.id}')" class="p-1 text-rose-300"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
@@ -371,8 +349,6 @@
             document.getElementById('panel-database').classList.toggle('hidden', sec !== 'database');
         }
 
-        function showInstallGuide() { document.getElementById('modal-install').classList.remove('hidden'); }
-        function hideInstallGuide() { document.getElementById('modal-install').classList.add('hidden'); }
         function showDeleteModal(id) { idToRemoval = id; document.getElementById('modal-delete').classList.remove('hidden'); }
         function hideDeleteModal() { document.getElementById('modal-delete').classList.add('hidden'); }
 
@@ -402,7 +378,7 @@
             const backupData = { records, categories };
             const blob = new Blob([JSON.stringify(backupData)], { type: 'application/json' });
             const url = URL.createObjectURL(blob); const a = document.createElement('a');
-            a.href = url; a.download = `Backup_PintarNiaga.json`; a.click();
+            a.href = url; a.download = `Cadangan_NiagaPintar.json`; a.click();
         }
 
         function restoreDatabase(e) {
@@ -421,25 +397,19 @@
         function confirmResetDB() {
             if (confirm("Hapus Semua?")) {
                 const tx = db.transaction([STORE_NAME], 'readwrite');
-                tx.objectStore(STORE_NAME).clear(); tx.oncomplete = () => { updateUI(); showNotification("DB Kosong"); };
+                tx.objectStore(STORE_NAME).clear(); tx.oncomplete = () => { updateUI(); showNotification("Database Kosong"); };
             }
         }
 
-        // SERVICE WORKER REGISTRATION (HACK FOR SINGLE FILE GITHUB PAGES)
+        // PENDAFTARAN SERVICE WORKER (Mengarah ke file sw.js eksternal)
         if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
             window.addEventListener('load', function() {
-                // Creating a Service Worker on-the-fly via Blob for single-file adherence
-                const swCode = `
-                    const cacheName = 'niagapintar-v2.7';
-                    const assets = [location.href];
-                    self.addEventListener('install', e => e.waitUntil(caches.open(cacheName).then(c => c.addAll(assets))));
-                    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl).then(() => {
-                    document.getElementById('offline-ready').classList.remove('hidden');
-                }).catch(err => console.log('SW failed', err));
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => {
+                        console.log('SW Berhasil Terdaftar');
+                        document.getElementById('offline-ready').classList.remove('hidden');
+                    })
+                    .catch(err => console.log('SW Gagal', err));
             });
         }
     </script>
