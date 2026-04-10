@@ -1,10 +1,13 @@
 /**
- * NiagaPintar PRO - Service Worker v7.3.5
- * Strategi: Network First untuk index.html agar UI tidak terkunci cache.
+ * NiagaPintar PRO - Service Worker v7.5.1
+ * Strategi: Network First untuk index.html (Menjamin UI Cloud Resilient terbaru).
+ * Strategi: Stale-While-Revalidate untuk aset library.
  */
 
-const CACHE_NAME = 'niagapintar-v7.3.5';
-const ASSETS = [
+const CACHE_NAME = 'niagapintar-v7.5.1';
+
+// Daftar aset untuk performa offline
+const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
@@ -18,43 +21,67 @@ const ASSETS = [
   'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js'
 ];
 
-self.addEventListener('install', (e) => {
+// Tahap Install: Simpan aset ke cache
+self.addEventListener('install', (event) => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Memasang Cache v7.5.1');
+      return Promise.all(
+        ASSETS_TO_CACHE.map(url => 
+          cache.add(url).catch(err => console.warn(`Gagal cache: ${url}`, err))
+        )
+      );
+    })
+  );
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
+// Tahap Activate: Bersihkan cache lama
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    Promise.all([
+      self.clients.claim(),
+      caches.keys().then((keys) => {
+        return Promise.all(
+          keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        );
+      })
+    ])
+  );
 });
 
-self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return;
-  const url = new URL(e.request.url);
+// Tahap Fetch: Strategi caching pintar
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
 
-  // Strategi: Network First untuk file utama & navigasi
-  if (e.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname === '/') {
-    e.respondWith(
-      fetch(e.request)
-        .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, copy));
-          return res;
+  const url = new URL(event.request.url);
+
+  // Navigasi & Index: Network First
+  // Selalu ambil versi terbaru dari cloud jika online untuk menghindari status 'stuck' offline
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('index.html') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          return response;
         })
         .catch(() => caches.match('./index.html'))
     );
     return;
   }
 
-  // Strategi: Cache First untuk library
-  e.respondWith(
-    caches.match(e.request).then(res => {
-      return res || fetch(e.request).then(net => {
-        if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com')) {
-          const copy = net.clone();
-          caches.open(CACHE_NAME).then(c => c.put(e.request, copy));
+  // Library & Assets: Stale-While-Revalidate
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        // Simpan library ke cache
+        if (url.hostname.includes('gstatic.com') || url.hostname.includes('cdnjs.cloudflare.com') || url.hostname.includes('unpkg.com')) {
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse.clone()));
         }
-        return net;
+        return networkResponse;
       });
+      return cachedResponse || fetchPromise;
     })
   );
 });
