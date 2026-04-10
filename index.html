@@ -471,14 +471,7 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Config ---
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // --- ID Generator ---
+        // --- Inisialisasi Global Statis (Penting agar UI tidak beku) ---
         const getOrCreateNiagaId = () => {
             let id = localStorage.getItem('niaga_pro_id');
             if (!id || id.length !== 10) {
@@ -491,14 +484,20 @@
         const myPrimaryNiagaId = getOrCreateNiagaId();
         let activeSyncId = localStorage.getItem('niagapintar_manual_uid') || myPrimaryNiagaId;
         
-        // --- State ---
+        // --- State Awal (Muat Langsung dari Local) ---
         let records = JSON.parse(localStorage.getItem('local_backup_records') || '[]');
         let categories = JSON.parse(localStorage.getItem('local_backup_cats') || '[]');
         let idToRemoval = null;
-        let isCloudConnected = false;
         let unsubTrans = null;
         let unsubCats = null;
         let userAuthReady = false;
+
+        // --- Firebase Config ---
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // --- UI Helpers ---
         const toIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
@@ -515,7 +514,6 @@
         };
 
         const updateStatusUI = (connected) => {
-            isCloudConnected = connected;
             const dot = document.getElementById('sync-status-dot');
             const txt = document.getElementById('sync-status-text');
             const hDot = document.getElementById('header-sync-dot');
@@ -564,7 +562,7 @@
             const noData = document.getElementById('no-data');
             if (noData) noData.classList.toggle('hidden', filtered.length > 0);
 
-            // Update Dashboard
+            // Dashboard
             const inc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
             const exp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
             
@@ -636,8 +634,6 @@
             if (unsubTrans) unsubTrans();
             if (unsubCats) unsubCats();
 
-            updateStatusUI(false);
-
             const transCol = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + uid);
             const catCol = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + uid);
 
@@ -647,7 +643,7 @@
                 updateUI();
                 updateStatusUI(true);
             }, (err) => {
-                console.error("Cloud Error:", err);
+                console.warn("Cloud error (possible offline):", err);
                 updateStatusUI(false);
             });
 
@@ -663,6 +659,7 @@
                 }
             });
 
+            // Update Header Display
             const uidEl = document.getElementById('user-display-id');
             const fuidEl = document.getElementById('full-user-id');
             const formatted = uid.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
@@ -683,7 +680,7 @@
             for (const c of def) await addDoc(col, c);
         };
 
-        // --- Auth & Start ---
+        // --- Auth Setup ---
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -692,8 +689,7 @@
                     await signInAnonymously(auth);
                 }
             } catch (error) {
-                console.error("Auth Initialization Error:", error);
-                updateStatusUI(false);
+                console.warn("Auth init slow or offline:", error);
             }
         };
 
@@ -706,7 +702,7 @@
 
         initAuth();
 
-        // --- Window Globals ---
+        // --- Window Globals (Penting: Daftarkan Segera agar UI Responsif) ---
         window.switchView = (viewId) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(`view-${viewId}`);
@@ -731,27 +727,39 @@
         };
 
         window.addNewCategory = async (type) => {
-            if (!auth.currentUser) return showNotification("Tunggu Koneksi Cloud...");
             const val = prompt("Nama Kategori Baru:");
             if (!val) return;
-            const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId);
-            await addDoc(col, { type, name: val.trim() });
+            if (userAuthReady && auth.currentUser) {
+                const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId);
+                await addDoc(col, { type, name: val.trim() });
+            } else {
+                categories.push({ id: Date.now().toString(), type, name: val.trim() });
+                localStorage.setItem('local_backup_cats', JSON.stringify(categories));
+                renderCatManager();
+                window.filterFormCategories();
+                showNotification("KATEGORI DISIMPAN LOKAL");
+            }
         };
 
         window.deleteCategory = async (id) => {
-            if (!auth.currentUser) return showNotification("Tunggu Koneksi Cloud...");
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId, id);
-            await deleteDoc(docRef);
+            if (userAuthReady && auth.currentUser) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId, id);
+                await deleteDoc(docRef);
+            } else {
+                categories = categories.filter(c => c.id !== id);
+                localStorage.setItem('local_backup_cats', JSON.stringify(categories));
+                renderCatManager();
+                showNotification("KATEGORI DIHAPUS");
+            }
         };
 
         window.showDeleteModal = (id) => { idToRemoval = id; document.getElementById('modal-delete').classList.remove('hidden'); };
         window.hideDeleteModal = () => document.getElementById('modal-delete').classList.add('hidden');
 
         window.copyUserId = () => {
-            const id = activeSyncId;
             const temp = document.createElement('input');
             document.body.appendChild(temp);
-            temp.value = id;
+            temp.value = activeSyncId;
             temp.select();
             document.execCommand('copy');
             document.body.removeChild(temp);
@@ -765,19 +773,26 @@
             localStorage.setItem('niagapintar_manual_uid', activeSyncId);
             startListening(activeSyncId);
             inp.value = "";
+            showNotification("MENGHUBUNGKAN ID...");
         };
 
         window.resetToOriginalAccount = () => {
             activeSyncId = myPrimaryNiagaId;
             localStorage.removeItem('niagapintar_manual_uid');
             startListening(myPrimaryNiagaId);
+            showNotification("KEMBALI KE ID UTAMA");
         };
 
         window.confirmResetDB = async () => {
-            if (!auth.currentUser) return showNotification("Tunggu Koneksi Cloud...");
             if(confirm("Hapus seluruh data di cloud?")) {
-                for (const r of records) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, r.id));
+                if (userAuthReady && auth.currentUser) {
+                    for (const r of records) {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, r.id));
+                    }
+                } else {
+                    records = [];
+                    localStorage.removeItem('local_backup_records');
+                    updateUI();
                 }
             }
         };
@@ -792,7 +807,7 @@
             lucide.createIcons();
         };
 
-        // --- Forms & Actions ---
+        // --- Event Listeners ---
         document.getElementById('accounting-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-button');
@@ -809,50 +824,43 @@
             };
 
             try {
-                if (!auth.currentUser) throw new Error("Unauthenticated");
+                if (!userAuthReady || !auth.currentUser) throw new Error("Offline");
 
                 const col = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId);
                 await addDoc(col, data);
-                
                 showNotification("TERSINKRON");
-                document.getElementById('accounting-form').reset();
-                document.getElementById('date').valueAsDate = new Date();
-                window.switchView('history');
             } catch (err) {
-                console.error("Cloud push failed, saving locally:", err);
                 const localId = 'LOCAL-' + Date.now();
                 records.push({ id: localId, ...data, timestamp: new Date() });
                 localStorage.setItem('local_backup_records', JSON.stringify(records));
-                updateUI();
-                showNotification("TERSIMPAM LOKAL (OFFLINE)");
+                showNotification("TERSIMPAN LOKAL");
+            } finally {
                 document.getElementById('accounting-form').reset();
                 document.getElementById('date').valueAsDate = new Date();
-                window.switchView('history');
-            } finally {
                 btn.innerText = "SIMPAN TRANSAKSI";
                 btn.disabled = false;
+                window.switchView('history');
             }
         });
 
         document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
             if (!idToRemoval) return;
             try {
-                if (!auth.currentUser) throw new Error("Unauthenticated");
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, idToRemoval));
-                hideDeleteModal();
-            } catch (err) {
-                records = records.filter(r => r.id !== idToRemoval);
-                localStorage.setItem('local_backup_records', JSON.stringify(records));
-                updateUI();
+                if (userAuthReady && auth.currentUser && !idToRemoval.startsWith('LOCAL')) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, idToRemoval));
+                } else {
+                    records = records.filter(r => r.id !== idToRemoval);
+                    localStorage.setItem('local_backup_records', JSON.stringify(records));
+                    updateUI();
+                }
+            } finally {
                 hideDeleteModal();
             }
         });
 
-        // Search
         const sb = document.getElementById('search-bar');
         if (sb) sb.addEventListener('input', updateUI);
 
-        // Export
         window.exportToPDF = () => {
             const { jsPDF } = window.jspdf;
             const docPdf = new jsPDF();
@@ -869,8 +877,12 @@
             XLSX.writeFile(wb, `Laporan_${activeSyncId}.xlsx`);
         };
 
+        // --- Final Init ---
         document.getElementById('date').valueAsDate = new Date();
         updateUI();
+        renderCatManager();
+        window.filterFormCategories();
+        updateStatusUI(false); // Initial state
     </script>
 </body>
 </html>
