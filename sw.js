@@ -1,13 +1,13 @@
 /**
- * NiagaPintar PRO - Service Worker v4.6
- * Menaikkan versi untuk memaksa pembaruan cache pada browser.
+ * NiagaPintar PRO - Service Worker v4.8
+ * Update Navigasi: Pemaksaan perataan horizontal sejajar penuh pada navigasi bawah.
  */
 
-const CACHE_NAME = 'niagapintar-v4.6';
+const CACHE_NAME = 'niagapintar-v4.8';
 
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
+  './pembukuan_umkm.html',
   './manifest.json',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/chart.js',
