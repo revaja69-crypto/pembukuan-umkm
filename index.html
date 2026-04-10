@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NiagaPintar PRO | Hybrid Cloud Sync</title>
+    <title>NiagaPintar PRO | Full Feature Stable Sync</title>
     
-    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4f46e5">
     
-    <!-- Link ke Manifest -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11550/11550419.png">
 
-    <!-- Pustaka Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -27,7 +23,6 @@
         
         :root {
             --brand: #4f46e5;
-            --brand-light: #eef2ff;
             --emerald: #10b981;
             --rose: #f43f5e;
         }
@@ -42,20 +37,9 @@
 
         .app-container {
             display: flex;
-            height: 100vh;
             height: 100dvh;
             width: 100%;
             background-color: #f8fafc;
-        }
-
-        .desktop-sidebar {
-            width: 260px;
-            background-color: #0f172a;
-            color: white;
-            display: none; 
-            flex-direction: column;
-            padding: 24px;
-            flex-shrink: 0;
         }
 
         .content-wrapper {
@@ -71,13 +55,7 @@
         }
 
         @media (min-width: 1024px) {
-            .desktop-sidebar { display: flex; }
-            .content-wrapper { 
-                max-width: none; 
-                margin: 0;
-                box-shadow: none;
-                border-left: 1px solid #e2e8f0;
-            }
+            .content-wrapper { max-width: none; margin: 0; border-left: 1px solid #e2e8f0; }
         }
 
         .main-content {
@@ -85,10 +63,6 @@
             overflow-y: auto;
             padding-bottom: 90px;
             -webkit-overflow-scrolling: touch;
-        }
-
-        @media (min-width: 1024px) {
-            .main-content { padding-bottom: 40px; }
         }
 
         .premium-gradient {
@@ -109,10 +83,6 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        @media (min-width: 1024px) {
-            .bottom-nav { display: none; }
-        }
-
         .nav-item-mobile {
             flex: 1;
             display: flex;
@@ -128,26 +98,6 @@
 
         .nav-item-mobile.active { color: var(--brand); }
 
-        .nav-item-desktop {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 4px;
-        }
-
-        .nav-item-desktop.active {
-            background-color: var(--brand);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
-        }
-
         .view-section {
             display: none;
             animation: fadeIn 0.3s ease-out forwards;
@@ -160,846 +110,378 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .card-shadow { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        .progress-bar-bg { background-color: #f1f5f9; height: 4px; border-radius: 10px; width: 100%; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease-in-out; }
-
-        /* Loading Overlay Custom */
         #sync-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(255,255,255,0.95);
-            z-index: 2000;
+            background: white;
+            z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(8px);
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease, visibility 0.4s;
         }
         
-        .pulse-loader {
-            width: 48px;
-            height: 48px;
-            background: var(--brand);
+        .loader-ring {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--brand);
             border-radius: 50%;
-            animation: pulse 1.5s infinite ease-in-out;
+            animation: spin 1s linear infinite;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.5; }
-        }
-
-        #emergency-close {
-            display: none;
-            margin-top: 2rem;
-            padding: 0.75rem 1.5rem;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            font-size: 10px;
-            font-weight: 800;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .btn-action {
             cursor: pointer;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
+            pointer-events: auto;
         }
+        .btn-action:active { transform: scale(0.95); opacity: 0.8; }
 
-        #emergency-close:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-            color: #475569;
+        .progress-bar {
+            height: 4px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
         }
     </style>
 </head>
 <body class="text-slate-900">
 
-    <!-- Loading Syncing Overlay -->
     <div id="sync-overlay">
-        <div class="pulse-loader"></div>
-        <p class="mt-6 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] animate-pulse">Menyambungkan Cloud...</p>
-        <p class="mt-2 text-[9px] text-slate-400">Mohon tunggu sebentar</p>
-        <button id="emergency-close" onclick="window.hideSyncOverlay()">Gunakan Mode Offline</button>
+        <div class="loader-ring"></div>
+        <p class="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sinkronisasi Cloud...</p>
+        <button onclick="hideOverlay()" class="mt-8 px-6 py-2 border border-slate-200 rounded-full text-[9px] font-bold text-slate-500 uppercase tracking-widest hover:bg-slate-50">Lewati & Gunakan Offline</button>
     </div>
 
     <div class="app-container">
-        <!-- SIDEBAR (DESKTOP) -->
-        <aside class="desktop-sidebar">
-            <div class="flex items-center gap-3 mb-10 px-2">
-                <div class="bg-indigo-600 p-2 rounded-xl shadow-lg shadow-indigo-500/20">
-                    <i data-lucide="calculator" class="w-6 h-6 text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-base font-black tracking-tight leading-none">NiagaPintar</h1>
-                    <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em]">Enterprise Hybrid</span>
-                </div>
-            </div>
-
-            <nav class="flex-1 space-y-1">
-                <div class="nav-item-desktop active" id="nav-home-desktop" onclick="window.switchView('home')">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                    <span>Beranda Dashboard</span>
-                </div>
-                <div class="nav-item-desktop" id="nav-input-desktop" onclick="window.switchView('input')">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                    <span>Input Transaksi</span>
-                </div>
-                <div class="nav-item-desktop" id="nav-history-desktop" onclick="window.switchView('history')">
-                    <i data-lucide="clock-3" class="w-5 h-5"></i>
-                    <span>Riwayat & Laporan</span>
-                </div>
-                <div class="nav-item-desktop" id="nav-settings-desktop" onclick="window.switchView('settings')">
-                    <i data-lucide="settings-2" class="w-5 h-5"></i>
-                    <span>Pengaturan Sistem</span>
-                </div>
-            </nav>
-
-            <div class="mt-auto pt-6 border-t border-white/10">
-                <div id="account-sidebar-card" class="bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-2 h-2 rounded-full bg-slate-500" id="sync-status-dot"></div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="sync-status-text">MENYAMBUNGKAN...</p>
-                    </div>
-                    <p class="text-[11px] text-white font-black tracking-widest mb-1" id="user-display-id">000 000 0000</p>
-                    <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                        <div id="sync-progress-bar" class="bg-indigo-500 h-full w-0 transition-all duration-500"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- CONTENT AREA -->
         <div class="content-wrapper">
-            <!-- Header -->
-            <header class="premium-gradient text-white px-5 py-4 shrink-0 lg:bg-white lg:text-slate-800 lg:border-b lg:border-slate-100 lg:from-transparent lg:to-transparent">
+            <header class="premium-gradient text-white px-5 py-4 shrink-0">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="bg-white/20 p-2 rounded-xl lg:bg-indigo-50 lg:p-2.5">
-                            <i data-lucide="cloud" class="w-4 h-4 text-white lg:text-indigo-600"></i>
+                        <div class="bg-white/20 p-2 rounded-xl">
+                            <i data-lucide="zap" class="w-4 h-4 text-white"></i>
                         </div>
                         <div>
-                            <h1 class="text-xs font-black uppercase tracking-tight lg:text-sm lg:text-slate-900 lg:normal-case">NiagaPintar PRO</h1>
-                            <span id="view-title" class="text-[8px] font-bold text-indigo-200 block -mt-0.5 uppercase tracking-widest lg:text-indigo-600 lg:font-black">DASHBOARD</span>
+                            <h1 class="text-xs font-black uppercase tracking-tight">NiagaPintar PRO</h1>
+                            <span id="view-title" class="text-[8px] font-bold text-indigo-200 block uppercase tracking-widest">DASHBOARD</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div id="offline-badge" class="flex items-center gap-1.5 bg-slate-500/20 px-3 py-1 rounded-full border border-slate-500/20">
-                            <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse" id="header-sync-dot"></span>
-                            <span class="text-[8px] font-black text-slate-400 lg:text-slate-600" id="header-sync-text">MEMUAT...</span>
+                        <div class="flex items-center gap-1.5 bg-black/20 px-3 py-1 rounded-full border border-white/10">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400" id="sync-dot"></span>
+                            <span class="text-[8px] font-black text-white uppercase" id="sync-text">OFFLINE</span>
                         </div>
                     </div>
                 </div>
             </header>
 
             <main class="main-content px-5 py-6">
-                <!-- SECTION: BERANDA -->
-                <div id="view-home" class="view-section active space-y-8">
-                    <!-- Kartu Ringkasan -->
-                    <div class="grid grid-cols-3 gap-3 md:gap-6">
-                        <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50 relative group transition-all hover:scale-[1.02]">
-                            <div class="bg-emerald-50 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
-                                <i data-lucide="arrow-down-circle" class="w-4 h-4 text-emerald-500"></i>
-                            </div>
-                            <span class="text-[8px] font-extrabold text-slate-400 uppercase block mb-1">Masuk</span>
-                            <h3 id="display-income" class="text-xs font-black text-slate-900 lg:text-lg tracking-tighter">Rp 0</h3>
+                <!-- BERANDA -->
+                <div id="view-home" class="view-section active space-y-6">
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Masuk</span>
+                            <h3 id="display-income" class="text-xs font-black text-slate-900 tracking-tighter">Rp 0</h3>
                         </div>
-                        <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50 relative group transition-all hover:scale-[1.02]">
-                            <div class="bg-rose-50 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
-                                <i data-lucide="arrow-up-circle" class="w-4 h-4 text-rose-500"></i>
-                            </div>
-                            <span class="text-[8px] font-extrabold text-slate-400 uppercase block mb-1">Keluar</span>
-                            <h3 id="display-expense" class="text-xs font-black text-slate-900 lg:text-lg tracking-tighter">Rp 0</h3>
+                        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+                            <span class="text-[8px] font-bold text-slate-400 uppercase block mb-1">Keluar</span>
+                            <h3 id="display-expense" class="text-xs font-black text-slate-900 tracking-tighter">Rp 0</h3>
                         </div>
-                        <div class="bg-slate-900 p-4 rounded-[2rem] shadow-xl relative group transition-all hover:scale-[1.02]">
-                            <div class="bg-white/10 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
-                                <i data-lucide="wallet" class="w-4 h-4 text-indigo-300"></i>
-                            </div>
-                            <span class="text-[8px] font-extrabold text-slate-500 uppercase block mb-1">Saldo</span>
-                            <h3 id="display-balance" class="text-xs font-black text-white lg:text-lg tracking-tighter">Rp 0</h3>
+                        <div class="bg-slate-900 p-4 rounded-3xl shadow-lg">
+                            <span class="text-[8px] font-bold text-slate-500 uppercase block mb-1">Saldo</span>
+                            <h3 id="display-balance" class="text-xs font-black text-white tracking-tighter">Rp 0</h3>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-1.5 h-5 bg-emerald-500 rounded-full"></div>
-                                <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pemasukan</h2>
-                            </div>
-                            <div id="income-visual-list" class="space-y-3"></div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-1.5 h-5 bg-rose-500 rounded-full"></div>
-                                <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pengeluaran</h2>
-                            </div>
-                            <div id="expense-visual-list" class="space-y-3"></div>
-                        </div>
-                    </div>
-
-                    <div id="home-no-data" class="hidden py-16 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
-                        <i data-lucide="package-open" class="w-10 h-10 text-slate-200 mx-auto mb-3"></i>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Belum Ada Data</p>
+                    <div id="visual-stats" class="space-y-4"></div>
+                    <div id="home-empty" class="hidden py-16 text-center opacity-30">
+                        <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-2 text-slate-400"></i>
+                        <p class="text-[10px] font-bold uppercase tracking-widest">Belum ada data</p>
                     </div>
                 </div>
 
-                <!-- SECTION: INPUT -->
-                <div id="view-input" class="view-section space-y-6 max-w-2xl">
-                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-50">
-                        <div class="flex items-center gap-3 mb-8">
-                            <i data-lucide="plus-circle" class="w-6 h-6 text-indigo-600"></i>
-                            <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Catat Baru</h2>
+                <!-- INPUT -->
+                <div id="view-input" class="view-section">
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm space-y-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i>
+                            <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Catat Baru</h2>
                         </div>
-                        <form id="accounting-form" class="space-y-5">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan</label>
-                                <input type="text" id="desc" placeholder="Contoh: Stok Barang, Penjualan..." required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:ring-4 focus:ring-indigo-500/10 focus:outline-none transition-all">
+                        <form id="accounting-form" class="space-y-4">
+                            <input type="text" id="desc" placeholder="Keterangan..." required class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm outline-none">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="setT('income')" id="btn-t-inc" class="p-4 rounded-2xl border-2 font-bold text-[10px] uppercase">💰 MASUK</button>
+                                <button type="button" onclick="setT('expense')" id="btn-t-exp" class="p-4 rounded-2xl border-2 font-bold text-[10px] uppercase">💸 KELUAR</button>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Dana</label>
-                                    <select id="type" onchange="window.filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm cursor-pointer focus:outline-none">
-                                        <option value="income">💰 Uang Masuk</option>
-                                        <option value="expense">💸 Uang Keluar</option>
-                                    </select>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nominal (IDR)</label>
-                                    <input type="number" id="amount" placeholder="0" required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black">
-                                </div>
+                            <input type="hidden" id="type" value="income">
+                            <input type="number" id="amount" placeholder="Nominal Rp..." required class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black outline-none">
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="category" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm"></select>
+                                <input type="date" id="date" required class="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategori</label>
-                                    <select id="category" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm cursor-pointer"></select>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal</label>
-                                    <input type="date" id="date" required class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
-                                </div>
-                            </div>
-                            <button type="submit" id="submit-button" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl shadow-indigo-200 mt-4 transition-all hover:bg-indigo-700 active:scale-95">SIMPAN TRANSAKSI</button>
+                            <button type="submit" id="submit-btn" class="w-full p-5 bg-indigo-600 text-white rounded-[2rem] font-black text-xs shadow-lg btn-action">SIMPAN TRANSAKSI</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- SECTION: RIWAYAT -->
-                <div id="view-history" class="view-section space-y-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex gap-2">
-                            <button onclick="window.exportToExcel()" class="flex items-center gap-2 px-5 py-3 bg-white text-emerald-600 rounded-2xl shadow-sm border border-slate-100 font-bold text-xs hover:bg-emerald-50"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Excel</button>
-                            <button onclick="window.exportToPDF()" class="flex items-center gap-2 px-5 py-3 bg-white text-rose-500 rounded-2xl shadow-sm border border-slate-100 font-bold text-xs hover:bg-rose-50"><i data-lucide="file-text" class="w-4 h-4"></i> PDF</button>
-                        </div>
-                        <div class="flex gap-2 relative">
-                            <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                            <input type="text" id="search-bar" placeholder="Cari..." class="pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs shadow-sm outline-none w-full md:w-64">
-                        </div>
+                <!-- HISTORY -->
+                <div id="view-history" class="view-section space-y-4">
+                    <div class="flex gap-2">
+                        <button onclick="exportDoc('pdf')" class="flex-1 p-3 bg-white border border-slate-100 rounded-2xl text-[9px] font-bold uppercase text-slate-500 hover:bg-slate-50">Unduh PDF</button>
+                        <button onclick="exportDoc('xlsx')" class="flex-1 p-3 bg-white border border-slate-100 rounded-2xl text-[9px] font-bold uppercase text-slate-500 hover:bg-slate-50">Unduh Excel</button>
                     </div>
-
-                    <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <tr>
-                                    <th class="px-6 py-5">Tanggal</th>
-                                    <th class="px-2 py-5">Detail Transaksi</th>
-                                    <th class="px-6 py-5 text-right">Jumlah</th>
-                                    <th class="px-6 py-5 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="list-container" class="divide-y divide-slate-50"></tbody>
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                        <input type="text" id="search-bar" oninput="renderUI()" placeholder="Cari transaksi..." class="w-full pl-12 pr-4 py-3 bg-white border border-slate-100 rounded-2xl text-xs outline-none">
+                    </div>
+                    <div class="bg-white rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                        <table class="w-full text-left text-[11px]">
+                            <tbody id="list-body" class="divide-y divide-slate-50"></tbody>
                         </table>
-                        <div id="no-data" class="hidden py-32 text-center text-slate-300 text-xs font-black uppercase tracking-widest">Laporan Masih Kosong</div>
                     </div>
                 </div>
 
-                <!-- SECTION: SISTEM -->
-                <div id="view-settings" class="view-section space-y-6 max-w-4xl">
-                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100 mb-6">
-                        <div class="flex items-center justify-between mb-8">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="cloud-sync" class="w-6 h-6 text-indigo-600"></i>
-                                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Manajemen Cloud</h2>
-                            </div>
+                <!-- SETTINGS -->
+                <div id="view-settings" class="view-section space-y-6">
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm space-y-4">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">User NiagaID</p>
+                        <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl">
+                            <span id="display-uid" class="font-black tracking-[0.2em] text-xs">0000000000</span>
+                            <i data-lucide="copy" class="w-4 h-4 text-indigo-600 cursor-pointer" onclick="copyUID()"></i>
                         </div>
-                        
-                        <div class="space-y-6">
-                            <div class="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">User NiagaID Anda</p>
-                                <div class="flex items-center justify-between gap-4">
-                                    <p class="text-lg font-black text-slate-800 tracking-[0.2em]" id="full-user-id">0000000000</p>
-                                    <button onclick="window.copyUserId()" class="shrink-0 p-3 bg-white text-indigo-600 border border-slate-100 shadow-sm rounded-xl hover:scale-105 transition-all">
-                                        <i data-lucide="copy" class="w-5 h-5"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="space-y-3">
-                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest px-2">Hubungkan Perangkat</p>
-                                <div class="flex gap-2">
-                                    <input type="number" id="manual-uid-input" placeholder="Masukkan 10 Angka" class="flex-1 px-5 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-indigo-500/10 focus:outline-none transition-all">
-                                    <button onclick="window.switchManualAccount()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase active:scale-95 transition-all">HUBUNGKAN</button>
-                                </div>
-                            </div>
-
-                            <div id="manual-reset-btn" class="hidden">
-                                <button onclick="window.resetToOriginalAccount()" class="w-full py-4 border-2 border-dashed border-rose-100 text-rose-500 font-black text-[10px] uppercase rounded-2xl hover:bg-rose-50 transition-all">Kembali ke ID Utama</button>
-                            </div>
+                        <div class="pt-4 border-t space-y-3">
+                            <input type="number" id="input-uid" placeholder="Ganti ID (10 Angka)" class="w-full p-4 border rounded-2xl text-xs outline-none">
+                            <button onclick="switchUID()" class="w-full p-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase">Ganti Perangkat</button>
                         </div>
                     </div>
 
-                    <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100">
-                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
-                            <i data-lucide="sliders-horizontal" class="w-5 h-5"></i> Konfigurasi Kategori
-                        </h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                            <div class="space-y-4">
-                                <span class="text-xs font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2 border-b border-emerald-50 pb-2">
-                                    <i data-lucide="chevron-down-circle" class="w-3 h-3"></i> Kategori Masuk
-                                </span>
-                                <div id="income-cat-list" class="grid grid-cols-1 gap-2"></div>
-                                <button onclick="window.addNewCategory('income')" class="w-full py-3 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-bold border border-emerald-100 hover:bg-emerald-100 transition-all">+ Kategori Baru</button>
-                            </div>
-                            <div class="space-y-4">
-                                <span class="text-xs font-black text-rose-600 uppercase tracking-widest flex items-center gap-2 border-b border-rose-50 pb-2">
-                                    <i data-lucide="chevron-up-circle" class="w-3 h-3"></i> Kategori Keluar
-                                </span>
-                                <div id="expense-cat-list" class="grid grid-cols-1 gap-2"></div>
-                                <button onclick="window.addNewCategory('expense')" class="w-full py-3 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-bold border border-rose-100 hover:bg-rose-100 transition-all">+ Kategori Baru</button>
-                            </div>
+                    <!-- KELOLA KATEGORI -->
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm space-y-4">
+                        <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2"><i data-lucide="tags" class="w-4 h-4 text-indigo-600"></i> Kelola Kategori</h2>
+                        <div class="flex gap-2">
+                            <input type="text" id="new-cat-name" placeholder="Nama kategori..." class="flex-1 p-3 bg-slate-50 border rounded-xl text-xs outline-none">
+                            <select id="new-cat-type" class="bg-slate-50 border p-3 rounded-xl text-xs font-bold">
+                                <option value="income">Masuk</option>
+                                <option value="expense">Keluar</option>
+                            </select>
+                            <button onclick="addCat()" class="bg-indigo-600 text-white p-3 rounded-xl btn-action"><i data-lucide="plus" class="w-4 h-4"></i></button>
                         </div>
-                        <div class="pt-8 border-t border-slate-100">
-                            <button onclick="window.confirmResetDB()" class="w-full py-5 text-rose-500 font-bold text-xs hover:bg-rose-50 rounded-[2rem] transition-all uppercase tracking-widest">Hapus Seluruh Data Cloud</button>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div id="list-cat-inc" class="space-y-1"></div>
+                            <div id="list-cat-exp" class="space-y-1"></div>
                         </div>
                     </div>
                 </div>
             </main>
 
-            <!-- NAVIGATION (MOBILE) -->
             <nav class="bottom-nav">
-                <div class="nav-item-mobile active" id="nav-home-mobile" onclick="window.switchView('home')">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                    <span>Home</span>
-                </div>
-                <div class="nav-item-mobile" id="nav-input-mobile" onclick="window.switchView('input')">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                    <span>Catat</span>
-                </div>
-                <div class="nav-item-mobile" id="nav-history-mobile" onclick="window.switchView('history')">
-                    <i data-lucide="clock-3" class="w-5 h-5"></i>
-                    <span>Laporan</span>
-                </div>
-                <div class="nav-item-mobile" id="nav-settings-mobile" onclick="window.switchView('settings')">
-                    <i data-lucide="settings-2" class="w-5 h-5"></i>
-                    <span>Sistem</span>
-                </div>
+                <div class="nav-item-mobile active" id="nav-home" onclick="switchView('home')"><i data-lucide="home" class="w-5 h-5"></i><span>Home</span></div>
+                <div class="nav-item-mobile" id="nav-input" onclick="switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
+                <div class="nav-item-mobile" id="nav-history" onclick="switchView('history')"><i data-lucide="list" class="w-5 h-5"></i><span>Laporan</span></div>
+                <div class="nav-item-mobile" id="nav-settings" onclick="switchView('settings')"><i data-lucide="settings" class="w-5 h-5"></i><span>Sistem</span></div>
             </nav>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="modal-delete" class="fixed inset-0 bg-slate-900/80 hidden z-[500] flex items-center justify-center p-6 backdrop-blur-lg">
-        <div class="bg-white rounded-[3rem] p-10 w-full max-w-[340px] text-center shadow-2xl animate-fade">
-            <div class="bg-rose-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-500">
-                <i data-lucide="trash-2" class="w-12 h-12"></i>
-            </div>
-            <h3 class="text-xl font-black text-slate-800 mb-2 tracking-tight">Hapus Data?</h3>
-            <p class="text-xs text-slate-400 mb-10 leading-relaxed">Transaksi ini akan dihapus permanen dari server cloud.</p>
-            <div class="flex gap-4">
-                <button onclick="window.hideDeleteModal()" class="flex-1 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Batal</button>
-                <button id="btn-confirm-delete" class="flex-1 py-5 bg-rose-500 text-white rounded-[2rem] text-xs font-black shadow-lg uppercase tracking-widest">Ya, Hapus</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="notification" class="fixed top-12 left-1/2 -translate-x-1/2 z-[600] -translate-y-32 opacity-0 transition-all duration-700">
-        <div class="bg-slate-900 text-white px-10 py-4 rounded-full shadow-2xl flex items-center gap-4 border border-white/10">
-            <i data-lucide="check-circle-2" class="text-emerald-400 w-6 h-6"></i>
-            <span id="notif-text" class="text-xs font-black uppercase tracking-widest">Berhasil</span>
-        </div>
-    </div>
-
-    <script>
-        // --- Fail-safe Global (Di luar module agar lari duluan) ---
-        window.hideSyncOverlay = () => {
-            const overlay = document.getElementById('sync-overlay');
-            if (overlay) {
-                overlay.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; }, 500);
-            }
-        };
-
-        // Munculkan tombol darurat setelah 4 detik jika belum hilang
-        setTimeout(() => {
-            const btn = document.getElementById('emergency-close');
-            const overlay = document.getElementById('sync-overlay');
-            if (btn && overlay && (overlay.style.display !== 'none')) {
-                btn.style.display = 'block';
-            }
-        }, 4000);
-
-        // Paksa tutup setelah 8 detik apapun yang terjadi
-        setTimeout(window.hideSyncOverlay, 8000);
-    </script>
+    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 z-[10000] opacity-0 transition-all pointer-events-none bg-slate-900 text-white px-8 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest">Berhasil</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Inisialisasi Global Statis ---
-        const getOrCreateNiagaId = () => {
-            let id = localStorage.getItem('niaga_pro_id');
-            if (!id || id.length !== 10) {
-                id = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-                localStorage.setItem('niaga_pro_id', id);
-            }
+        // Global State
+        window.records = JSON.parse(localStorage.getItem('np_local_recs') || '[]');
+        window.cats = JSON.parse(localStorage.getItem('np_local_cats') || '[]');
+        let currentUID = localStorage.getItem('np_active_uid') || (() => {
+            const id = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            localStorage.setItem('np_active_uid', id);
             return id;
-        };
+        })();
 
-        const myPrimaryNiagaId = getOrCreateNiagaId();
-        let activeSyncId = localStorage.getItem('niagapintar_manual_uid') || myPrimaryNiagaId;
-        
-        // --- State Awal ---
-        let records = JSON.parse(localStorage.getItem('local_backup_records') || '[]');
-        let categories = JSON.parse(localStorage.getItem('local_backup_cats') || '[]');
-        let idToRemoval = null;
-        let unsubTrans = null;
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-id';
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let unsubRecs = null;
         let unsubCats = null;
-        let userAuthReady = false;
 
-        // --- Firebase Config Safe Load ---
-        let db, auth, appId;
-        try {
-            const firebaseConfig = JSON.parse(__firebase_config);
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        } catch (e) {
-            console.error("Firebase Initialization Failed", e);
-            window.hideSyncOverlay(); // Tutup jika init gagal
-        }
-
-        // --- UI Helpers ---
-        const toIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
-        const formatDate = (dateStr) => { if(!dateStr) return "-"; const d = new Date(dateStr); return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); };
-
-        const showNotification = (text) => {
-            const n = document.getElementById('notification');
-            const nt = document.getElementById('notif-text');
-            if (n && nt) {
-                nt.innerText = text;
-                n.classList.remove('-translate-y-32', 'opacity-0');
-                setTimeout(() => n.classList.add('-translate-y-32', 'opacity-0'), 3000);
-            }
+        window.hideOverlay = () => {
+            const overlay = document.getElementById('sync-overlay');
+            if(overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.visibility = 'hidden', 400); }
         };
 
-        const updateStatusUI = (connected) => {
-            const dot = document.getElementById('sync-status-dot');
-            const txt = document.getElementById('sync-status-text');
-            const hDot = document.getElementById('header-sync-dot');
-            const hTxt = document.getElementById('header-sync-text');
-
-            const isManual = activeSyncId !== myPrimaryNiagaId;
-            const isOnline = connected && window.navigator.onLine;
-
-            if (dot) dot.className = `w-2 h-2 rounded-full ${isOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-500'}`;
-            if (txt) txt.innerText = isOnline ? (isManual ? 'SHARED DATA' : 'CLOUD ONLINE') : 'OFFLINE MODE';
-            if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full animate-pulse ${isOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-400'}`;
-            if (hTxt) {
-                hTxt.innerText = isOnline ? (isManual ? 'SYNC ACTIVE' : 'CONNECTED') : 'OFFLINE';
-                hTxt.className = `text-[8px] font-black lg:text-[10px] ${isOnline ? (isManual ? 'text-indigo-400' : 'text-emerald-500') : 'text-slate-400'}`;
-            }
-
-            if (isOnline) window.hideSyncOverlay();
+        window.notify = (m) => {
+            const t = document.getElementById('toast');
+            if(t) { t.innerText = m; t.classList.remove('opacity-0'); setTimeout(() => t.classList.add('opacity-0'), 3000); }
         };
 
-        const updateUI = () => {
-            const search = document.getElementById('search-bar');
-            const queryText = search ? search.value.toLowerCase() : "";
+        window.renderUI = () => {
+            const fmt = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v);
+            const query = document.getElementById('search-bar')?.value.toLowerCase() || "";
+            const list = document.getElementById('list-body');
             
-            let filtered = records.filter(item => 
-                (item.desc || "").toLowerCase().includes(queryText) || 
-                (item.category && item.category.toLowerCase().includes(queryText))
-            ).sort((a, b) => new Date(b.date) - new Date(a.date));
+            const filtered = window.records.filter(r => (r.desc || "").toLowerCase().includes(query) || (r.category || "").toLowerCase().includes(query))
+                .sort((a,b) => new Date(b.date) - new Date(a.date));
 
-            const listBody = document.getElementById('list-container');
-            if (listBody) {
-                listBody.innerHTML = filtered.map(item => {
-                    const isInc = item.type === 'income';
-                    return `
-                        <tr class="text-[11px] hover:bg-slate-50 transition-colors group">
-                            <td class="px-6 py-5 font-bold text-slate-400">${formatDate(item.date)}</td>
-                            <td class="px-2 py-5">
-                                <span class="font-bold text-slate-800 block leading-tight truncate max-w-[200px] mb-1">${item.desc}</span>
-                                <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">${item.category || 'LAINNYA'}</span>
-                            </td>
-                            <td class="px-6 py-5 text-right font-black ${isInc ? 'text-emerald-600' : 'text-rose-600'}">${toIDR(item.amount)}</td>
-                            <td class="px-6 py-5 text-center">
-                                <button onclick="window.showDeleteModal('${item.id}')" class="text-rose-200 hover:text-rose-500 p-2 rounded-xl hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+            if(list) {
+                list.innerHTML = filtered.map(r => `
+                    <tr class="group">
+                        <td class="px-6 py-4 font-bold text-slate-400">${r.date.split('-').reverse().slice(0,2).join('/')}</td>
+                        <td class="px-2 py-4">
+                            <span class="font-black text-slate-800 block truncate max-w-[120px] mb-1">${r.desc}</span>
+                            <span class="text-[8px] font-bold text-slate-300 uppercase tracking-widest">${r.category}</span>
+                        </td>
+                        <td class="px-4 py-4 text-right font-black ${r.type==='income'?'text-emerald-500':'text-rose-500'}">${fmt(r.amount).replace('Rp', '')}</td>
+                        <td class="px-4 py-4 text-center">
+                            <button onclick="delRec('${r.id}')" class="text-slate-200 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
             }
-            
-            const noData = document.getElementById('no-data');
-            if (noData) noData.classList.toggle('hidden', filtered.length > 0);
 
-            // Dashboard
-            const inc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
-            const exp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
-            
-            const incEl = document.getElementById('display-income');
-            const expEl = document.getElementById('display-expense');
-            const balEl = document.getElementById('display-balance');
-            if (incEl) incEl.innerText = toIDR(inc);
-            if (expEl) expEl.innerText = toIDR(exp);
-            if (balEl) balEl.innerText = toIDR(inc - exp);
-
-            updateHomeVisuals();
+            const inc = window.records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+            const exp = window.records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+            document.getElementById('display-income').innerText = fmt(inc);
+            document.getElementById('display-expense').innerText = fmt(exp);
+            document.getElementById('display-balance').innerText = fmt(inc - exp);
+            document.getElementById('home-empty').classList.toggle('hidden', window.records.length > 0);
+            renderStats(inc, exp, fmt);
             lucide.createIcons();
         };
 
-        const updateHomeVisuals = () => {
-            const incList = document.getElementById('income-visual-list');
-            const expList = document.getElementById('expense-visual-list');
-            const empty = document.getElementById('home-no-data');
-            if (!incList || !expList) return;
-
-            if (records.length === 0) {
-                if (empty) empty.classList.remove('hidden');
-                incList.innerHTML = ''; expList.innerHTML = '';
-                return;
-            }
-            if (empty) empty.classList.add('hidden');
-
-            const catsInc = {};
-            const catsExp = {};
-            records.filter(r => r.type === 'income').forEach(r => catsInc[r.category] = (catsInc[r.category] || 0) + r.amount);
-            records.filter(r => r.type === 'expense').forEach(r => catsExp[r.category] = (catsExp[r.category] || 0) + r.amount);
-
-            const totalInc = Object.values(catsInc).reduce((a,b) => a+b, 0);
-            const totalExp = Object.values(catsExp).reduce((a,b) => a+b, 0);
-
-            const render = (cats, total, color, icon) => {
-                const labels = Object.keys(cats).sort((a,b) => cats[b] - cats[a]);
-                if (labels.length === 0) return `<p class="text-[10px] text-slate-300 py-4 text-center">Kosong</p>`;
-                return labels.map(label => {
-                    const perc = total > 0 ? ((cats[label] / total) * 100).toFixed(0) : 0;
-                    return `
-                        <div class="bg-white p-5 rounded-[2rem] card-shadow border border-slate-50 flex flex-col gap-4 animate-fade">
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-slate-50">
-                                        <i data-lucide="${icon}" class="w-5 h-5" style="color: ${color}"></i>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[11px] font-black text-slate-800 uppercase tracking-tighter mb-1">${label}</span>
-                                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">${perc}% Porsi</span>
-                                    </div>
-                                </div>
-                                <div class="text-right"><span class="text-xs font-black text-slate-900">${toIDR(cats[label])}</span></div>
-                            </div>
-                            <div class="progress-bar-bg"><div class="progress-fill" style="width: ${perc}%; background-color: ${color}"></div></div>
+        const renderStats = (tInc, tExp, fmt) => {
+            const container = document.getElementById('visual-stats');
+            if(!container || window.records.length === 0) return;
+            const data = {};
+            window.records.forEach(r => { const k = `${r.type}:${r.category}`; data[k] = (data[k] || 0) + r.amount; });
+            container.innerHTML = Object.keys(data).sort((a,b) => data[b] - data[a]).slice(0, 3).map(k => {
+                const [type, name] = k.split(':');
+                const total = type === 'income' ? tInc : tExp;
+                const perc = total > 0 ? Math.round((data[k]/total)*100) : 0;
+                const color = type === 'income' ? '#10b981' : '#f43f5e';
+                return `
+                    <div class="bg-white p-4 rounded-3xl border border-slate-50 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] font-black text-slate-800 uppercase tracking-widest leading-none">${name}</span>
+                            <span class="text-[10px] font-black text-slate-900">${fmt(data[k])}</span>
                         </div>
-                    `;
-                }).join('');
-            };
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${perc}%; background-color: ${color}"></div></div>
+                    </div>
+                `;
+            }).join('');
+        };
 
-            incList.innerHTML = render(catsInc, totalInc, '#10b981', 'trending-up');
-            expList.innerHTML = render(catsExp, totalExp, '#f43f5e', 'trending-down');
+        const renderCatsUI = () => {
+            const incL = document.getElementById('list-cat-inc');
+            const expL = document.getElementById('list-cat-exp');
+            if(!incL || !expL) return;
+            const ui = (c) => `
+                <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100 mb-1">
+                    <span class="text-[9px] font-bold text-slate-600 uppercase">${c.name}</span>
+                    <button onclick="delCat('${c.id}')" class="text-slate-300 hover:text-rose-500"><i data-lucide="x-circle" class="w-3 h-3"></i></button>
+                </div>`;
+            incL.innerHTML = window.cats.filter(c => c.type === 'income').map(ui).join('');
+            expL.innerHTML = window.cats.filter(c => c.type === 'expense').map(ui).join('');
             lucide.createIcons();
         };
 
-        // --- Cloud Logic ---
-        const startListening = (uid) => {
-            if (!userAuthReady || !auth.currentUser) return;
-            if (unsubTrans) unsubTrans();
+        const startSync = (uid) => {
+            if (unsubRecs) unsubRecs();
             if (unsubCats) unsubCats();
 
-            const transCol = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + uid);
-            const catCol = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + uid);
+            const pathRecs = `artifacts/${appId}/public/data/recs_${uid}`;
+            const pathCats = `artifacts/${appId}/public/data/cats_${uid}`;
 
-            updateStatusUI(window.navigator.onLine);
-
-            unsubTrans = onSnapshot(transCol, (snapshot) => {
-                records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                localStorage.setItem('local_backup_records', JSON.stringify(records));
-                updateUI();
-                updateStatusUI(true);
-            }, (err) => {
-                console.warn("Cloud error:", err);
-                updateStatusUI(false);
+            unsubRecs = onSnapshot(collection(db, pathRecs), (snap) => {
+                window.records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                localStorage.setItem('np_local_recs', JSON.stringify(window.records));
+                window.renderUI();
+                document.getElementById('sync-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse";
+                document.getElementById('sync-text').innerText = "CONNECTED";
+                window.hideOverlay();
+            }, () => {
+                document.getElementById('sync-dot').className = "w-1.5 h-1.5 rounded-full bg-slate-400";
+                document.getElementById('sync-text').innerText = "OFFLINE";
             });
 
-            unsubCats = onSnapshot(catCol, (snapshot) => {
-                const fetched = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (fetched.length === 0 && uid === myPrimaryNiagaId) {
-                    seedDefaults(uid);
-                } else {
-                    categories = fetched;
-                    localStorage.setItem('local_backup_cats', JSON.stringify(categories));
-                    renderCatManager();
-                    window.filterFormCategories();
+            unsubCats = onSnapshot(collection(db, pathCats), (snap) => {
+                const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if(fetched.length === 0 && uid === currentUID) seedCats(uid);
+                else {
+                    window.cats = fetched;
+                    localStorage.setItem('np_local_cats', JSON.stringify(window.cats));
+                    renderCatsUI();
+                    window.setT(document.getElementById('type').value);
                 }
-            }, (err) => {
-                updateStatusUI(false);
             });
 
-            const uidEl = document.getElementById('user-display-id');
-            const fuidEl = document.getElementById('full-user-id');
-            const formatted = uid.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-            if (uidEl) uidEl.innerText = formatted;
-            if (fuidEl) fuidEl.innerText = formatted;
-            const resetBtn = document.getElementById('manual-reset-btn');
-            if (resetBtn) resetBtn.classList.toggle('hidden', uid === myPrimaryNiagaId);
+            document.getElementById('display-uid').innerText = uid;
         };
 
-        const seedDefaults = async (uid) => {
-            if (!auth.currentUser) return;
+        const seedCats = async (uid) => {
             const def = [
                 { type: 'income', name: 'Penjualan' }, { type: 'income', name: 'Modal' },
-                { type: 'expense', name: 'Bahan Baku' }, { type: 'expense', name: 'Gaji' },
-                { type: 'expense', name: 'Sewa' }, { type: 'expense', name: 'Lain-lain' }
+                { type: 'expense', name: 'Stok' }, { type: 'expense', name: 'Sewa' }, { type: 'expense', name: 'Gaji' }
             ];
-            const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + uid);
-            for (const c of def) await addDoc(col, c);
+            for (const c of def) await addDoc(collection(db, `artifacts/${appId}/public/data/cats_${uid}`), c);
         };
 
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.warn("Auth init error:", error);
-                updateStatusUI(false);
-            }
-        };
+        onAuthStateChanged(auth, (user) => { if (user) startSync(currentUID); });
+        signInAnonymously(auth).catch(() => window.hideOverlay());
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userAuthReady = true;
-                startListening(activeSyncId);
-            }
-        });
-
-        initAuth();
-
-        window.addEventListener('online', () => {
-            showNotification("KONEKSI TERHUBUNG");
-            if (userAuthReady) startListening(activeSyncId);
-            else updateStatusUI(true);
-        });
-        window.addEventListener('offline', () => {
-            showNotification("MODE OFFLINE");
-            updateStatusUI(false);
-        });
-
-        window.switchView = (viewId) => {
+        window.switchView = (v) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(`view-${viewId}`);
-            if (target) target.classList.add('active');
-            
-            const vt = document.getElementById('view-title');
-            if (vt) vt.innerText = viewId.toUpperCase();
-            
-            document.querySelectorAll('.nav-item-mobile, .nav-item-desktop').forEach(item => {
-                item.classList.remove('active');
-                if (item.id.includes(viewId)) item.classList.add('active');
-            });
-            updateUI();
+            document.getElementById(`view-${v}`).classList.add('active');
+            document.getElementById('view-title').innerText = v.toUpperCase();
+            document.querySelectorAll('.nav-item-mobile').forEach(i => i.classList.remove('active'));
+            document.getElementById(`nav-${v}`).classList.add('active');
+            window.renderUI();
+            if(v === 'settings') renderCatsUI();
         };
 
-        window.filterFormCategories = () => {
-            const t = document.getElementById('type');
-            const c = document.getElementById('category');
-            if (t && c) {
-                c.innerHTML = categories.filter(cat => cat.type === t.value).map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
-            }
+        window.setT = (t) => {
+            document.getElementById('type').value = t;
+            document.getElementById('btn-t-inc').className = `p-4 rounded-2xl border-2 font-bold text-[10px] uppercase transition-all ${t==='income'?'bg-emerald-500 text-white border-emerald-500':'bg-white text-slate-300 border-slate-100'}`;
+            document.getElementById('btn-t-exp').className = `p-4 rounded-2xl border-2 font-bold text-[10px] uppercase transition-all ${t==='expense'?'bg-rose-500 text-white border-rose-500':'bg-white text-slate-300 border-slate-100'}`;
+            const filtered = window.cats.filter(c => c.type === t);
+            document.getElementById('category').innerHTML = filtered.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
         };
 
-        window.addNewCategory = async (type) => {
-            const val = prompt("Nama Kategori Baru:");
-            if (!val) return;
-            if (userAuthReady && auth.currentUser && window.navigator.onLine) {
-                const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId);
-                await addDoc(col, { type, name: val.trim() });
-            } else {
-                categories.push({ id: 'LOCAL-' + Date.now(), type, name: val.trim() });
-                localStorage.setItem('local_backup_cats', JSON.stringify(categories));
-                renderCatManager();
-                window.filterFormCategories();
-                showNotification("KATEGORI DISIMPAN LOKAL");
-            }
+        window.copyUID = () => { navigator.clipboard.writeText(currentUID); window.notify("ID DISALIN"); };
+        window.switchUID = () => {
+            const v = document.getElementById('input-uid').value;
+            if(v.length !== 10) return alert("ID harus 10 angka");
+            currentUID = v;
+            localStorage.setItem('np_active_uid', v);
+            startSync(v);
+            window.switchView('home');
+            window.notify("SWITCHING...");
         };
 
-        window.deleteCategory = async (id) => {
-            if (userAuthReady && auth.currentUser && window.navigator.onLine && !id.startsWith('LOCAL')) {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId, id);
-                await deleteDoc(docRef);
-            } else {
-                categories = categories.filter(c => c.id !== id);
-                localStorage.setItem('local_backup_cats', JSON.stringify(categories));
-                renderCatManager();
-                showNotification("KATEGORI DIHAPUS");
-            }
-        };
-
-        window.showDeleteModal = (id) => { idToRemoval = id; document.getElementById('modal-delete').classList.remove('hidden'); };
-        window.hideDeleteModal = () => document.getElementById('modal-delete').classList.add('hidden');
-
-        window.copyUserId = () => {
-            const temp = document.createElement('input');
-            document.body.appendChild(temp);
-            temp.value = activeSyncId;
-            temp.select();
-            document.execCommand('copy');
-            document.body.removeChild(temp);
-            showNotification("ID DISALIN");
-        };
-
-        window.switchManualAccount = () => {
-            const inp = document.getElementById('manual-uid-input');
-            if (!inp || inp.value.length !== 10) return showNotification("INPUT 10 ANGKA");
-            activeSyncId = inp.value;
-            localStorage.setItem('niagapintar_manual_uid', activeSyncId);
-            
-            const overlay = document.getElementById('sync-overlay');
-            if (overlay) {
-                overlay.style.display = 'flex';
-                overlay.style.opacity = '1';
-                setTimeout(window.hideSyncOverlay, 5000);
-            }
-            
-            startListening(activeSyncId);
-            inp.value = "";
-            showNotification("MENYAMBUNGKAN ID...");
-        };
-
-        window.resetToOriginalAccount = () => {
-            activeSyncId = myPrimaryNiagaId;
-            localStorage.removeItem('niagapintar_manual_uid');
-            startListening(myPrimaryNiagaId);
-            showNotification("KEMBALI KE ID UTAMA");
-        };
-
-        window.confirmResetDB = async () => {
-            if(confirm("Hapus seluruh data di cloud?")) {
-                if (userAuthReady && auth.currentUser && window.navigator.onLine) {
-                    for (const r of records) {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, r.id));
-                    }
-                    showNotification("DATA CLOUD DIHAPUS");
-                } else {
-                    records = [];
-                    localStorage.removeItem('local_backup_records');
-                    updateUI();
-                    showNotification("DATA LOKAL DIHAPUS");
-                }
-            }
-        };
-
-        const renderCatManager = () => {
-            const inc = document.getElementById('income-cat-list');
-            const exp = document.getElementById('expense-cat-list');
-            if (!inc || !exp) return;
-            const ui = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl text-[9px] font-black text-slate-700 border border-slate-50"><span>${c.name}</span><button onclick="window.deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
-            inc.innerHTML = categories.filter(c => c.type === 'income').map(ui).join('');
-            exp.innerHTML = categories.filter(c => c.type === 'expense').map(ui).join('');
-            lucide.createIcons();
-        };
-
-        document.getElementById('accounting-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-button');
-            const originalText = btn.innerText;
-            btn.innerText = "MENYIMPAN...";
-            btn.disabled = true;
-
-            const data = {
-                desc: document.getElementById('desc').value,
-                amount: parseFloat(document.getElementById('amount').value),
-                type: document.getElementById('type').value,
-                category: document.getElementById('category').value,
-                date: document.getElementById('date').value,
-                timestamp: serverTimestamp()
-            };
-
+        window.addCat = async () => {
+            const name = document.getElementById('new-cat-name').value.trim();
+            const type = document.getElementById('new-cat-type').value;
+            if(!name) return;
             try {
-                if (!userAuthReady || !auth.currentUser || !window.navigator.onLine) throw new Error("Offline");
-
-                const col = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId);
-                await addDoc(col, data);
-                showNotification("TERSINKRON");
-            } catch (err) {
-                const localId = 'LOCAL-' + Date.now();
-                records.push({ id: localId, ...data, timestamp: new Date() });
-                localStorage.setItem('local_backup_records', JSON.stringify(records));
-                showNotification("TERSIMPAN LOKAL");
-                updateUI();
-            } finally {
-                document.getElementById('accounting-form').reset();
-                document.getElementById('date').valueAsDate = new Date();
-                btn.innerText = originalText;
-                btn.disabled = false;
-                window.switchView('history');
-            }
-        });
-
-        document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
-            if (!idToRemoval) return;
-            try {
-                if (userAuthReady && auth.currentUser && window.navigator.onLine && !idToRemoval.startsWith('LOCAL')) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, idToRemoval));
-                    showNotification("DATA DIHAPUS");
-                } else {
-                    records = records.filter(r => r.id !== idToRemoval);
-                    localStorage.setItem('local_backup_records', JSON.stringify(records));
-                    updateUI();
-                    showNotification("DATA LOKAL DIHAPUS");
-                }
-            } catch (err) {
-                showNotification("GAGAL MENGHAPUS");
-            } finally {
-                hideDeleteModal();
-            }
-        });
-
-        const sb = document.getElementById('search-bar');
-        if (sb) sb.addEventListener('input', updateUI);
-
-        window.exportToPDF = () => {
-            const { jsPDF } = window.jspdf;
-            const docPdf = new jsPDF();
-            docPdf.text("Laporan NiagaPintar PRO", 14, 20);
-            const tableData = records.map(r => [formatDate(r.date), r.desc, r.category, r.type === 'income' ? 'MASUK' : 'KELUAR', toIDR(r.amount)]);
-            docPdf.autoTable({ startY: 30, head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']], body: tableData });
-            docPdf.save(`Laporan_${activeSyncId}.pdf`);
+                await addDoc(collection(db, `artifacts/${appId}/public/data/cats_${currentUID}`), { name, type });
+                document.getElementById('new-cat-name').value = '';
+                window.notify("KATEGORI DITAMBAH");
+            } catch { window.notify("GAGAL"); }
         };
 
-        window.exportToExcel = () => {
-            const ws = XLSX.utils.json_to_sheet(records);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Laporan");
-            XLSX.writeFile(wb, `Laporan_${activeSyncId}.xlsx`);
+        window.delCat = async (id) => {
+            if(!confirm("Hapus kategori?")) return;
+            try { await deleteDoc(doc(db, `artifacts/${appId}/public/data/cats_${currentUID}`, id)); window.notify("KATEGORI DIHAPUS"); }
+            catch { window.notify("GAGAL"); }
         };
-
-        document.getElementById('date').valueAsDate = new Date();
-        updateUI();
-        renderCatManager();
-        window.filterFormCategories();
-        updateStatusUI(window.navigator.onLine);
-    </script>
-</body>
-</html>
