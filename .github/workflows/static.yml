@@ -1,0 +1,44 @@
+# Workflow untuk mendeploy konten statis ke GitHub Pages
+name: Deploy NiagaPintar PRO to Pages
+
+on:
+  # Berjalan saat push ke branch main
+  push:
+    branches: ["main"]
+
+  # Memungkinkan menjalankan workflow secara manual dari tab Actions
+  workflow_dispatch:
+
+# Mengatur izin GITHUB_TOKEN untuk memungkinkan deployment ke GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Memastikan hanya satu deployment yang berjalan dalam satu waktu
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Mengunggah seluruh repositori karena index.html ada di root
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
