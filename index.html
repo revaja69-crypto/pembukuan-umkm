@@ -54,7 +54,7 @@
             width: 260px;
             background-color: #0f172a;
             color: white;
-            display: none; /* Default hidden for mobile */
+            display: none; 
             flex-direction: column;
             padding: 24px;
             flex-shrink: 0;
@@ -68,7 +68,6 @@
             overflow: hidden;
             position: relative;
             background-color: #f8fafc;
-            /* Center mobile view on large screens */
             max-width: 480px;
             margin: 0 auto;
             box-shadow: 0 0 100px rgba(0,0,0,0.05);
@@ -227,9 +226,9 @@
             </div>
         </aside>
 
-        <!-- CONTENT AREA (MOBILE SHELL / DESKTOP CONTENT) -->
+        <!-- CONTENT AREA -->
         <div class="content-wrapper">
-            <!-- Header (Mobile Only / Content Header Desktop) -->
+            <!-- Header -->
             <header class="premium-gradient text-white px-5 py-4 shrink-0 lg:bg-white lg:text-slate-800 lg:border-b lg:border-slate-100 lg:from-transparent lg:to-transparent">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
@@ -254,7 +253,7 @@
                 
                 <!-- SECTION: BERANDA -->
                 <div id="view-home" class="view-section active space-y-8">
-                    <!-- Kartu Ringkasan (Grid Responsif) -->
+                    <!-- Kartu Ringkasan -->
                     <div class="grid grid-cols-3 gap-3 md:gap-6">
                         <div class="bg-white p-4 rounded-[2rem] card-shadow border border-slate-50 relative group transition-all hover:scale-[1.02]">
                             <div class="bg-emerald-50 w-8 h-8 rounded-xl flex items-center justify-center mb-3">
@@ -279,26 +278,19 @@
                         </div>
                     </div>
 
-                    <!-- Layout Perbandingan (Side by Side on Desktop) -->
+                    <!-- Layout Perbandingan -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <!-- Rincian Pemasukan -->
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between px-1">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-1.5 h-5 bg-emerald-500 rounded-full"></div>
-                                    <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pemasukan</h2>
-                                </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-1.5 h-5 bg-emerald-500 rounded-full"></div>
+                                <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pemasukan</h2>
                             </div>
                             <div id="income-visual-list" class="space-y-3"></div>
                         </div>
-
-                        <!-- Rincian Pengeluaran -->
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between px-1">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-1.5 h-5 bg-rose-500 rounded-full"></div>
-                                    <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pengeluaran</h2>
-                                </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-1.5 h-5 bg-rose-500 rounded-full"></div>
+                                <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pengeluaran</h2>
                             </div>
                             <div id="expense-visual-list" class="space-y-3"></div>
                         </div>
@@ -307,17 +299,6 @@
                     <div id="home-no-data" class="hidden py-16 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
                         <i data-lucide="package-open" class="w-10 h-10 text-slate-200 mx-auto mb-3"></i>
                         <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Database Masih Kosong</p>
-                    </div>
-
-                    <!-- Info Box -->
-                    <div class="bg-indigo-600 p-6 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl shadow-indigo-100 lg:max-w-md">
-                        <div class="absolute -right-6 -bottom-6 opacity-20 rotate-12">
-                            <i data-lucide="sparkles" class="w-32 h-32"></i>
-                        </div>
-                        <div class="relative z-10">
-                            <h4 class="text-[10px] font-black opacity-60 uppercase tracking-[0.3em] mb-2">Tips Manajemen</h4>
-                            <p class="text-sm font-black leading-snug">Rata-rata pengeluaran Anda dapat ditekan jika kategori 'Lain-lain' teridentifikasi dengan jelas.</p>
-                        </div>
                     </div>
                 </div>
 
@@ -337,7 +318,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Dana</label>
-                                    <select id="type" onchange="filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none cursor-pointer">
+                                    <select id="type" onchange="filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm cursor-pointer focus:outline-none">
                                         <option value="income">💰 Uang Masuk</option>
                                         <option value="expense">💸 Uang Keluar</option>
                                     </select>
@@ -357,7 +338,7 @@
                                     <input type="date" id="date" required class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
                                 </div>
                             </div>
-                            <button type="submit" id="btn-submit" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl shadow-indigo-200 mt-4 transition-all hover:bg-indigo-700 active:scale-95">KONFIRMASI PENYIMPANAN</button>
+                            <button type="submit" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl shadow-indigo-200 mt-4 transition-all hover:bg-indigo-700 active:scale-95">SIMPAN TRANSAKSI</button>
                         </form>
                     </div>
                 </div>
@@ -393,44 +374,49 @@
 
                 <!-- SECTION: SISTEM -->
                 <div id="view-settings" class="view-section space-y-6 max-w-4xl">
+                    <!-- FITUR PWA INSTALL -->
+                    <div id="install-banner" class="hidden bg-gradient-to-r from-indigo-600 to-indigo-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden mb-6">
+                        <div class="absolute -right-10 -bottom-10 opacity-10">
+                            <i data-lucide="download" class="w-40 h-40"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <h3 class="text-lg font-black mb-2 uppercase tracking-tight">Pasang di Perangkat Anda</h3>
+                            <p class="text-xs opacity-80 mb-6 max-w-xs leading-relaxed">Nikmati akses instan NiagaPintar PRO langsung dari layar utama tanpa melalui browser.</p>
+                            <button id="btn-install-app" class="px-8 py-4 bg-white text-indigo-600 rounded-2xl text-xs font-black shadow-xl hover:scale-105 transition-all">PASANG SEKARANG</button>
+                        </div>
+                    </div>
+
                     <div class="bg-white p-8 rounded-[2.5rem] card-shadow border border-slate-100">
                         <h2 class="text-sm font-black text-slate-800 uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
                             <i data-lucide="sliders-horizontal" class="w-5 h-5"></i> Konfigurasi Kategori
                         </h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
-                                    <span class="text-xs font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                                        <i data-lucide="chevron-down-circle" class="w-3 h-3"></i> Kategori Masuk
-                                    </span>
-                                </div>
+                                <span class="text-xs font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2 border-b border-emerald-50 pb-2">
+                                    <i data-lucide="chevron-down-circle" class="w-3 h-3"></i> Kategori Masuk
+                                </span>
                                 <div id="income-cat-list" class="grid grid-cols-1 gap-2"></div>
                                 <button onclick="addNewCategory('income')" class="w-full py-3 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-bold border border-emerald-100 hover:bg-emerald-100">+ Kategori Baru</button>
                             </div>
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between border-b border-rose-100 pb-2">
-                                    <span class="text-xs font-black text-rose-600 uppercase tracking-widest flex items-center gap-2">
-                                        <i data-lucide="chevron-up-circle" class="w-3 h-3"></i> Kategori Keluar
-                                    </span>
-                                </div>
+                                <span class="text-xs font-black text-rose-600 uppercase tracking-widest flex items-center gap-2 border-b border-rose-50 pb-2">
+                                    <i data-lucide="chevron-up-circle" class="w-3 h-3"></i> Kategori Keluar
+                                </span>
                                 <div id="expense-cat-list" class="grid grid-cols-1 gap-2"></div>
                                 <button onclick="addNewCategory('expense')" class="w-full py-3 bg-rose-50 text-rose-600 rounded-xl text-[10px] font-bold border border-rose-100 hover:bg-rose-100">+ Kategori Baru</button>
                             </div>
                         </div>
                         <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row gap-4">
-                            <button onclick="backupDatabase()" class="flex-1 py-5 bg-slate-900 text-white rounded-[2rem] text-xs font-black flex items-center justify-center gap-3 shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all">
+                            <button onclick="backupDatabase()" class="flex-1 py-5 bg-slate-900 text-white rounded-[2rem] text-xs font-black flex items-center justify-center gap-3 shadow-xl hover:bg-slate-800 transition-all">
                                 <i data-lucide="download-cloud" class="w-5 h-5 text-indigo-400"></i> EKSPOR BACKUP DATA (.JSON)
                             </button>
                             <button onclick="confirmResetDB()" class="px-8 py-5 text-rose-500 font-bold text-xs hover:bg-rose-50 rounded-[2rem]">RESET SISTEM</button>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Product by NiagaPintar Dev • v6.0</p>
-                    </div>
                 </div>
             </main>
 
-            <!-- NAVIGATION (MOBILE ONLY) -->
+            <!-- NAVIGATION (MOBILE) -->
             <nav class="bottom-nav">
                 <div class="nav-item-mobile active" onclick="switchView('home')">
                     <i data-lucide="layout-grid" class="w-5 h-5"></i>
@@ -479,6 +465,7 @@
         const STORE_NAME = 'transaksi';
         const STORE_CAT = 'kategori_v2';
         let db;
+        let deferredPrompt; // Untuk menyimpan prompt instalasi PWA
 
         const request = indexedDB.open(DB_NAME, 1);
         request.onupgradeneeded = (e) => {
@@ -504,13 +491,37 @@
             updateUI(); 
         };
 
+        // --- Logika Instalasi PWA ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('install-banner');
+            if (banner) banner.classList.remove('hidden');
+        });
+
+        const btnInstall = document.getElementById('btn-install-app');
+        if (btnInstall) {
+            btnInstall.addEventListener('click', async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('install-banner').classList.add('hidden');
+                }
+                deferredPrompt = null;
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('install-banner').classList.add('hidden');
+            showNotification("APLIKASI TERPASANG");
+        });
+
         let records = [], categories = [], idToRemoval = null;
         const toIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
         const formatDate = (dateStr) => { const d = new Date(dateStr); return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); };
 
         lucide.createIcons();
-        
-        // Inisialisasi input tanggal setelah DOM siap
         window.addEventListener('DOMContentLoaded', () => {
             const dateInput = document.getElementById('date');
             if (dateInput) dateInput.valueAsDate = new Date();
@@ -525,23 +536,19 @@
             const targetView = document.getElementById(`view-${viewId}`);
             if (targetView) targetView.classList.add('active');
             
-            // Sync Mobile Nav
             document.querySelectorAll('.nav-item-mobile').forEach((item, idx) => {
                 const views = ['home', 'input', 'history', 'settings'];
                 item.classList.toggle('active', views[idx] === viewId);
             });
 
-            // Sync Desktop Sidebar
             document.querySelectorAll('.nav-item-desktop').forEach((item, idx) => {
                 const views = ['home', 'input', 'history', 'settings'];
                 item.classList.toggle('active', views[idx] === viewId);
             });
 
             if(viewId === 'home') setTimeout(updateHomeVisuals, 100);
-            
             const mainContent = document.querySelector('.main-content');
             if (mainContent) mainContent.scrollTop = 0;
-            
             lucide.createIcons();
         }
 
@@ -564,18 +571,13 @@
             filterFormCategories();
             
             const searchInput = document.getElementById('search-bar');
-            const filterSelect = document.getElementById('filter-type');
-            
-            // Guard clause untuk mencegah error jika elemen DOM belum siap
-            if (!searchInput || !filterSelect) return;
+            if (!searchInput) return;
 
             const query = searchInput.value.toLowerCase();
-            const selectedType = filterSelect.value;
-            let filtered = records.filter(item => (selectedType === 'all' || item.type === selectedType) && (item.desc.toLowerCase().includes(query) || (item.category && item.category.toLowerCase().includes(query)))).sort((a, b) => new Date(b.date) - new Date(a.date));
+            let filtered = records.filter(item => (item.desc.toLowerCase().includes(query) || (item.category && item.category.toLowerCase().includes(query)))).sort((a, b) => new Date(b.date) - new Date(a.date));
             
             const listBody = document.getElementById('list-container');
             if (!listBody) return;
-            
             listBody.innerHTML = '';
             
             const noDataEl = document.getElementById('no-data');
@@ -623,7 +625,6 @@
             const incomeVisualList = document.getElementById('income-visual-list');
             const expenseVisualList = document.getElementById('expense-visual-list');
             const noDataMsg = document.getElementById('home-no-data');
-            
             if (!incomeVisualList || !expenseVisualList) return;
 
             const catsInc = {};
@@ -641,8 +642,7 @@
 
             if (incLabels.length === 0 && expLabels.length === 0) {
                 if (noDataMsg) noDataMsg.classList.remove('hidden');
-                incomeVisualList.innerHTML = '';
-                expenseVisualList.innerHTML = '';
+                incomeVisualList.innerHTML = ''; expenseVisualList.innerHTML = '';
                 return;
             } else {
                 if (noDataMsg) noDataMsg.classList.add('hidden');
@@ -684,17 +684,14 @@
             lucide.createIcons();
         }
 
-        // --- Ekspor & Kategori ---
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const totalIncome = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
             const totalExpense = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
             const balance = totalIncome - totalExpense;
-            doc.setFontSize(18);
-            doc.text("Laporan NiagaPintar PRO", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
+            doc.setFontSize(18); doc.text("Laporan NiagaPintar PRO", 14, 20);
+            doc.setFontSize(10); doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 28);
             const tableData = [...records].sort((a,b) => new Date(b.date) - new Date(a.date)).map(r => [r.date, r.desc, r.category || '-', r.type === 'income' ? 'Masuk' : 'Keluar', toIDR(r.amount)]);
             doc.autoTable({
                 startY: 35, head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']], body: tableData, theme: 'grid', headStyles: { fillColor: [79, 70, 229] },
@@ -721,7 +718,6 @@
             const typeSelect = document.getElementById('type');
             const categorySelect = document.getElementById('category');
             if (!typeSelect || !categorySelect) return;
-            
             const type = typeSelect.value;
             categorySelect.innerHTML = categories.filter(c => c.type === type).map(c => `<option value="${c.name}">${c.name}</option>`).join('');
         }
@@ -730,7 +726,6 @@
             const incomeList = document.getElementById('income-cat-list');
             const expenseList = document.getElementById('expense-cat-list');
             if (!incomeList || !expenseList) return;
-
             const itemUI = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl text-[9px] font-black text-slate-700 border border-slate-50 shadow-sm group"><span>${c.name}</span><button onclick="deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500 transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
             incomeList.innerHTML = categories.filter(c => c.type === 'income').map(itemUI).join('');
             expenseList.innerHTML = categories.filter(c => c.type === 'expense').map(itemUI).join('');
@@ -755,20 +750,14 @@
             e.preventDefault();
             const id = 'TRX-' + Date.now();
             const data = { 
-                id, 
-                desc: document.getElementById('desc').value, 
-                amount: parseFloat(document.getElementById('amount').value), 
-                type: document.getElementById('type').value, 
-                category: document.getElementById('category').value, 
-                date: document.getElementById('date').value 
+                id, desc: document.getElementById('desc').value, amount: parseFloat(document.getElementById('amount').value), 
+                type: document.getElementById('type').value, category: document.getElementById('category').value, date: document.getElementById('date').value 
             };
             const tx = db.transaction([STORE_NAME], 'readwrite');
             tx.objectStore(STORE_NAME).put(data);
             tx.oncomplete = () => { 
-                document.getElementById('accounting-form').reset(); 
-                updateUI(); 
-                showNotification("DATA BERHASIL DISIMPAN"); 
-                switchView('history'); 
+                document.getElementById('accounting-form').reset(); updateUI(); 
+                showNotification("DATA BERHASIL DISIMPAN"); switchView('history'); 
                 const dateInput = document.getElementById('date');
                 if (dateInput) dateInput.valueAsDate = new Date();
             };
@@ -804,9 +793,7 @@
 
         if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
             window.addEventListener('load', () => {
-                const swCode = `const cacheName = 'niagapintar-v6.0'; self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(cacheName).then(c => c.add(location.href))); }); self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== cacheName).map(k => caches.delete(k)))))); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob));
+                navigator.serviceWorker.register('./sw.js');
             });
         }
     </script>
