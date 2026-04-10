@@ -471,7 +471,7 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Inisialisasi Global Statis (Penting agar UI tidak beku) ---
+        // --- Inisialisasi Global Statis ---
         const getOrCreateNiagaId = () => {
             let id = localStorage.getItem('niaga_pro_id');
             if (!id || id.length !== 10) {
@@ -484,7 +484,7 @@
         const myPrimaryNiagaId = getOrCreateNiagaId();
         let activeSyncId = localStorage.getItem('niagapintar_manual_uid') || myPrimaryNiagaId;
         
-        // --- State Awal (Muat Langsung dari Local) ---
+        // --- State Awal ---
         let records = JSON.parse(localStorage.getItem('local_backup_records') || '[]');
         let categories = JSON.parse(localStorage.getItem('local_backup_cats') || '[]');
         let idToRemoval = null;
@@ -520,13 +520,14 @@
             const hTxt = document.getElementById('header-sync-text');
 
             const isManual = activeSyncId !== myPrimaryNiagaId;
+            const isOnline = connected && window.navigator.onLine;
 
-            if (dot) dot.className = `w-2 h-2 rounded-full ${connected ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-500'}`;
-            if (txt) txt.innerText = connected ? (isManual ? 'SHARED DATA' : 'CLOUD ONLINE') : 'OFFLINE MODE';
-            if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full animate-pulse ${connected ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-400'}`;
+            if (dot) dot.className = `w-2 h-2 rounded-full ${isOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-500'}`;
+            if (txt) txt.innerText = isOnline ? (isManual ? 'SHARED DATA' : 'CLOUD ONLINE') : 'OFFLINE MODE';
+            if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full animate-pulse ${isOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-400'}`;
             if (hTxt) {
-                hTxt.innerText = connected ? (isManual ? 'SYNC ACTIVE' : 'CONNECTED') : 'OFFLINE';
-                hTxt.className = `text-[8px] font-black lg:text-[10px] ${connected ? (isManual ? 'text-indigo-400' : 'text-emerald-500') : 'text-slate-400'}`;
+                hTxt.innerText = isOnline ? (isManual ? 'SYNC ACTIVE' : 'CONNECTED') : 'OFFLINE';
+                hTxt.className = `text-[8px] font-black lg:text-[10px] ${isOnline ? (isManual ? 'text-indigo-400' : 'text-emerald-500') : 'text-slate-400'}`;
             }
         };
 
@@ -637,6 +638,9 @@
             const transCol = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + uid);
             const catCol = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + uid);
 
+            // Proactive status update if navigator is online
+            updateStatusUI(window.navigator.onLine);
+
             unsubTrans = onSnapshot(transCol, (snapshot) => {
                 records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 localStorage.setItem('local_backup_records', JSON.stringify(records));
@@ -702,7 +706,17 @@
 
         initAuth();
 
-        // --- Window Globals (Penting: Daftarkan Segera agar UI Responsif) ---
+        // --- Connectivity Listeners ---
+        window.addEventListener('online', () => {
+            showNotification("KONEKSI TERDETEKSI");
+            if (userAuthReady) startListening(activeSyncId);
+        });
+        window.addEventListener('offline', () => {
+            showNotification("MODE OFFLINE AKTIF");
+            updateStatusUI(false);
+        });
+
+        // --- Window Globals ---
         window.switchView = (viewId) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(`view-${viewId}`);
@@ -729,7 +743,7 @@
         window.addNewCategory = async (type) => {
             const val = prompt("Nama Kategori Baru:");
             if (!val) return;
-            if (userAuthReady && auth.currentUser) {
+            if (userAuthReady && auth.currentUser && window.navigator.onLine) {
                 const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId);
                 await addDoc(col, { type, name: val.trim() });
             } else {
@@ -742,7 +756,7 @@
         };
 
         window.deleteCategory = async (id) => {
-            if (userAuthReady && auth.currentUser) {
+            if (userAuthReady && auth.currentUser && window.navigator.onLine && !id.startsWith('LOCAL')) {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeSyncId, id);
                 await deleteDoc(docRef);
             } else {
@@ -785,7 +799,7 @@
 
         window.confirmResetDB = async () => {
             if(confirm("Hapus seluruh data di cloud?")) {
-                if (userAuthReady && auth.currentUser) {
+                if (userAuthReady && auth.currentUser && window.navigator.onLine) {
                     for (const r of records) {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, r.id));
                     }
@@ -824,7 +838,7 @@
             };
 
             try {
-                if (!userAuthReady || !auth.currentUser) throw new Error("Offline");
+                if (!userAuthReady || !auth.currentUser || !window.navigator.onLine) throw new Error("Offline");
 
                 const col = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId);
                 await addDoc(col, data);
@@ -846,7 +860,7 @@
         document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
             if (!idToRemoval) return;
             try {
-                if (userAuthReady && auth.currentUser && !idToRemoval.startsWith('LOCAL')) {
+                if (userAuthReady && auth.currentUser && window.navigator.onLine && !idToRemoval.startsWith('LOCAL')) {
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeSyncId, idToRemoval));
                 } else {
                     records = records.filter(r => r.id !== idToRemoval);
@@ -882,7 +896,8 @@
         updateUI();
         renderCatManager();
         window.filterFormCategories();
-        updateStatusUI(false); // Initial state
+        // Initial sync check
+        updateStatusUI(window.navigator.onLine);
     </script>
 </body>
 </html>
