@@ -172,13 +172,13 @@
         #sync-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             z-index: 2000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             transition: opacity 0.5s ease;
         }
         
@@ -195,6 +195,29 @@
             50% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(0.8); opacity: 0.5; }
         }
+
+        #emergency-close {
+            display: none;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        #emergency-close:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
     </style>
 </head>
 <body class="text-slate-900">
@@ -204,6 +227,7 @@
         <div class="pulse-loader"></div>
         <p class="mt-6 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] animate-pulse">Menyambungkan Cloud...</p>
         <p class="mt-2 text-[9px] text-slate-400">Mohon tunggu sebentar</p>
+        <button id="emergency-close" onclick="window.hideSyncOverlay()">Gunakan Mode Offline</button>
     </div>
 
     <div class="app-container">
@@ -501,6 +525,29 @@
         </div>
     </div>
 
+    <script>
+        // --- Fail-safe Global (Di luar module agar lari duluan) ---
+        window.hideSyncOverlay = () => {
+            const overlay = document.getElementById('sync-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 500);
+            }
+        };
+
+        // Munculkan tombol darurat setelah 4 detik jika belum hilang
+        setTimeout(() => {
+            const btn = document.getElementById('emergency-close');
+            const overlay = document.getElementById('sync-overlay');
+            if (btn && overlay && (overlay.style.display !== 'none')) {
+                btn.style.display = 'block';
+            }
+        }, 4000);
+
+        // Paksa tutup setelah 8 detik apapun yang terjadi
+        setTimeout(window.hideSyncOverlay, 8000);
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -527,12 +574,18 @@
         let unsubCats = null;
         let userAuthReady = false;
 
-        // --- Firebase Config ---
-        const firebaseConfig = JSON.parse(__firebase_config);
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // --- Firebase Config Safe Load ---
+        let db, auth, appId;
+        try {
+            const firebaseConfig = JSON.parse(__firebase_config);
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        } catch (e) {
+            console.error("Firebase Initialization Failed", e);
+            window.hideSyncOverlay(); // Tutup jika init gagal
+        }
 
         // --- UI Helpers ---
         const toIDR = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
@@ -565,23 +618,8 @@
                 hTxt.className = `text-[8px] font-black lg:text-[10px] ${isOnline ? (isManual ? 'text-indigo-400' : 'text-emerald-500') : 'text-slate-400'}`;
             }
 
-            // Hide overlay if connected or timed out
-            const overlay = document.getElementById('sync-overlay');
-            if (overlay && isOnline) {
-                overlay.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; }, 500);
-            }
+            if (isOnline) window.hideSyncOverlay();
         };
-
-        // Fail-safe Timeout: Sembunyikan loading jika terlalu lama (misal 5 detik)
-        setTimeout(() => {
-            const overlay = document.getElementById('sync-overlay');
-            if (overlay && overlay.style.display !== 'none') {
-                overlay.style.opacity = '0';
-                setTimeout(() => { overlay.style.display = 'none'; }, 500);
-                if (!userAuthReady) showNotification("MODE OFFLINE DIGUNAKAN");
-            }
-        }, 5000);
 
         const updateUI = () => {
             const search = document.getElementById('search-bar');
@@ -837,17 +875,11 @@
             activeSyncId = inp.value;
             localStorage.setItem('niagapintar_manual_uid', activeSyncId);
             
-            // Show overlay during switch
             const overlay = document.getElementById('sync-overlay');
             if (overlay) {
                 overlay.style.display = 'flex';
                 overlay.style.opacity = '1';
-                setTimeout(() => {
-                    if (overlay.style.display !== 'none') {
-                        overlay.style.opacity = '0';
-                        setTimeout(() => { overlay.style.display = 'none'; }, 500);
-                    }
-                }, 4000);
+                setTimeout(window.hideSyncOverlay, 5000);
             }
             
             startListening(activeSyncId);
