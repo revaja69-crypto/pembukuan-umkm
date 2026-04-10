@@ -143,7 +143,6 @@
         
         button:active { transform: scale(0.96); transition: transform 0.1s; }
         
-        /* Fix for non-clickable elements */
         .clickable { cursor: pointer; pointer-events: auto; }
     </style>
 </head>
@@ -185,7 +184,7 @@
                 <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
                     <div class="flex items-center gap-2 mb-2">
                         <div class="w-2 h-2 rounded-full bg-slate-500" id="sync-status-dot"></div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="sync-status-text">MENYAMBUNGKAN...</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="sync-status-text">OFFLINE</p>
                     </div>
                     <p class="text-[11px] text-white font-black tracking-widest mb-1" id="user-display-id">000 000 0000</p>
                     <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden">
@@ -209,8 +208,8 @@
                         </div>
                     </div>
                     <div id="offline-badge" class="flex items-center gap-1.5 bg-slate-900/30 px-3 py-1.5 rounded-full border border-white/10">
-                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse" id="header-sync-dot"></span>
-                        <span class="text-[8px] font-black text-white uppercase tracking-widest" id="header-sync-text">MEMUAT...</span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full" id="header-sync-dot"></span>
+                        <span class="text-[8px] font-black text-white uppercase tracking-widest" id="header-sync-text">OFFLINE</span>
                     </div>
                 </div>
             </header>
@@ -239,13 +238,13 @@
                     <div class="grid grid-cols-1 gap-6">
                         <div class="space-y-4">
                             <h2 class="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                                <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span> Pemasukan Terbesar
+                                <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span> Pemasukan
                             </h2>
                             <div id="income-visual-list" class="space-y-3"></div>
                         </div>
                         <div class="space-y-4">
                             <h2 class="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                                <span class="w-1.5 h-4 bg-rose-500 rounded-full"></span> Pengeluaran Terbesar
+                                <span class="w-1.5 h-4 bg-rose-500 rounded-full"></span> Pengeluaran
                             </h2>
                             <div id="expense-visual-list" class="space-y-3"></div>
                         </div>
@@ -253,7 +252,7 @@
 
                     <div id="home-no-data" class="hidden py-16 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
                         <i data-lucide="package-open" class="w-10 h-10 text-slate-200 mx-auto mb-3"></i>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Belum Ada Transaksi</p>
+                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Belum Ada Data</p>
                     </div>
                 </div>
 
@@ -271,14 +270,14 @@
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Dana</label>
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis</label>
                                     <select id="type" onchange="window.filterFormCategories()" class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
-                                        <option value="income">💰 Uang Masuk</option>
-                                        <option value="expense">💸 Uang Keluar</option>
+                                        <option value="income">💰 Masuk</option>
+                                        <option value="expense">💸 Keluar</option>
                                     </select>
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nominal (IDR)</label>
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nominal</label>
                                     <input type="number" id="amount" placeholder="0" required class="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-black">
                                 </div>
                             </div>
@@ -292,7 +291,7 @@
                                     <input type="date" id="date" required class="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm">
                                 </div>
                             </div>
-                            <button type="submit" id="submit-button" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl transition-all clickable">SIMPAN TRANSAKSI</button>
+                            <button type="submit" id="submit-button" class="w-full py-5 bg-indigo-600 text-white font-black rounded-[2rem] text-xs shadow-2xl transition-all clickable">SIMPAN KE CLOUD</button>
                         </form>
                     </div>
                 </div>
@@ -316,7 +315,7 @@
                                 <tr>
                                     <th class="px-6 py-4">Tgl</th>
                                     <th class="px-2 py-4">Item</th>
-                                    <th class="px-6 py-4 text-right">IDR</th>
+                                    <th class="px-6 py-4 text-right">Rp</th>
                                     <th class="px-6 py-4"></th>
                                 </tr>
                             </thead>
@@ -336,7 +335,7 @@
                         
                         <div class="space-y-6">
                             <div class="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">User NiagaID Anda</p>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">ID Niaga Anda</p>
                                 <div class="flex items-center justify-between gap-4">
                                     <p class="text-base font-black text-slate-800 tracking-[0.2em]" id="full-user-id">0000000000</p>
                                     <button onclick="window.copyUserId()" class="shrink-0 p-3 bg-white text-indigo-600 border border-slate-100 shadow-sm rounded-xl clickable">
@@ -346,15 +345,15 @@
                             </div>
 
                             <div class="space-y-3">
-                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest px-2">Hubungkan Perangkat</p>
+                                <p class="text-[10px] font-black text-slate-800 uppercase tracking-widest px-2">Ganti ID Niaga</p>
                                 <div class="flex gap-2">
-                                    <input type="number" id="manual-uid-input" placeholder="10 Angka" class="flex-1 px-5 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold outline-none">
-                                    <button onclick="window.switchManualAccount()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase clickable">HUBUNGKAN</button>
+                                    <input type="number" id="manual-uid-input" placeholder="10 Digit" class="flex-1 px-5 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold outline-none">
+                                    <button onclick="window.switchManualAccount()" class="px-6 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase clickable">GANTI</button>
                                 </div>
                             </div>
 
                             <div id="manual-reset-btn" class="hidden">
-                                <button onclick="window.resetToOriginalAccount()" class="w-full py-4 border-2 border-dashed border-rose-100 text-rose-500 font-black text-[10px] uppercase rounded-2xl clickable">Keluar ke ID Utama</button>
+                                <button onclick="window.resetToOriginalAccount()" class="w-full py-4 border-2 border-dashed border-rose-100 text-rose-500 font-black text-[10px] uppercase rounded-2xl clickable">Kembali ke ID Awal</button>
                             </div>
                         </div>
                     </div>
@@ -368,7 +367,7 @@
             <nav class="bottom-nav">
                 <div class="nav-item-mobile active clickable" onclick="window.switchView('home')"><i data-lucide="layout-grid" class="w-5 h-5"></i><span>Home</span></div>
                 <div class="nav-item-mobile clickable" onclick="window.switchView('input')"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Catat</span></div>
-                <div class="nav-item-mobile clickable" onclick="window.switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Laporan</span></div>
+                <div class="nav-item-mobile clickable" onclick="window.switchView('history')"><i data-lucide="clock-3" class="w-5 h-5"></i><span>Riwayat</span></div>
                 <div class="nav-item-mobile clickable" onclick="window.switchView('settings')"><i data-lucide="settings-2" class="w-5 h-5"></i><span>Sistem</span></div>
             </nav>
         </div>
@@ -400,14 +399,12 @@
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Core ---
         const firebaseConfig = JSON.parse(__firebase_config);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- ID Logic ---
         const getOrCreateId = () => {
             let id = localStorage.getItem('niaga_id_10');
             if (!id || id.length !== 10) {
@@ -420,7 +417,6 @@
         const myId = getOrCreateId();
         let activeId = localStorage.getItem('niaga_active_id') || myId;
         
-        // --- State ---
         let records = JSON.parse(localStorage.getItem('local_db_rec') || '[]');
         let categories = JSON.parse(localStorage.getItem('local_db_cat') || '[]');
         let currentDeleteId = null;
@@ -428,7 +424,6 @@
         let unsubC = null;
         let isAuthReady = false;
 
-        // --- UI Logic ---
         const formatIDR = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(v);
         
         const notify = (t) => {
@@ -441,15 +436,16 @@
             }
         };
 
-        const updateStatusUI = (isOnline) => {
+        const updateStatusUI = (connected) => {
             const dot = document.getElementById('sync-status-dot');
             const txt = document.getElementById('sync-status-text');
             const hDot = document.getElementById('header-sync-dot');
             const hTxt = document.getElementById('header-sync-text');
             const isManual = activeId !== myId;
+            const isOnline = connected && window.navigator.onLine;
 
             if (dot) dot.className = `w-2 h-2 rounded-full ${isOnline ? (isManual ? 'bg-indigo-400' : 'bg-emerald-500') : 'bg-slate-500'}`;
-            if (txt) txt.innerText = isOnline ? (isManual ? 'SHARED SYNC' : 'CLOUD ONLINE') : 'OFFLINE MODE';
+            if (txt) txt.innerText = isOnline ? (isManual ? 'SYNC AKTIF' : 'CLOUD ONLINE') : 'OFFLINE';
             if (hDot) hDot.className = `w-1.5 h-1.5 rounded-full ${isOnline ? 'animate-pulse bg-emerald-400' : 'bg-slate-400'}`;
             if (hTxt) {
                 hTxt.innerText = isOnline ? 'CONNECTED' : 'OFFLINE';
@@ -458,13 +454,13 @@
         };
 
         const renderUI = () => {
-            const queryVal = document.getElementById('search-bar')?.value.toLowerCase() || "";
-            const filtered = records.filter(r => r.desc.toLowerCase().includes(queryVal)).sort((a,b) => new Date(b.date) - new Date(a.date));
+            const searchVal = document.getElementById('search-bar')?.value.toLowerCase() || "";
+            const filtered = records.filter(r => r.desc.toLowerCase().includes(searchVal)).sort((a,b) => new Date(b.date) - new Date(a.date));
             
             const listBody = document.getElementById('list-container');
             if (listBody) {
                 listBody.innerHTML = filtered.map(r => `
-                    <tr class="text-[10px] group">
+                    <tr class="text-[10px]">
                         <td class="px-6 py-4 font-bold text-slate-400">${r.date.split('-').reverse().slice(0,2).join('/')}</td>
                         <td class="px-2 py-4">
                             <span class="font-black text-slate-800 block truncate max-w-[120px]">${r.desc}</span>
@@ -478,13 +474,14 @@
                 `).join('');
             }
             
+            document.getElementById('home-no-data')?.classList.toggle('hidden', records.length > 0);
             document.getElementById('no-data')?.classList.toggle('hidden', filtered.length > 0);
             
-            const totalInc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
-            const totalExp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
-            document.getElementById('display-income').innerText = formatIDR(totalInc);
-            document.getElementById('display-expense').innerText = formatIDR(totalExp);
-            document.getElementById('display-balance').innerText = formatIDR(totalInc - totalExp);
+            const tInc = records.filter(r => r.type === 'income').reduce((s, r) => s + r.amount, 0);
+            const tExp = records.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+            document.getElementById('display-income').innerText = formatIDR(tInc);
+            document.getElementById('display-expense').innerText = formatIDR(tExp);
+            document.getElementById('display-balance').innerText = formatIDR(tInc - tExp);
             
             updateVisuals();
             lucide.createIcons();
@@ -493,31 +490,24 @@
         const updateVisuals = () => {
             const incL = document.getElementById('income-visual-list');
             const expL = document.getElementById('expense-visual-list');
-            const emptyEl = document.getElementById('home-no-data');
             if (!incL || !expL) return;
 
-            if (records.length === 0) {
-                emptyEl?.classList.remove('hidden');
-                incL.innerHTML = ''; expL.innerHTML = ''; return;
-            }
-            emptyEl?.classList.add('hidden');
-
-            const processStats = (type, color, icon) => {
-                const dataSet = records.filter(r => r.type === type);
-                const total = dataSet.reduce((s, r) => s + r.amount, 0);
-                const catGroups = {};
-                dataSet.forEach(r => catGroups[r.category] = (catGroups[r.category] || 0) + r.amount);
+            const process = (type, color, icon) => {
+                const data = records.filter(r => r.type === type);
+                const total = data.reduce((s, r) => s + r.amount, 0);
+                const cats = {};
+                data.forEach(r => cats[r.category] = (cats[r.category] || 0) + r.amount);
                 
-                return Object.keys(catGroups).sort((a,b) => catGroups[b] - catGroups[a]).slice(0, 3).map(catName => {
-                    const ratio = total > 0 ? ((catGroups[catName] / total) * 100).toFixed(0) : 0;
+                return Object.keys(cats).sort((a,b) => cats[b] - cats[a]).slice(0, 3).map(c => {
+                    const ratio = total > 0 ? ((cats[c] / total) * 100).toFixed(0) : 0;
                     return `
                         <div class="bg-white p-4 rounded-[2rem] border border-slate-50 flex flex-col gap-3">
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center gap-2">
                                     <div class="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center"><i data-lucide="${icon}" class="w-4 h-4" style="color:${color}"></i></div>
-                                    <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase mb-1 leading-none">${catName}</span><span class="text-[8px] font-bold text-slate-400">${ratio}%</span></div>
+                                    <div class="flex flex-col"><span class="text-[10px] font-black text-slate-800 uppercase mb-1 leading-none">${c}</span><span class="text-[8px] font-bold text-slate-400">${ratio}%</span></div>
                                 </div>
-                                <span class="text-[10px] font-black text-slate-900">${formatIDR(catGroups[catName])}</span>
+                                <span class="text-[10px] font-black text-slate-900">${formatIDR(cats[c])}</span>
                             </div>
                             <div class="progress-bar-bg"><div class="progress-fill" style="width:${ratio}%; background-color:${color}"></div></div>
                         </div>
@@ -525,60 +515,51 @@
                 }).join('');
             };
 
-            incL.innerHTML = processStats('income', '#10b981', 'trending-up');
-            expL.innerHTML = processStats('expense', '#f43f5e', 'trending-down');
+            incL.innerHTML = process('income', '#10b981', 'trending-up');
+            expL.innerHTML = process('expense', '#f43f5e', 'trending-down');
         };
 
-        // --- Cloud Logic ---
         const startSync = (id) => {
             if (!auth.currentUser) return;
             if (unsubT) unsubT();
             if (unsubC) unsubC();
 
-            // Strict Path: /artifacts/{appId}/public/data/{collectionName}
-            const transColRef = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + id);
-            const catsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
+            const tCol = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + id);
+            const cCol = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
 
-            unsubT = onSnapshot(transColRef, (snap) => {
+            unsubT = onSnapshot(tCol, (snap) => {
                 records = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 localStorage.setItem('local_db_rec', JSON.stringify(records));
                 renderUI();
                 updateStatusUI(true);
-            }, (err) => {
-                console.error("Sync Error:", err);
-                updateStatusUI(false);
-            });
+            }, () => updateStatusUI(false));
 
-            unsubC = onSnapshot(catsColRef, (snap) => {
-                const fetchedCats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                if (fetchedCats.length === 0 && id === myId) {
-                    seedDatabase(id);
-                } else {
-                    categories = fetchedCats;
+            unsubC = onSnapshot(cCol, (snap) => {
+                const fetched = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (fetched.length === 0 && id === myId) seed(id);
+                else {
+                    categories = fetched;
                     localStorage.setItem('local_db_cat', JSON.stringify(categories));
                     renderSettingsCats();
                     window.filterFormCategories();
                 }
-            }, (err) => console.error("Cat Sync Error:", err));
+            });
 
-            const formattedID = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-            const uidDisplay = document.getElementById('user-display-id');
-            const fullUidDisplay = document.getElementById('full-user-id');
-            if(uidDisplay) uidDisplay.innerText = formattedID;
-            if(fullUidDisplay) fullUidDisplay.innerText = formattedID;
+            const fmtID = id.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+            document.getElementById('user-display-id').innerText = fmtID;
+            document.getElementById('full-user-id').innerText = fmtID;
             document.getElementById('manual-reset-btn')?.classList.toggle('hidden', id === myId);
         };
 
-        const seedDatabase = async (id) => {
-            const defaults = [
+        const seed = async (id) => {
+            const def = [
                 { type: 'income', name: 'Penjualan' }, { type: 'income', name: 'Modal' },
                 { type: 'expense', name: 'Stok' }, { type: 'expense', name: 'Gaji' }, { type: 'expense', name: 'Lainnya' }
             ];
             const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + id);
-            for (const c of defaults) await addDoc(col, c);
+            for (const c of def) await addDoc(col, c);
         };
 
-        // --- Auth flow ---
         const startApp = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -587,7 +568,6 @@
                     await signInAnonymously(auth);
                 }
             } catch (err) {
-                console.error("Auth Failed:", err);
                 updateStatusUI(false);
             }
         };
@@ -601,13 +581,10 @@
 
         startApp();
 
-        // --- Nav ---
         window.switchView = (v) => {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`view-${v}`)?.classList.add('active');
-            const titleEl = document.getElementById('view-title');
-            if(titleEl) titleEl.innerText = v.toUpperCase();
-            
+            document.getElementById('view-title').innerText = v.toUpperCase();
             document.querySelectorAll('.nav-item-mobile').forEach(n => {
                 n.classList.remove('active');
                 if (n.innerText.toLowerCase().includes(v.substring(0,3))) n.classList.add('active');
@@ -616,27 +593,26 @@
         };
 
         window.filterFormCategories = () => {
-            const typeVal = document.getElementById('type').value;
-            const catSelect = document.getElementById('category');
-            if (catSelect) catSelect.innerHTML = categories.filter(cat => cat.type === typeVal).map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+            const tVal = document.getElementById('type').value;
+            const cSel = document.getElementById('category');
+            if (cSel) cSel.innerHTML = categories.filter(cat => cat.type === tVal).map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
         };
 
         window.copyUserId = () => {
-            const tempInput = document.createElement('input');
-            tempInput.value = activeId;
-            document.body.appendChild(tempInput); 
-            tempInput.select();
+            const temp = document.createElement('input');
+            temp.value = activeId;
+            document.body.appendChild(temp); temp.select();
             document.execCommand('copy');
-            document.body.removeChild(tempInput);
+            document.body.removeChild(temp);
             notify("ID DISALIN");
         };
 
         window.switchManualAccount = () => {
-            const inputVal = document.getElementById('manual-uid-input')?.value;
-            if (!inputVal || inputVal.length !== 10) return notify("HARUS 10 ANGKA");
-            activeId = inputVal;
-            localStorage.setItem('niaga_active_id', inputVal);
-            if(isAuthReady) startSync(inputVal);
+            const val = document.getElementById('manual-uid-input')?.value;
+            if (!val || val.length !== 10) return notify("HARUS 10 ANGKA");
+            activeId = val;
+            localStorage.setItem('niaga_active_id', val);
+            if(isAuthReady) startSync(val);
             notify("MENGHUBUNGKAN...");
         };
 
@@ -644,7 +620,7 @@
             activeId = myId;
             localStorage.removeItem('niaga_active_id');
             if(isAuthReady) startSync(myId);
-            notify("KEMBALI KE ID UTAMA");
+            notify("KEMBALI KE ID AWAL");
         };
 
         window.showDeleteModal = (id) => { currentDeleteId = id; document.getElementById('modal-delete').classList.remove('hidden'); };
@@ -654,33 +630,31 @@
             const iL = document.getElementById('income-cat-list');
             const eL = document.getElementById('expense-cat-list');
             if (!iL || !eL) return;
-            const catRow = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-50 text-[9px] font-black uppercase"><span>${c.name}</span><button onclick="window.deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500 clickable"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
-            iL.innerHTML = categories.filter(c => c.type === 'income').map(catRow).join('');
-            eL.innerHTML = categories.filter(c => c.type === 'expense').map(catRow).join('');
+            const row = (c) => `<div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-50 text-[9px] font-black uppercase"><span>${c.name}</span><button onclick="window.deleteCategory('${c.id}')" class="text-rose-200 hover:text-rose-500 clickable"><i data-lucide="x-circle" class="w-4 h-4"></i></button></div>`;
+            iL.innerHTML = categories.filter(c => c.type === 'income').map(row).join('');
+            eL.innerHTML = categories.filter(c => c.type === 'expense').map(row).join('');
             lucide.createIcons();
         };
 
         window.addNewCategory = async (type) => {
-            const catName = prompt("Nama Kategori:");
-            if (!catName || !isAuthReady) return;
-            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId);
-            await addDoc(colRef, { type, name: catName.trim() });
+            const name = prompt("Nama Kategori:");
+            if (!name || !isAuthReady) return;
+            const col = collection(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId);
+            await addDoc(col, { type, name: name.trim() });
         };
 
         window.deleteCategory = async (catId) => {
             if(!isAuthReady) return;
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId, catId);
-            await deleteDoc(docRef);
+            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'cats_' + activeId, catId);
+            await deleteDoc(ref);
         };
 
-        // --- Form Handler ---
         document.getElementById('accounting-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitBtn = document.getElementById('submit-button');
-            submitBtn.disabled = true; 
-            submitBtn.innerText = "MENYIMPAN...";
+            const btn = document.getElementById('submit-button');
+            btn.disabled = true; btn.innerText = "MENYIMPAN...";
 
-            const transData = {
+            const data = {
                 desc: document.getElementById('desc').value,
                 amount: parseFloat(document.getElementById('amount').value),
                 type: document.getElementById('type').value,
@@ -690,22 +664,21 @@
             };
 
             try {
-                if(!isAuthReady) throw new Error("Not Authed");
-                const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId);
-                await addDoc(colRef, transData);
+                if(!isAuthReady) throw new Error("Offline");
+                const col = collection(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId);
+                await addDoc(col, data);
                 notify("TERSINKRON");
                 document.getElementById('accounting-form').reset();
                 document.getElementById('date').valueAsDate = new Date();
                 window.switchView('history');
             } catch (err) {
-                notify("SIMPAN LOKAL (OFFLINE)");
-                records.push({ id: 'LOCAL-'+Date.now(), ...transData });
+                notify("SIMPAN LOKAL");
+                records.push({ id: 'LOCAL-'+Date.now(), ...data });
                 localStorage.setItem('local_db_rec', JSON.stringify(records));
                 renderUI();
                 window.switchView('history');
             } finally {
-                submitBtn.disabled = false; 
-                submitBtn.innerText = "SIMPAN TRANSAKSI";
+                btn.disabled = false; btn.innerText = "SIMPAN KE CLOUD";
             }
         });
 
@@ -713,41 +686,34 @@
             if (!currentDeleteId) return;
             try {
                 if(isAuthReady && !currentDeleteId.startsWith('LOCAL')) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId, currentDeleteId);
-                    await deleteDoc(docRef);
+                    const ref = doc(db, 'artifacts', appId, 'public', 'data', 'trans_' + activeId, currentDeleteId);
+                    await deleteDoc(ref);
                 } else {
                     records = records.filter(r => r.id !== currentDeleteId);
                     localStorage.setItem('local_db_rec', JSON.stringify(records));
                     renderUI();
                 }
-            } catch (err) { console.error(err); }
-            finally { hideDeleteModal(); }
+            } finally { hideDeleteModal(); }
         });
 
-        // --- Init ---
         document.getElementById('search-bar')?.addEventListener('input', renderUI);
-        const dateInput = document.getElementById('date');
-        if(dateInput) dateInput.valueAsDate = new Date();
-        
+        document.getElementById('date').valueAsDate = new Date();
         renderUI();
         updateStatusUI(false);
-        
-        window.addEventListener('online', () => { notify("KEMBALI ONLINE"); if(isAuthReady) startSync(activeId); });
-        window.addEventListener('offline', () => { notify("MODE OFFLINE"); updateStatusUI(false); });
-
-        // --- Export ---
+        window.addEventListener('online', () => { notify("ONLINE"); if(isAuthReady) startSync(activeId); });
+        window.addEventListener('offline', () => { notify("OFFLINE"); updateStatusUI(false); });
         window.exportToPDF = () => {
             const { jsPDF } = window.jspdf;
-            const pdfDoc = new jsPDF();
-            pdfDoc.text("Laporan NiagaPintar PRO", 14, 20);
-            pdfDoc.autoTable({ startY: 25, head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']], body: records.map(r=>[r.date, r.desc, r.category, r.type, formatIDR(r.amount)]) });
-            pdfDoc.save(`Laporan_${activeId}.pdf`);
+            const pdf = new jsPDF();
+            pdf.text("Laporan NiagaPintar PRO", 14, 20);
+            pdf.autoTable({ startY: 25, head: [['Tgl', 'Item', 'Ktg', 'Tipe', 'Nominal']], body: records.map(r=>[r.date, r.desc, r.category, r.type, formatIDR(r.amount)]) });
+            pdf.save(`Laporan_${activeId}.pdf`);
         };
         window.exportToExcel = () => {
-            const workSheet = XLSX.utils.json_to_sheet(records);
-            const workBook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workBook, workSheet, "Laporan");
-            XLSX.writeFile(workBook, `Laporan_${activeId}.xlsx`);
+            const ws = XLSX.utils.json_to_sheet(records);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Laporan");
+            XLSX.writeFile(wb, `Laporan_${activeId}.xlsx`);
         };
     </script>
 </body>
