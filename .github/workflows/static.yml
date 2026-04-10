@@ -1,10 +1,12 @@
-# Workflow Deployment NiagaPintar PRO v7.5.3
-# Perbaikan untuk error "Multiple artifacts found"
+# Workflow Deployment NiagaPintar PRO v7.5.4
+# Perbaikan Final untuk error "Multiple artifacts found"
 name: Deploy to GitHub Pages
 
 on:
+  # Berjalan otomatis saat ada perubahan di branch main
   push:
     branches: ["main"]
+  # Memungkinkan menjalankan secara manual dari tab Actions
   workflow_dispatch:
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
   pages: write
   id-token: write
 
-# Sangat penting: Memastikan hanya satu proses 'pages' yang berjalan
+# Mencegah penumpukan proses: Membatalkan deployment lama jika ada yang baru
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -33,9 +35,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Pastikan hanya folder ini yang diunggah
+          # Pastikan hanya mengunggah folder saat ini
           path: '.'
-          # Nama artefak default adalah 'github-pages'
 
       - name: Deploy to GitHub Pages
         id: deployment
