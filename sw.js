@@ -1,9 +1,9 @@
 /**
- * NiagaPintar PRO - Service Worker v6.0
- * Sinkronisasi dengan sistem Responsive Dashboard (Desktop & Mobile).
+ * NiagaPintar PRO - Service Worker v7.2
+ * Sinkronisasi dengan sistem NiagaID 10-Digit & Cloud Sync Fixed.
  */
 
-const CACHE_NAME = 'niagapintar-v6.0';
+const CACHE_NAME = 'niagapintar-v7.2';
 
 // Daftar aset yang akan disimpan secara offline
 const ASSETS_TO_CACHE = [
@@ -18,22 +18,22 @@ const ASSETS_TO_CACHE = [
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
-// Proses Instalasi: Menyimpan aset ke cache
+// Proses Instalasi: Membuat cache baru
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Memperbarui Cache ke v6.0');
+      console.log('[SW] Memperbarui Cache ke v7.2 (NiagaID 10-Digit)');
       return Promise.all(
         ASSETS_TO_CACHE.map(url => 
-          cache.add(url).catch(err => console.warn(`Gagal menyimpan cache: ${url}`, err))
+          cache.add(url).catch(err => console.warn(`Gagal cache aset: ${url}`, err))
         )
       );
     })
   );
 });
 
-// Proses Aktivasi: Membersihkan cache versi lama
+// Proses Aktivasi: Menghapus cache versi lama
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -44,15 +44,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Strategi Fetch: Cache First, fallback to Network
+// Strategi Fetch: Cache First, Network Fallback
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).catch(() => {
-        // Jika offline dan aset tidak ada di cache
-        return new Response("Koneksi internet diperlukan untuk akses pertama kali.");
+      return cachedResponse || fetch(event.request).then((networkResponse) => {
+        return networkResponse;
+      }).catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('./pembukuan_umkm.html');
+        }
       });
     })
   );
